@@ -1,0 +1,6 @@
+framework module Franz {
+  umbrella header "Franz-umbrella.h"
+
+  export *
+  module * { export * }
+}
