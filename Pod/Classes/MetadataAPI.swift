@@ -54,17 +54,18 @@ class TopicMetadataRequestMessage: KafkaClass {
         values = KafkaArray(bytes: &bytes)
     }
 
-    var length: Int {
-        return values.length
-    }
+    lazy var length: Int = {
+        return self.values.length
+    }()
     
-    var data: NSData {
-        return values.data
-    }
+    lazy var data: NSData = {
+        return self.values.data
+    }()
 
-    var description: String {
-        return ""
-    }
+    lazy var description: String = {
+        return "\tTOPICS(\(self.values.length)):\n\t\t" +
+            self.values.description
+    }()
 }
 
 class MetadataResponse: KafkaResponse {
@@ -83,7 +84,7 @@ class MetadataResponse: KafkaResponse {
     var topics: [String: Topic] {
         var values = [String: Topic]()
         for value in _topicMetadata.values {
-            values[value.name] = value
+            values[value.name ?? String()] = value
         }
         return values
     }

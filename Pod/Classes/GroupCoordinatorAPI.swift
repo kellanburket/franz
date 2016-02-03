@@ -44,7 +44,7 @@ class GroupCoordinatorRequestMessage: KafkaClass {
     }()
     
     var id: String {
-        return _groupId.value
+        return _groupId.value ?? String()
     }
     
     lazy var description: String = {
@@ -69,7 +69,7 @@ class GroupCoordinatorResponse: KafkaResponse {
     }
     
     var host: String {
-        return _coordinatorHost.value
+        return _coordinatorHost.value ?? String()
     }
 
     var port: Int32 {

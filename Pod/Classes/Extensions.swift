@@ -9,24 +9,22 @@
 import Foundation
 
 
-protocol Datable {
+protocol VariableLengthDatable {
+    var data: NSData { get }
+    init()
+    static func fromBytes(var bytes: [UInt8]) -> VariableLengthDatable
+}
+
+
+protocol FixedLengthDatable {
+    init(_:Int)
+    func toInt() -> Int
     var data: NSData { get }
     init(bytes: [UInt8])
 }
 
 
-protocol StringDatable: Datable {
-    init(_:String)
-}
-
-
-protocol IntDatable: Datable {
-    init(_:Int)
-    func toInt() -> Int
-}
-
-
-extension Int8: IntDatable {
+extension Int8: FixedLengthDatable {
     
     init(var bytes: [UInt8]) {
         let data = NSData(bytes: &bytes, length: 1)
@@ -45,7 +43,7 @@ extension Int8: IntDatable {
     }
 }
 
-extension UInt8: IntDatable {
+extension UInt8: FixedLengthDatable {
 
     init(var bytes: [UInt8]) {
         let data = NSData(bytes: &bytes, length: 1)
@@ -64,7 +62,7 @@ extension UInt8: IntDatable {
     }
 }
 
-extension Int16: IntDatable {
+extension Int16: FixedLengthDatable {
 
     init(var bytes: [UInt8]) {
         let data = NSData(bytes: &bytes, length: 2)
@@ -83,7 +81,7 @@ extension Int16: IntDatable {
     }
 }
 
-extension UInt16: IntDatable {
+extension UInt16: FixedLengthDatable {
     
     init(var bytes: [UInt8]) {
         let data = NSData(bytes: &bytes, length: 2)
@@ -102,7 +100,7 @@ extension UInt16: IntDatable {
     }
 }
 
-extension Int32: IntDatable {
+extension Int32: FixedLengthDatable {
 
     init(var bytes: [UInt8]) {
         let data = NSData(bytes: &bytes, length: 4)
@@ -121,7 +119,7 @@ extension Int32: IntDatable {
     }
 }
 
-extension UInt32: IntDatable {
+extension UInt32: FixedLengthDatable {
 
     init(var bytes: [UInt8]) {
         let data = NSData(bytes: &bytes, length: 4)
@@ -140,7 +138,7 @@ extension UInt32: IntDatable {
     }
 }
 
-extension Int: IntDatable {
+extension Int: FixedLengthDatable {
 
     init(var bytes: [UInt8]) {
         let data = NSData(bytes: &bytes, length: sizeof(Int.self))
@@ -153,9 +151,9 @@ extension Int: IntDatable {
         return Int(self)
     }
    
-    init(_ value: IntDatable) {
+    init(_ value: FixedLengthDatable) {
         var dataBytes = value.data
-        let data = NSData(bytes: &dataBytes, length: sizeof(IntDatable.self))
+        let data = NSData(bytes: &dataBytes, length: sizeof(FixedLengthDatable.self))
 
         var out: Int = 0
         data.getBytes(&out, length: sizeof(Int.self))
@@ -168,7 +166,7 @@ extension Int: IntDatable {
     }
 }
 
-extension Int64: IntDatable {
+extension Int64: FixedLengthDatable {
 
     init(var bytes: [UInt8]) {
         let data = NSData(bytes: &bytes, length: 8)
@@ -187,7 +185,7 @@ extension Int64: IntDatable {
     }
 }
 
-extension UInt64: IntDatable {
+extension UInt64: FixedLengthDatable {
 
     init(var bytes: [UInt8]) {
         let data = NSData(bytes: &bytes, length: 8)
@@ -206,11 +204,12 @@ extension UInt64: IntDatable {
     }
 }
 
-extension String: StringDatable {
+extension String: VariableLengthDatable {
 
-    init(var bytes: [UInt8]) {
+    static func fromBytes(var bytes: [UInt8]) -> VariableLengthDatable {
         let data = NSData(bytes: &bytes, length: bytes.count)
-        self.init(String(data: data, encoding: NSUTF8StringEncoding) ?? "")
+        let string = String(data: data, encoding: NSUTF8StringEncoding) ?? ""
+        return self.init(string)
     }
     
     var data: NSData {
@@ -220,6 +219,18 @@ extension String: StringDatable {
         ) ?? NSData()
     }
 }
+
+extension NSData: VariableLengthDatable {
+
+    static func fromBytes(var bytes: [UInt8]) -> VariableLengthDatable {
+        return NSData(bytes: &bytes, length: bytes.count)
+    }
+    
+    var data: NSData {
+        return self
+    }
+}
+
 
 extension NSStreamEvent {
     var description: String {

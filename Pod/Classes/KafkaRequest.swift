@@ -63,9 +63,9 @@ class KafkaRequest: NSObject {
         return 4
     }
     
-    lazy var sizeData: NSData = {
+    var sizeData: NSData {
         return Int32(self.length).data
-    }()
+    }
     
     lazy var data: NSData = {
         let data = NSMutableData(capacity: self.length)!
@@ -80,6 +80,7 @@ class KafkaRequest: NSObject {
             data.appendData(value.data)
         }
         
+        //print("REQUEST LENGTH: \(data.length)")
         //print(self.description)
         return data
     }()
@@ -92,7 +93,7 @@ class KafkaRequest: NSObject {
             "\tAPI_KEY(\(_apiKey.length)): \(_apiKey.data)\n" +
             "\tAPI_VERSION(\(_apiVersion.length)): \(_apiVersion.data)\n" +
             "\tCORRELATION_ID(\(_correlationId.length)): \(correlationId.data)\n" +
-            "\tCLIENT_ID((\(clientId.length)): \(clientId.data)\n" +
+            "\tCLIENT_ID(\(clientId.length)): \(_clientId?.value) => \(_clientId?.data)\n" +
             value
     }
 }

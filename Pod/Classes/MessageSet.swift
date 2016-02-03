@@ -34,6 +34,14 @@ class MessageSet: KafkaClass {
         }
     }
     
+    func addMessage(message: String, key: String? = nil) {
+        
+    }
+    
+    func addMessage(data: NSData, key: String? = nil) {
+        
+    }
+    
     lazy var length: Int = {
         return self.valueLength + 4
     }()
@@ -88,18 +96,16 @@ class MessageSetItem: KafkaClass {
         return _value
     }
     
-    init(
-        value: String,
-        key: String? = nil,
-        offset: Int = 0
-    ) {
+    init(value: String, key: String? = nil, offset: Int = 0) {
         self._offset = KafkaInt64(value: Int64(offset))
-        self._value = Message(
-            value: value,
-            key: key
-        )
+        self._value = Message(value: value, key: key)
     }
-    
+
+    init(data: NSData, key: String? = nil, offset: Int = 0) {
+        self._offset = KafkaInt64(value: Int64(offset))
+        self._value = Message(data: data, key: key)
+    }
+
     required init(inout bytes: [UInt8]) {
         _offset = KafkaInt64(bytes: &bytes)
         _size = KafkaInt32(bytes: &bytes)
@@ -144,13 +150,12 @@ public class Message: KafkaClass {
     private var _magicByte: KafkaInt8
     private var _attributes: KafkaInt8
     private var _crc: KafkaUInt32! = nil
-    
-    public var key: String {
-        return _key.value
-    }
-    
-    public var value: String {
-        return _value.value
+
+    public init(data: NSData, key: String? = nil) {
+        self._attributes = KafkaInt8(value: CompressionCodec.None.rawValue)
+        self._magicByte = KafkaInt8(value: 0)
+        self._key = KafkaBytes(value: key ?? "")
+        self._value = KafkaBytes(data: data)
     }
     
     public init(value: String, key: String? = nil) {

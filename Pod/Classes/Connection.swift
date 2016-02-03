@@ -26,6 +26,7 @@ enum ConnectionError: ErrorType {
     case OutputStreamHasEnded
     case OutputStreamClosed
     case UnableToWriteBytes
+    case BytesNoLongerAvailable
 }
 
 class KafkaConnection: NSObject, NSStreamDelegate {
@@ -37,6 +38,7 @@ class KafkaConnection: NSObject, NSStreamDelegate {
     }
 
     private var _requestCallbacks = [Int32: RequestCallback]()
+    private var _broker: Broker
     
     private var clientId: String
     
@@ -55,17 +57,18 @@ class KafkaConnection: NSObject, NSStreamDelegate {
     private var _outputStreamQueue: dispatch_queue_t
     private var _writeRequestBlocks = [dispatch_block_t]()
     
-    init(ipv4: String, port: Int32, clientId: String) {
+    init(ipv4: String, port: Int32, broker: Broker, clientId: String) {
         self.ipv4 = ipv4
         self.clientId = clientId
+        self._broker = broker
         self.port = port
 
         _inputStreamQueue = dispatch_queue_create(
-            "input.stream.franz", DISPATCH_QUEUE_SERIAL
+            "\(self.ipv4).\(self.port).input.stream.franz", DISPATCH_QUEUE_SERIAL
         )
 
         _outputStreamQueue = dispatch_queue_create(
-            "output.stream.franz", DISPATCH_QUEUE_SERIAL
+            "\(self.ipv4).\(self.port).output.stream.franz", DISPATCH_QUEUE_SERIAL
         )
 
         super.init()
@@ -81,45 +84,49 @@ class KafkaConnection: NSObject, NSStreamDelegate {
         inputStream = readStream?.takeUnretainedValue()
         outputStream = writeStream?.takeUnretainedValue()
 
-        open()
-    }
-    
-    private func open() {
         self.inputStream?.delegate = self
-        dispatch_async(_inputStreamQueue) {
-            self.inputStream?.scheduleInRunLoop(
-                NSRunLoop.mainRunLoop(),
-                forMode: NSDefaultRunLoopMode
-            )
-            
-            self.inputStream?.open()
-        }
+        self.inputStream?.scheduleInRunLoop(
+            NSRunLoop.mainRunLoop(),
+            forMode: NSDefaultRunLoopMode
+        )
 
         self.outputStream?.delegate = self
-        dispatch_async(_outputStreamQueue) {
-            self.outputStream?.scheduleInRunLoop(
-                NSRunLoop.mainRunLoop(),
-                forMode: NSDefaultRunLoopMode
-            )
-            
-            self.outputStream?.open()
-        }
-    }
+        self.outputStream?.scheduleInRunLoop(
+            NSRunLoop.mainRunLoop(),
+            forMode: NSDefaultRunLoopMode
+        )
 
-    private func read() {
+        self.inputStream?.open()
+        self.outputStream?.open()
+    }
+    
+    private func read(timeout: Double = 3000) {
+        //print("Read Block Added")
         dispatch_async(_inputStreamQueue) {
+            //print("\tBeginning Input Stream Read")
             if let inputStream = self.inputStream {
                 do {
                     let (size, correlationId) = try self.getMessageMetadata()
+                    //print("\t\tReading Bytes")
                     var bytes = [UInt8]()
-                    
+                    let startTime = NSDate().timeIntervalSince1970
                     while bytes.count < Int(size) {
+                        
                         if inputStream.hasBytesAvailable {
                             var buffer = [UInt8](count: Int(size), repeatedValue: 0)
                             let bytesInBuffer = inputStream.read(&buffer, maxLength: Int(size))
+                            //print("\t\tReading Bytes")
                             buffer = buffer.slice(0, length: bytesInBuffer)
                             //print("BUFFER(\(size)): \(buffer)")
                             bytes += buffer
+                        }
+                        
+                        let currentTime = NSDate().timeIntervalSince1970
+                        let timeDelta = (currentTime - startTime) * 1000
+
+                        if  timeDelta >= timeout {
+                            print("Timeout @ Delta \(timeDelta).")
+                            break
                         }
                     }
                     
@@ -132,34 +139,42 @@ class KafkaConnection: NSObject, NSStreamDelegate {
                         )
                     }
                 } catch ConnectionError.ZeroLengthResponse {
-                    return
+                    print("Zero Lenth Response")
                 } catch ConnectionError.PartialResponse(let size) {
                     print("Response Size: \(size) is invalid.")
+                } catch ConnectionError.BytesNoLongerAvailable {
+                    return
                 } catch {
                     print("Error")
                 }
             } else {
                 print("Unable to find Input Stream")
             }
+
+            //print("\tReleasing Input Stream Read")
         }
     }
 
     func write(request: KafkaRequest, callback: RequestCallback? = nil) {
         request.clientId = KafkaString(value: clientId)
-
+        //print("Write Block Added")
         if let requestCallback = callback {
             _requestCallbacks[request.correlationId] = requestCallback
         }
         
         let dispatchBlock = dispatch_block_create(DISPATCH_BLOCK_INHERIT_QOS_CLASS) {
-            let data = request.data
-            //print("DATA OUT: \(data)")
-            let bytesPtr = data.bytes
-            let bytes = unsafeBitCast(bytesPtr, UnsafePointer<UInt8>.self)
-
-            if let bytesWrittenCount = self.outputStream?.write(bytes, maxLength: data.length) {
-                if bytesWrittenCount == -1 {
-                    //throw ConnectionError.UnableToWriteBytes
+            //print("\tBeginning Output Stream Write")
+            if let stream = self.outputStream {
+                if stream.hasSpaceAvailable {
+                    let data = request.data
+                    //print("Data: \(data)")
+                    let bytesPtr = data.bytes
+                    let bytes = unsafeBitCast(bytesPtr, UnsafePointer<UInt8>.self)
+                    //print("Writing to Output Stream: \(data.length)")
+                    stream.write(bytes, maxLength: data.length)
+                    //print("\tReleasing Output Stream Write(\(data.length))")
+                } else {
+                    print("No Space Available for Writing")
                 }
             }
         }
@@ -176,13 +191,15 @@ class KafkaConnection: NSObject, NSStreamDelegate {
     }
     
     private func getMessageMetadata() throws -> (Int32, Int32) {
-
         if let activeInputStream = inputStream {
             let length = responseLengthSize + responseCorrelationIdSize
-            
             var buffer = Array<UInt8>(count: Int(length), repeatedValue: 0)
             
-            activeInputStream.read(&buffer, maxLength: Int(length))
+            if activeInputStream.hasBytesAvailable {
+                activeInputStream.read(&buffer, maxLength: Int(length))
+            } else {
+                throw ConnectionError.BytesNoLongerAvailable
+            }
             
             //print("SIZE BUFFER: \(buffer)")
             
@@ -205,6 +222,7 @@ class KafkaConnection: NSObject, NSStreamDelegate {
     }
     
     func stream(aStream: NSStream, handleEvent eventCode: NSStreamEvent) {
+        //print("STREAM STATUS: \(aStream.streamStatus.description) => \(eventCode.description)")
         if let inputStream = aStream as? NSInputStream {
             let status = inputStream.streamStatus
             //print("INPUT STREAM STATUS: \(status.description) => \(eventCode.description)")
@@ -212,6 +230,7 @@ class KafkaConnection: NSObject, NSStreamDelegate {
             case .Open:
                 switch eventCode {
                 case NSStreamEvent.HasBytesAvailable:
+                    //print("Input Stream Has Bytes Available")
                     read()
                 case NSStreamEvent.OpenCompleted:
                     return
@@ -229,16 +248,15 @@ class KafkaConnection: NSObject, NSStreamDelegate {
             }
         } else if let outputStream = aStream as? NSOutputStream {
             let status = outputStream.streamStatus
-            //print("OUTPUT STREAM STATUS: \(status.description)")
+            //print("OUTPUT STREAM STATUS: \(status.description) => \(eventCode.description)")
             switch status {
             case .Open:
                 switch eventCode {
                 case NSStreamEvent.HasSpaceAvailable:
+                    //print("Requests: \(_writeRequestBlocks.count)")
                     if _writeRequestBlocks.count > 0 {
-                        while _writeRequestBlocks.count > 0 {
-                            let block = _writeRequestBlocks.removeFirst()
-                            dispatch_async(_outputStreamQueue, block)
-                        }
+                        let block = _writeRequestBlocks.removeFirst()
+                        dispatch_async(_outputStreamQueue, block)
                     }
                 case NSStreamEvent.OpenCompleted:
                     return
@@ -255,5 +273,9 @@ class KafkaConnection: NSObject, NSStreamDelegate {
                 return
             }
         }
+    }
+    
+    deinit {
+        print("Deinitializing.")
     }
 }

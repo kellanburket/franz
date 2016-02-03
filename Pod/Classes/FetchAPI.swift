@@ -172,7 +172,7 @@ class TopicalFetchMessage: KafkaClass {
     private var _partitions: KafkaArray<PartitionedFetchMessage>
 
     var topicName: String {
-        return _topicName.value
+        return _topicName.value ?? String()
     }
     
     init(
@@ -290,6 +290,19 @@ class FetchResponse: KafkaResponse {
         }
         return offsets
     }
+    
+    var topics: [String: [Int32: PartitionedFetchResponse]] {
+        var topics = [String: [Int32: PartitionedFetchResponse]]()
+        for value in values.values {
+            let topic = value.topicName
+            var partitions = [Int32: PartitionedFetchResponse]()
+            for (key, partition) in value.partitions {
+                partitions[key] = partition
+            }
+            topics[topic] = partitions
+        }
+        return topics
+    }
 
     var messages: [Message] {
         var msgs = [Message]()
@@ -312,7 +325,7 @@ class TopicalFetchResponse: KafkaClass {
     private var _partitions: KafkaArray<PartitionedFetchResponse>
     
     var topicName: String {
-        return _topicName.value
+        return _topicName.value ?? String()
     }
     
     var partitions: [Int32: PartitionedFetchResponse] {

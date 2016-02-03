@@ -32,7 +32,7 @@ public class Topic: KafkaClass {
         return values
     }
     
-    public var name: String {
+    public var name: String? {
         return _topicName.value
     }
     

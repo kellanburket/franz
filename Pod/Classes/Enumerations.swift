@@ -8,16 +8,6 @@
 
 import Foundation
 
-enum KafkaProtocolError: ErrorType {
-    case BadMessageLength
-    case MalformedClientId
-}
-
-
-enum AssignmentStrategy: String {
-    case Range = "org.apache.kafka.clients.consumer.RangeAssignor"
-}
-
 /*
 Used to ask for all messages before a certain time (ms).
 Pulled in descending order.
@@ -119,38 +109,70 @@ enum KafkaErrorCode: Int16 {
     
     var description: String {
         switch self {
-        case NoError: return "No error--it worked!"
-        case Unknown: return "An unexpected server error"
-        case OffsetOutOfRange: return "The requested offset is outside the range of offsets maintained by the server for the given topic/partition."
-        case InvalidMessage: return "This indicates that a message contents does not match its CRC"
-        case UnknownTopicOrPartition: return "This request is for a topic or partition that does not exist on this broker."
-        case InvalidMessageSize: return "The message has a negative size"
-        case LeaderNotAvailable: return "This error is thrown if we are in the middle of a leadership election and there is currently no leader for this partition and hence it is unavailable for writes."
-        case NotLeaderForPartition: return "This error is thrown if the client attempts to send messages to a replica that is not the leader for some partition. It indicates that the clients metadata is out of date."
-        case RequestTimedOut: return "This error is thrown if the request exceeds the user-specified time limit in the request."
-        case BrokerNotAvailable: return "This is not a client facing error and is used mostly by tools when a broker is not alive."
-        case ReplicaNotAvailable: return "If replica is expected on a broker, but is not (this can be safely ignored)."
-        case MessageSizeTooLarge: return "The server has a configurable maximum message size to avoid unbounded memory allocation. This error is thrown if the client attempt to produce a message larger than this maximum."
-        case StaleControllerEpochCode: return "Internal error code for broker-to-broker communication."
-        case OffsetMetadataTooLargeCode: return "If you specify a string larger than configured maximum for offset metadata"
-        case GroupLoadInProgressCode: return "The broker returns this error code for an offset fetch request if it is still loading offsets (after a leader change for that offsets topic partition), or in response to group membership requests (such as heartbeats) when group metadata is being loaded by the coordinator."
-        case GroupCoordinatorNotAvailableCode: return "The broker returns this error code for group coordinator requests, offset commits, and most group management requests if the offsets topic has not yet been created, or if the group coordinator is not active."
-        case NotCoordinatorForGroupCode: return "The broker returns this error code if it receives an offset fetch or commit request for a group that it is not a coordinator for."
-        case InvalidTopicCode: return "For a request which attempts to access an invalid topic (e.g. one which has an illegal name), or if an attempt is made to write to an internal topic (such as the consumer offsets topic)."
-        case RecordListTooLargeCode: return "If a message batch in a produce request exceeds the maximum configured segment size."
-        case NotEnoughReplicasCode: return "Returned from a produce request when the number of in-sync replicas is lower than the configured minimum and requiredAcks is -1."
-        case NotEnoughReplicasAfterAppendCode: return "Returned from a produce request when the message was written to the log, but with fewer in-sync replicas than required."
-        case InvalidRequiredAcksCode: return "Returned from a produce request if the requested requiredAcks is invalid (anything other than -1, 1, or 0)."
-        case IllegalGenerationCode: return "Returned from group membership requests (such as heartbeats) when the generation id provided in the request is not the current generation."
-        case InconsistentGroupProtocolCode: return "Returned in join group when the member provides a protocol type or set of protocols which is not compatible with the current group."
-        case InvalidGroupIdCode: return "Returned in join group when the groupId is empty or null."
-        case UnknownMemberIdCode: return "Returned from group requests (offset commits/fetches, heartbeats, etc) when the memberId is not in the current generation."
-        case InvalidSessionTimeoutCode: return "Return in join group when the requested session timeout is outside of the allowed range on the broker"
-        case RebalanceInProgressCode: return "Returned in heartbeat requests when the coordinator has begun rebalancing the group. This indicates to the client that it should rejoin the group."
-        case InvalidCommitOffsetSizeCode: return "This error indicates that an offset commit was rejected because of oversize metadata."
-        case TopicAuthorizationFailedCode: return "Returned by the broker when the client is not authorized to access the requested topic."
-        case GroupAuthorizationFailedCode: return "Returned by the broker when the client is not authorized to access a particular groupId."
-        case ClusterAuthorizationFailedCode: return "Returned by the broker when the client is not authorized to use an inter-broker or administrative API."
+        case NoError:
+            return "No error."
+        case Unknown:
+            return "An unexpected server error"
+        case OffsetOutOfRange:
+            return "The requested offset is outside the range of offsets maintained by the server for the given topic/partition."
+        case InvalidMessage:
+            return "Message contents does not match its CRC"
+        case UnknownTopicOrPartition:
+            return "Topic or partition does not exist on this broker."
+        case InvalidMessageSize:
+            return "Message has a negative size"
+        case LeaderNotAvailable:
+            return "This error is thrown if we are in the middle of a leadership election and there is currently no leader for this partition and hence it is unavailable for writes."
+        case NotLeaderForPartition:
+            return "This error is thrown if the client attempts to send messages to a replica that is not the leader for some partition. It indicates that the clients metadata is out of date."
+        case RequestTimedOut:
+            return "This error is thrown if the request exceeds the user-specified time limit in the request."
+        case BrokerNotAvailable:
+            return "This is not a client facing error and is used mostly by tools when a broker is not alive."
+        case ReplicaNotAvailable:
+            return "If replica is expected on a broker, but is not (this can be safely ignored)."
+        case MessageSizeTooLarge:
+            return "The server has a configurable maximum message size to avoid unbounded memory allocation. This error is thrown if the client attempt to produce a message larger than this maximum."
+        case StaleControllerEpochCode:
+            return "Internal error."
+        case OffsetMetadataTooLargeCode:
+            return "String larger than configured maximum for offset metadata"
+        case GroupLoadInProgressCode:
+            return "The broker returns this error code for an offset fetch request if it is still loading offsets (after a leader change for that offsets topic partition), or in response to group membership requests (such as heartbeats) when group metadata is being loaded by the coordinator."
+        case GroupCoordinatorNotAvailableCode:
+            return "Offsets topic has not yet been created or group coordinator is not active."
+        case NotCoordinatorForGroupCode:
+            return "Broke is not group coordinator for offset fetch or commit request."
+        case InvalidTopicCode:
+            return "For a request which attempts to access an invalid topic (e.g. one which has an illegal name), or if an attempt is made to write to an internal topic (such as the consumer offsets topic)."
+        case RecordListTooLargeCode:
+            return "Request exceeds the maximum configured segment size."
+        case NotEnoughReplicasCode:
+            return "The number of in-sync replicas is lower than the configured minimum and requiredAcks is -1."
+        case NotEnoughReplicasAfterAppendCode:
+            return "Message was written to the log, but with fewer in-sync replicas than required."
+        case InvalidRequiredAcksCode:
+            return "RequiredAcks is invalid (anything other than -1, 1, or 0)."
+        case IllegalGenerationCode:
+            return "Generation id provided in the request is not the current generation."
+        case InconsistentGroupProtocolCode:
+            return "Protocol type or set of protocols is not compatible with the current group."
+        case InvalidGroupIdCode:
+            return "The groupId is empty or null."
+        case UnknownMemberIdCode:
+            return "The memberId is not in the current generation."
+        case InvalidSessionTimeoutCode:
+            return "The requested session timeout is outside of the allowed range on the broker"
+        case RebalanceInProgressCode:
+            return "Client that it should rejoin the group."
+        case InvalidCommitOffsetSizeCode:
+            return "Offset commit rejected due to oversize metadata."
+        case TopicAuthorizationFailedCode:
+            return "The client is not authorized to access the requested topic."
+        case GroupAuthorizationFailedCode:
+            return "The client is not authorized to access a particular groupId."
+        case ClusterAuthorizationFailedCode:
+            return "The client is not authorized to use an inter-broker or administrative API."
         }
     }
     
@@ -243,7 +265,10 @@ enum ApiVersion: Int16 {
 }
 
 
-enum GroupProtocol {
+/**
+    Group Protocols
+**/
+public enum GroupProtocol {
     case Consumer
     case Custom(name: String)
 
@@ -256,3 +281,34 @@ enum GroupProtocol {
         }
     }
 }
+
+
+public enum GroupState: String {
+    case AwaitingSync = "AwaitingSync"
+    case Initialize = "Initialize"
+    case Joining = "Joining"
+    case Stable = "Stable"
+    case Down = "Down"
+    
+    var description: String {
+        switch self {
+        case AwaitingSync:
+            return "The join group phase has completed (i.e. all expected members of the group have sent JoinGroup requests) and the coordinator is awaiting group state from the leader. Unexpected coordinator requests return an error indicating that a rebalance is in progress."
+        case Initialize:
+            return "The coordinator is reading group data from Zookeeper (or some other storage) in order to transition groups from failed coordinators. Any heartbeat or join group requests are returned with an error indicating that the coordinator is not ready yet."
+        case Joining:
+            return "The coordinator has received a JoinGroup request from at least one member and is awaiting JoinGroup requests from the rest of the group. Heartbeats or SyncGroup requests in this state return an error indicating that a rebalance is in progress."
+        case Stable:
+            return "The coordinator either has an active generation or has no members and is awaiting the first JoinGroup. Heartbeats are accepted from members in this state and are used to keep group members active or to indicate that they need to join the group."
+        case Down:
+            return "There are no active members and group state has been cleaned up."
+        }
+    }
+}
+
+
+public enum AssignmentStrategy: String {
+    case Range = "_"
+    case RoundRobin = "roundrobin"
+}
+

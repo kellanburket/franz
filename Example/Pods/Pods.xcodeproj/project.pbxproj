@@ -31,9 +31,10 @@
 		723FDDFD804188090511DEFA8309A06B /* UIImage+Snapshot.h in Headers */ = {isa = PBXBuildFile; fileRef = 0345D737618C6A063BD152389ACCBF87 /* UIImage+Snapshot.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		76299E1B1C55882900C4EDE1 /* Cluster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A812AF34C9481DB730691CAAAC731A4 /* Cluster.swift */; };
 		76333B141C57CA6A00556A70 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76333B121C57C9D300556A70 /* Group.swift */; };
+		76F973731C5ECA430084C4A0 /* OffsetFetchAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F973711C5ECA250084C4A0 /* OffsetFetchAPI.swift */; };
 		788E3D9458FE9540469981BE9A0B227C /* UIImage+Compare.m in Sources */ = {isa = PBXBuildFile; fileRef = 5999002674B86E70DC7970CEA62F278E /* UIImage+Compare.m */; };
 		7BEF20E09F0E864478905311672F91AB /* FBSnapshotTestController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4AC2C5814DCFC7590AC8C46AAB7FCEEF /* FBSnapshotTestController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		80C79D920A1B124F0E5C1EE749E83598 /* OffsetCommitFetchAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CBFE487B6497221DA7FC0DC25C03032 /* OffsetCommitFetchAPI.swift */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
+		80C79D920A1B124F0E5C1EE749E83598 /* OffsetCommitAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CBFE487B6497221DA7FC0DC25C03032 /* OffsetCommitAPI.swift */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
 		821A26883ED14BDCD7EBADD37D671D17 /* FBSnapshotTestCase.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EE4692BF9A76DAAA67A8FF4DABD27E8 /* FBSnapshotTestCase.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		82DDF40C496D87C0A83C6DF039E0481E /* OffsetAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA9EF77B3DAFCF252E7A17BD71D32852 /* OffsetAPI.swift */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
 		8384DFD78FD8BF8A6D04D27FA56AB554 /* KafkaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = B96B360AE51EFDE67C733F9BBBDEFB0D /* KafkaResponse.swift */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
@@ -128,10 +129,11 @@
 		5AA71D6414ACB25B984EE048BD9EF44F /* Franz.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = Franz.modulemap; sourceTree = "<group>"; };
 		5BEEC2AAA68DF2A94D30301C90B435E0 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5E72BEB8816B62053B902BF9053C97F6 /* MetadataAPI.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MetadataAPI.swift; sourceTree = "<group>"; };
-		6CBFE487B6497221DA7FC0DC25C03032 /* OffsetCommitFetchAPI.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OffsetCommitFetchAPI.swift; sourceTree = "<group>"; };
+		6CBFE487B6497221DA7FC0DC25C03032 /* OffsetCommitAPI.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OffsetCommitAPI.swift; sourceTree = "<group>"; };
 		71B05C8E3C6D92BDFE8AD10416A2C201 /* Pods-Franz_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Franz_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		73003A0752F3CABAA497D1FD1F5E4E44 /* UIImage+Diff.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+Diff.m"; path = "FBSnapshotTestCase/Categories/UIImage+Diff.m"; sourceTree = "<group>"; };
 		76333B121C57C9D300556A70 /* Group.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
+		76F973711C5ECA250084C4A0 /* OffsetFetchAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OffsetFetchAPI.swift; sourceTree = "<group>"; };
 		7BAF34E92C81EABA6A308F8F749080A1 /* Pods-Franz_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-Franz_Example.modulemap"; sourceTree = "<group>"; };
 		7CAAAB29C54DB2D5220028C4110E45E6 /* UIImage+Diff.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImage+Diff.h"; path = "FBSnapshotTestCase/Categories/UIImage+Diff.h"; sourceTree = "<group>"; };
 		853C84AC883B6FC690E82525E7ECB377 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -337,7 +339,8 @@
 				A7D2A38CCBF3E7D1F2F6DE754F58D865 /* MessageSet.swift */,
 				5E72BEB8816B62053B902BF9053C97F6 /* MetadataAPI.swift */,
 				CA9EF77B3DAFCF252E7A17BD71D32852 /* OffsetAPI.swift */,
-				6CBFE487B6497221DA7FC0DC25C03032 /* OffsetCommitFetchAPI.swift */,
+				6CBFE487B6497221DA7FC0DC25C03032 /* OffsetCommitAPI.swift */,
+				76F973711C5ECA250084C4A0 /* OffsetFetchAPI.swift */,
 				76333B121C57C9D300556A70 /* Group.swift */,
 				02EB238180060CCF49CCB44C4E91190D /* Partition.swift */,
 				9C783899B37D8C839A02861DED3AE879 /* ProduceAPI.swift */,
@@ -650,6 +653,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				76F973731C5ECA430084C4A0 /* OffsetFetchAPI.swift in Sources */,
 				61EF6F029586143469BBBA49D82646C6 /* AdminAPI.swift in Sources */,
 				446491C54EF0600A87F86D39B2A506A4 /* Broker.swift in Sources */,
 				76299E1B1C55882900C4EDE1 /* Cluster.swift in Sources */,
@@ -668,7 +672,7 @@
 				257ED6B3AACF80A75600C6851F4740F9 /* MessageSet.swift in Sources */,
 				41D0C3EF5AC6F1E2CDA22DD7E4A43AE5 /* MetadataAPI.swift in Sources */,
 				82DDF40C496D87C0A83C6DF039E0481E /* OffsetAPI.swift in Sources */,
-				80C79D920A1B124F0E5C1EE749E83598 /* OffsetCommitFetchAPI.swift in Sources */,
+				80C79D920A1B124F0E5C1EE749E83598 /* OffsetCommitAPI.swift in Sources */,
 				03B775E406BEB00CA5AD3ACA399A21C5 /* Partition.swift in Sources */,
 				D3CCFCE4A651A0EF30BF8BEBB838486B /* ProduceAPI.swift in Sources */,
 				E8F83144CB60E17DC4FCE06AC4779AE3 /* Topic.swift in Sources */,

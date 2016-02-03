@@ -104,7 +104,7 @@ class TopicalOffsetMessage: KafkaClass {
     private var _partitions: KafkaArray<PartitionedOffsetMessage>
     
     var topicName: String {
-        return _topicName.value
+        return _topicName.value ?? String()
     }
     
     init(
@@ -234,7 +234,7 @@ class TopicalPartitionedOffsets: KafkaClass {
     private var _partitions: KafkaArray<PartitionedOffsets>
     
     var topicName: String {
-        return _topicName.value
+        return _topicName.value ?? String()
     }
     
     var partitionedOffsets: [Int32: PartitionedOffsets] {

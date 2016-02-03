@@ -11,21 +11,15 @@ import Foundation
 import Foundation
 
 class ProduceRequest: KafkaRequest {
-    init(values: [String:[Int32:[String]]]) {
+    init(values: [String:[Int32:MessageSet]]) {
 
         var kafkaTopicalMessageSets = [KafkaTopicalMessageSet]()
 
         for (topic, partitions) in values {
             var kafkaPartitionedMessageSets = [KafkaPartitionedMessageSet]()
-            for (partition, messages) in partitions {
-                var messageSetItems = [MessageSetItem]()
-                for message in messages {
-                    let messageSetItem = MessageSetItem(value: message)
-                    messageSetItems.append(messageSetItem)
-                }
-
+            for (partition, messageSet) in partitions {
                 let kafkaPartitionedMessageSet = KafkaPartitionedMessageSet(
-                    value: MessageSet(values: messageSetItems),
+                    value: messageSet,
                     partition: partition
                 )
                 
@@ -107,7 +101,7 @@ class TopicalResponse: KafkaClass {
     private var _partitions: KafkaArray<PartitionedResponse>
     
     var topicName: String {
-        return _topicName.value
+        return _topicName.value ?? String()
     }
     
     var partitions: [PartitionedResponse] {

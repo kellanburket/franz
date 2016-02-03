@@ -19,18 +19,38 @@ class ViewController: UIViewController {
 
         let cluster = Cluster(
             brokers: [
-                ("127.0.0.1", 9092),
-                ("127.0.0.1", 9093),
-                ("127.0.0.1", 9094),
-                ("127.0.0.1", 9095)
+                ("127.0.0.1", 9092)
+                //("localhost", 9093),
+                //("localhost", 9094),
+                //("localhost", 9095)
             ],
-            clientId: "local-test"
-            //nodeId: 1
+            clientId: "replica-test"
         )
-
-        cluster.joinGroup("my-group", topics:["replica"])
+        
         /*
-        //cluster.sendMessage("example", partition: 0, message: "uhhh.")
+
+        //cluster.sendMessage("replica", partition: 0, message: "uhhh.")
+       */
+        cluster.joinGroup("replica-test", topics:["replica"]) { membership in
+            print("JOINING GROUP: \(membership.group.id)")
+            
+            cluster.listGroups { groupId, groupProtocolType in
+                print("LISTING GROUPS: \(groupId) => \(groupProtocolType)")
+            }
+            
+            membership.group.getState { state in
+                membership.sync(["replica": [0]]) {
+                    print("SYNC COMPLETE")
+                }
+                /*
+                cluster.consumeMessages("replica", partition: 0, groupId: groupId) { message in
+                    print("CONSUMING MESSAGE: \(message)")
+                }
+                */
+            }
+        }
+
+        /*
         cluster.consumeMessages("replica", partition: 0) { messages in
             for message in messages {
                 print(message.value)
@@ -41,11 +61,6 @@ class ViewController: UIViewController {
             for message in messages {
                 print(message.value)
             }
-        }
-
-        cluster.listGroups { group in
-            print("Group Found: \(group.id)")
-            //cluster.joinGroup("example-group", topics: ["example"])
         }
         
         cluster.listTopics { topics in

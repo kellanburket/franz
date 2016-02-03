@@ -23,6 +23,7 @@ public enum ClusterError: ErrorType {
 public class Cluster {
 
     private var _brokers = [String: Broker]()
+    private var _batches = [String: [Int32: [MessageSetItem]]]()
     private var _clientId: String
     private var _nodeId: ReplicaId
     
@@ -32,7 +33,7 @@ public class Cluster {
 
     lazy var dispatchQueue: dispatch_queue_t = {
         return dispatch_queue_create(
-            "metadata.read.stream.franz",
+            "metadata.cluster.read.stream.franz",
             DISPATCH_QUEUE_SERIAL
         )
     }()
@@ -62,6 +63,7 @@ public class Cluster {
             let dispatchBlock = dispatch_block_create(DISPATCH_BLOCK_INHERIT_QOS_CLASS) {
                 let connection = broker.connect(self.clientId)
                 let topicMetadataRequest = TopicMetadataRequest(topic: topic)
+                //print(topicMetadataRequest.description)
                 connection.write(topicMetadataRequest) { bytes in
                     var mutableBytes = bytes
                     let response = MetadataResponse(bytes: &mutableBytes)
@@ -91,7 +93,7 @@ public class Cluster {
                     }
 
                     if dispatchBlocks.count > 0 {
-                        dispatch_sync(self.dispatchQueue, dispatchBlocks.removeFirst())
+                        dispatch_async(self.dispatchQueue, dispatchBlocks.removeFirst())
                     }
                 }
             }
@@ -99,33 +101,28 @@ public class Cluster {
         }
 
         if dispatchBlocks.count > 0 {
-            dispatch_sync(dispatchQueue, dispatchBlocks.removeFirst())
+            dispatch_async(dispatchQueue, dispatchBlocks.removeFirst())
         }
     }
     
-    private func doAdminRequest(
-        request: KafkaRequest,
-        _ callback: [UInt8] -> ()
-    ) {
+    private func doAdminRequest(request: KafkaRequest, _ callback: [UInt8] -> ()) {
         var dispatchBlocks = [dispatch_block_t]()
-        
         for (_, broker) in _brokers {
             let dispatchBlock = dispatch_block_create(DISPATCH_BLOCK_INHERIT_QOS_CLASS) {
                 let connection = broker.connect(self.clientId)
-
                 connection.write(request, callback: callback)
             }
             dispatchBlocks.append(dispatchBlock)
         }
         
         if dispatchBlocks.count > 0 {
-            dispatch_sync(dispatchQueue, dispatchBlocks.removeFirst())
+            dispatch_async(dispatchQueue, dispatchBlocks.removeFirst())
         }
     }
 
     public func consumeMessages(
         topics: [String: [Int32: Int64]],
-        callback: [Message] -> ()
+        callback: Message -> ()
     ) {
         for (topic, partitions) in topics {
             for(partition, offset) in partitions {
@@ -144,27 +141,78 @@ public class Cluster {
             }
         }
     }
-
+    
     public func consumeMessages(
         topic: String,
         partition: Int32 = 0,
         offset: Int64 = 0,
-        callback: [Message] -> ()
+        callback: Message -> ()
     ) {
         consumeMessages([topic: [partition: offset]], callback: callback)
     }
-    
-    public func sendMessage(
+
+    public func consumeMessages(
         topic: String,
-        partition: Int32 = 0,
-        message: String
+        partition: Int32,
+        groupId: String,
+        callback: Message -> ()
     ) {
+        getGroupCoordinator(groupId) { coordinator in
+            do {
+                try coordinator.poll(
+                    topic,
+                    partition: partition,
+                    groupId: groupId,
+                    clientId: self.clientId,
+                    replicaId: self._nodeId,
+                    callback: callback
+                )
+            } catch {
+                print("Unable to find consumer group with id '\(groupId)'")
+            }
+        }
+    }
+    
+    public func sendMessage(topic: String, partition: Int32 = 0, message: String) {
         findTopicLeader(topic, partition: partition, { leader in
-            //print("Topic Leader for \(topic)(\(partition)) is Broker \(leader.nodeId)")
-            leader.send(topic, partition: partition, message: message, clientId: self.clientId)
+            let messages = MessageSet(values: [MessageSetItem(value: message)])
+            leader.send(
+                topic,
+                partition: partition,
+                batch: messages,
+                clientId: self.clientId
+            )
         }, { error in
             print(error)
         })
+    }
+    
+    public func batchMessage(topic: String, partition: Int32, message: String) {
+        let messageSetItem = MessageSetItem(value: message)
+        if var topicPartitions = _batches[topic] {
+            if var partition = topicPartitions[partition] {
+                partition.append(messageSetItem)
+            } else {
+               topicPartitions[partition] = [messageSetItem]
+            }
+        } else {
+            _batches[topic] = [partition: [messageSetItem]]
+        }
+    }
+    
+    public func sendBatch(topic: String, partition: Int32) {
+        if let topicBatch = _batches[topic], partitionBatch = topicBatch[partition] {
+            findTopicLeader(topic, partition: partition, { leader in
+                leader.send(
+                    topic,
+                    partition: partition,
+                    batch: MessageSet(values: partitionBatch),
+                    clientId: self.clientId
+                )
+            }, { error in
+                print(error)
+            })
+        }
     }
     
     public func listTopics(callback: [Topic] -> ()) {
@@ -214,11 +262,13 @@ public class Cluster {
         })
     }
 
-    public func listGroups(callback: Group -> ()) {
+    public func listGroups(callback: (String, String) -> ()) {
         for (_, broker) in _brokers {
-            print("Checking Groups For \(broker.host):\(broker.port)")
-            broker.listGroups(self.clientId) { group in
-                callback(group)
+            dispatch_async(dispatchQueue) {
+                // For Some Reason this request needs to be called twice. Not sure why.
+                broker.listGroups(self.clientId) { a, b in
+                    callback(a, b)
+                }
             }
         }
     }
@@ -227,25 +277,28 @@ public class Cluster {
         doAdminRequest(GroupCoordinatorRequest(id: id)) { bytes in
             var mutableBytes = bytes
             let response = GroupCoordinatorResponse(bytes: &mutableBytes)
-            print(response.description)
+            //print(response.description)
+            
             let host = response.host
             let port = response.port
-            let nodeId = response.id
             
             if let broker = self._brokers["\(host):\(port)"] {
                 callback(broker)
             } else {
-                let broker = Broker(nodeId: nodeId, host: host, port: port)
-                self._brokers["\(host):\(port)"] = broker
-                callback(broker)
+                print("Broker: \(host):\(port) Not Found.")
             }
         }
     }
     
-    public func joinGroup(id: String, topics: [String]) {
+    public func joinGroup(
+        id: String,
+        topics: [String],
+        callback: (GroupMembership -> ())? = nil
+    ) {
         getGroupCoordinator(id) { broker in
-            broker.joinGroup(id, subscription: topics, clientId: self.clientId)
+            broker.joinGroup(id, subscription: topics, clientId: self.clientId) { groupMembership in
+                callback?(groupMembership)
+            }
         }
     }
-    
 }

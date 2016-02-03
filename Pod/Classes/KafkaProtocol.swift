@@ -21,7 +21,7 @@ protocol KafkaType: Readable {
 }
 
 
-class KafkaFixedLengthType<T: IntDatable>: KafkaType {
+class KafkaFixedLengthType<T: FixedLengthDatable>: KafkaType {
     var value: T
     
     required init(value: T) {
@@ -38,7 +38,7 @@ class KafkaFixedLengthType<T: IntDatable>: KafkaType {
     }
     
     lazy var description: String = {
-       return "\(self.value)"
+       return "(\(self.length)): \(self.value) => \(self.data)"
     }()
     
     lazy var data: NSData = {
@@ -47,32 +47,39 @@ class KafkaFixedLengthType<T: IntDatable>: KafkaType {
 }
 
 
-class KafkaVariableLengthType<T: StringDatable, E: IntDatable>: KafkaType {
-    var value: T
+class KafkaVariableLengthType<T: VariableLengthDatable, E: FixedLengthDatable>: KafkaType {
+    var value: T?
     
-    required init(value: T) {
+    required init(value: T?) {
         self.value = value
     }
 
-    
     required init(inout bytes: [UInt8]) {
         let sizeSlice = bytes.slice(0, length: sizeof(E.self))
         let size = E(bytes: sizeSlice).toInt()
 
         if size > 0 {
             let slice = bytes.slice(0, length: size)
-            self.value = T(bytes: slice)
+            if let value = T.fromBytes(slice) as? T {
+                self.value = value
+            } else{
+                self.value = T()
+            }
         } else {
-            self.value = T("")
+            self.value = T()
         }
     }
 
     lazy var length: Int = {
-        return self.valueDataLength + self.sizeDataLength
+        if let value = self.value {
+            return self.valueDataLength + self.sizeDataLength
+        } else {
+            return self.sizeDataLength
+        }
     }()
     
     lazy var valueData: NSData = {
-        return self.value.data
+        return self.value?.data ?? NSData(data: E(-1).data)
     }()
 
     lazy var valueDataLength: Int = {
@@ -80,21 +87,18 @@ class KafkaVariableLengthType<T: StringDatable, E: IntDatable>: KafkaType {
     }()
 
     lazy var description: String = {
-        return "\(self.value)"
+        return "(\(self.length)): \(self.value) => \(self.data)"
     }()
 
     lazy var data: NSData = {
-        if let finalData = NSMutableData(capacity: self.length) {
-
-            var length = self.valueData.length > 0 ? self.valueData.length : -1
-            var sizeData = E(length).data
-
-            finalData.appendData(sizeData)
+        let finalData = NSMutableData(capacity: self.length)!
+        if let value = self.value {
+            finalData.appendData(E(self.valueData.length).data)
             finalData.appendData(self.valueData)
-            return finalData
         } else {
-            return NSData()
+            finalData.appendData(self.valueData)
         }
+        return finalData
     }()
 
     let sizeDataLength = sizeof(E.self)
@@ -241,10 +245,18 @@ class KafkaInt64: KafkaFixedLengthType<Int64> {
 
 }
 
-class KafkaBytes: KafkaVariableLengthType<String, Int32> {
+class KafkaBytes: KafkaVariableLengthType<NSData, Int32>, Hashable {
     
-    required init(value: String) {
-        super.init(value: value)
+    var hashValue: Int {
+        return value?.hashValue ?? -1
+    }
+    
+    convenience init(value: String?) {
+        self.init(data: value?.data)
+    }
+    
+    required init(data: NSData?) {
+        super.init(value: data)
     }
     
     required init(inout bytes: [UInt8]) {
@@ -257,10 +269,10 @@ class KafkaBytes: KafkaVariableLengthType<String, Int32> {
 class KafkaString: KafkaVariableLengthType<String, Int16>, Hashable {
     
     var hashValue: Int {
-        return value.hashValue
+        return value?.hashValue ?? -1
     }
     
-    required init(value: String) {
+    required init(value: String?) {
         super.init(value: value)
     }
 
@@ -275,64 +287,13 @@ func ==(lhs: KafkaString, rhs: KafkaString) -> Bool {
     return lhs.value == rhs.value
 }
 
-
-class KafkaProtocol<T: KafkaMetadata>: KafkaType {
-    var values: [KafkaString: T]
-
-    required init(metadata: [String: T]) {
-        values = [KafkaString: T]()
-
-        for (key, value) in metadata {
-            let kafkaString = KafkaString(value: key)
-            values[kafkaString] = value
-        }
-    }
-
-    required init(inout bytes: [UInt8]) {
-        let sizeBytes = bytes.slice(0, length: 4)
-        let count = Int32(bytes: sizeBytes)
-        
-        values = [KafkaString: T]()
-        
-        for _ in 0..<count {
-            let string = KafkaString(bytes: &bytes)
-            values[string] = T(bytes: &bytes)
-        }
-    }
-    
-    lazy var length: Int = {
-        var totalLength = 0
-        for (key, value) in self.values {
-            totalLength += key.length + value.length
-        }
-        return totalLength
-    }()
-
-    lazy var data: NSData = {
-        var data = NSMutableData(capacity: self.length)!
-        
-        data.appendData(Int32(self.values.count).data)
-        
-        for(key, value) in self.values {
-            data.appendData(key.data)
-            data.appendData(value.data)
-        }
-        return data
-    }()
-    
-    lazy var description: String = {
-        var str = ""
-        for (key, value) in self.values {
-            str += "\(key.value): \(value.description)"
-        }
-        return str
-    }()
+func ==(lhs: KafkaBytes, rhs: KafkaBytes) -> Bool {
+    return lhs.value == rhs.value
 }
 
 protocol KafkaMetadata: KafkaType {
-
+    static var protocolType: GroupProtocol { get }
 }
 
-protocol KafkaClass: KafkaType {
 
-}
+protocol KafkaClass: KafkaType {}
