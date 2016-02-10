@@ -31,6 +31,7 @@
 		723FDDFD804188090511DEFA8309A06B /* UIImage+Snapshot.h in Headers */ = {isa = PBXBuildFile; fileRef = 0345D737618C6A063BD152389ACCBF87 /* UIImage+Snapshot.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		76299E1B1C55882900C4EDE1 /* Cluster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A812AF34C9481DB730691CAAAC731A4 /* Cluster.swift */; };
 		76333B141C57CA6A00556A70 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76333B121C57C9D300556A70 /* Group.swift */; };
+		763720C31C64F67A0028E009 /* Consumer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763720C11C64F52E0028E009 /* Consumer.swift */; };
 		76F973731C5ECA430084C4A0 /* OffsetFetchAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F973711C5ECA250084C4A0 /* OffsetFetchAPI.swift */; };
 		788E3D9458FE9540469981BE9A0B227C /* UIImage+Compare.m in Sources */ = {isa = PBXBuildFile; fileRef = 5999002674B86E70DC7970CEA62F278E /* UIImage+Compare.m */; };
 		7BEF20E09F0E864478905311672F91AB /* FBSnapshotTestController.h in Headers */ = {isa = PBXBuildFile; fileRef = 4AC2C5814DCFC7590AC8C46AAB7FCEEF /* FBSnapshotTestController.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -133,6 +134,7 @@
 		71B05C8E3C6D92BDFE8AD10416A2C201 /* Pods-Franz_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Franz_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		73003A0752F3CABAA497D1FD1F5E4E44 /* UIImage+Diff.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+Diff.m"; path = "FBSnapshotTestCase/Categories/UIImage+Diff.m"; sourceTree = "<group>"; };
 		76333B121C57C9D300556A70 /* Group.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
+		763720C11C64F52E0028E009 /* Consumer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Consumer.swift; sourceTree = "<group>"; };
 		76F973711C5ECA250084C4A0 /* OffsetFetchAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OffsetFetchAPI.swift; sourceTree = "<group>"; };
 		7BAF34E92C81EABA6A308F8F749080A1 /* Pods-Franz_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-Franz_Example.modulemap"; sourceTree = "<group>"; };
 		7CAAAB29C54DB2D5220028C4110E45E6 /* UIImage+Diff.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImage+Diff.h"; path = "FBSnapshotTestCase/Categories/UIImage+Diff.h"; sourceTree = "<group>"; };
@@ -325,6 +327,7 @@
 			isa = PBXGroup;
 			children = (
 				2E26731DB888D4C460484424A2ED651F /* AdminAPI.swift */,
+				763720C11C64F52E0028E009 /* Consumer.swift */,
 				E59F010BD1EDFB7032F9E0DD90170356 /* Broker.swift */,
 				0A812AF34C9481DB730691CAAAC731A4 /* Cluster.swift */,
 				4C37831BCBA63E346F8F08F34ABC98F4 /* Connection.swift */,
@@ -654,6 +657,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				76F973731C5ECA430084C4A0 /* OffsetFetchAPI.swift in Sources */,
+				763720C31C64F67A0028E009 /* Consumer.swift in Sources */,
 				61EF6F029586143469BBBA49D82646C6 /* AdminAPI.swift in Sources */,
 				446491C54EF0600A87F86D39B2A506A4 /* Broker.swift in Sources */,
 				76299E1B1C55882900C4EDE1 /* Cluster.swift in Sources */,

@@ -8,13 +8,14 @@
 
 import Foundation
 
-class OffsetCommitRequest<T: KafkaMetadata>: KafkaRequest {
+
+class OffsetCommitRequest: KafkaRequest {
     
     convenience init(
         consumerGroupId: String,
         generationId: Int32,
         consumerId: String,
-        topics: [String:[Int32: (Int64, T)]],
+        topics: [String:[Int32: (Int64, String?)]],
         retentionTime: Int64 = 0
     ) {
         self.init(
@@ -28,27 +29,27 @@ class OffsetCommitRequest<T: KafkaMetadata>: KafkaRequest {
         )
     }
     
-    init(value: OffsetCommitRequestMessage<T>) {
+    init(value: OffsetCommitRequestMessage) {
         super.init(apiKey: ApiKey.OffsetCommitRequest, value: value)
     }
 }
 
-class OffsetCommitRequestMessage<T: KafkaMetadata>: KafkaClass {
+class OffsetCommitRequestMessage: KafkaClass {
 
     private var _consumerGroupId: KafkaString
     private var _consumerGroupGenerationId: KafkaInt32
     private var _consumerId: KafkaString
     private var _retentionTime: KafkaInt64
-    private var _topics: KafkaArray<OffsetCommitTopic<T>>
+    private var _topics: KafkaArray<OffsetCommitTopic>
  
     init(
         consumerGroupId: String,
         generationId: Int32,
         consumerId: String,
-        topics: [String:[Int32: (Int64, T)]],
+        topics: [String:[Int32: (Int64, String?)]],
         retentionTime: Int64 = 0
     ) {
-        var values = [OffsetCommitTopic<T>]()
+        var values = [OffsetCommitTopic]()
         for (key, value) in topics {
             let offsetCommitTopic = OffsetCommitTopic(topic: key, partitions: value)
             values.append(offsetCommitTopic)
@@ -98,13 +99,13 @@ class OffsetCommitRequestMessage<T: KafkaMetadata>: KafkaClass {
 }
 
 
-class OffsetCommitTopic<T: KafkaMetadata>: KafkaClass {
+class OffsetCommitTopic: KafkaClass {
     private var _topicName: KafkaString
-    private var _partitions: KafkaArray<OffsetCommitPartitionOffset<T>>
+    private var _partitions: KafkaArray<OffsetCommitPartitionOffset>
 
-    init(topic: String, partitions: [Int32:(Int64, T)]) {
+    init(topic: String, partitions: [Int32:(Int64, String?)]) {
         _topicName = KafkaString(value: topic)
-        var values = [OffsetCommitPartitionOffset<T>]()
+        var values = [OffsetCommitPartitionOffset]()
         for (key, value) in partitions {
             values.append(OffsetCommitPartitionOffset(partition: key, offset: value.0, metadata: value.1))
         }
@@ -133,21 +134,21 @@ class OffsetCommitTopic<T: KafkaMetadata>: KafkaClass {
 }
 
 
-class OffsetCommitPartitionOffset<T: KafkaMetadata>: KafkaClass {
+class OffsetCommitPartitionOffset: KafkaClass {
     private var _partition: KafkaInt32
     private var _offset: KafkaInt64
-    private var _metadata: T
+    private var _metadata: KafkaString
 
-    init(partition: Int32, offset: Int64, metadata: T) {
+    init(partition: Int32, offset: Int64, metadata: String?) {
         _partition = KafkaInt32(value: partition)
         _offset = KafkaInt64(value: offset)
-        _metadata = metadata
+        _metadata = KafkaString(value: metadata)
     }
 
     required init(inout bytes: [UInt8]) {
         _partition = KafkaInt32(bytes: &bytes)
         _offset = KafkaInt64(bytes: &bytes)
-        _metadata = T(bytes: &bytes)
+        _metadata = KafkaString(bytes: &bytes)
     }
 
     lazy var length: Int = {
@@ -179,6 +180,10 @@ class OffsetCommitResponse: KafkaResponse {
         super.init(bytes: &bytes)
     }
     
+    var topics: [OffsetCommitTopicResponse] {
+        return _topics.values
+    }
+    
     lazy var length: Int = {
         return self._topics.length
     }()
@@ -201,6 +206,10 @@ class OffsetCommitTopicResponse: KafkaClass {
     required init(inout bytes: [UInt8]) {
         _topicName = KafkaString(bytes: &bytes)
         _partitions = KafkaArray(bytes: &bytes)
+    }
+    
+    var partitions: [OffsetCommitPartitionResponse] {
+        return _partitions.values
     }
     
     lazy var length: Int = {

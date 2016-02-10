@@ -125,6 +125,10 @@ class OffsetFetchResponse: KafkaResponse {
         super.init(bytes: &bytes)
     }
     
+    var topics: [OffsetFetchTopicResponse] {
+        return _topics.values
+    }
+    
     lazy var length: Int = {
         return self._topics.length
     }()
@@ -136,7 +140,7 @@ class OffsetFetchResponse: KafkaResponse {
     }()
     
     override var description: String {
-        return "OFFSET FETCH REQUEST:\n" +
+        return "OFFSET FETCH RESPONSE:\n" +
             "\tTOPICS:\n" +
             self._topics.description
     }
@@ -149,6 +153,10 @@ class OffsetFetchTopicResponse: KafkaClass {
     
     var topic: String {
         return _topicName.value ?? String()
+    }
+    
+    var partitions: [OffsetFetchPartitionOffset] {
+        return _partitions.values
     }
     
     required init(inout bytes: [UInt8]) {
@@ -182,7 +190,11 @@ class OffsetFetchPartitionOffset: KafkaClass {
     private var _errorCode: KafkaInt16
     
     var error: KafkaErrorCode? {
-        return KafkaErrorCode(rawValue: _errorCode.value)
+        if _offset.value == -1 {
+            return KafkaErrorCode.NoError
+        } else {
+            return KafkaErrorCode(rawValue: _errorCode.value)
+        }
     }
     
     var partition: Int32 {
@@ -194,7 +206,7 @@ class OffsetFetchPartitionOffset: KafkaClass {
     }
     
     var offset: Int64 {
-        return _offset.value
+        return _offset.value == -1 ? 0 : _offset.value
     }
     
     required init(inout bytes: [UInt8]) {
@@ -224,6 +236,6 @@ class OffsetFetchPartitionOffset: KafkaClass {
         return "\t\t\tPARTITION: \(self.partition)\n" +
             "\t\t\tOFFSET: \(self.offset)\n" +
             "\t\t\tMETADATA: \(self.metadata)\n" +
-        "\t\t\tERROR: \(self.error?.description ?? String())"
+            "\t\t\tERROR: \(self.error?.description ?? String())"
     }()
 }

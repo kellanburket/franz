@@ -207,9 +207,10 @@ class TopicalFetchMessage: KafkaClass {
     }()
     
     lazy var description: String = {
-        return "\t\tTOPIC NAME(\(self._topicName.length)): \(self.topicName) => \(self._topicName.data)\n" +
+        return "\t\tTOPIC NAME(\(self._topicName.length)): " +
+                "\(self.topicName) => \(self._topicName.data)\n" +
             "\t\tPARTITIONS(\(self._partitions.length)):" +
-            self._partitions.description
+                self._partitions.description
     }()
 }
 
@@ -267,55 +268,19 @@ class PartitionedFetchMessage: KafkaClass {
 
 class FetchResponse: KafkaResponse {
     
-    var values: KafkaArray<TopicalFetchResponse>
+    private var _topics: KafkaArray<TopicalFetchResponse>
     
     required init(inout bytes: [UInt8]) {
-        values = KafkaArray(bytes: &bytes)
+        _topics = KafkaArray(bytes: &bytes)
         super.init(bytes: &bytes)
     }
     
     override var description: String {
-        return values.description
+        return _topics.description
     }
     
-    var offsets: [String:[Int32: Int64]] {
-        var offsets = [String:[Int32: Int64]]()
-        for value in values.values {
-            let topic = value.topicName
-            var partitions = [Int32: Int64]()
-            for (key, partition) in value.partitions {
-                partitions[key] = partition.offset
-            }
-            offsets[topic] = partitions
-        }
-        return offsets
-    }
-    
-    var topics: [String: [Int32: PartitionedFetchResponse]] {
-        var topics = [String: [Int32: PartitionedFetchResponse]]()
-        for value in values.values {
-            let topic = value.topicName
-            var partitions = [Int32: PartitionedFetchResponse]()
-            for (key, partition) in value.partitions {
-                partitions[key] = partition
-            }
-            topics[topic] = partitions
-        }
-        return topics
-    }
-
-    var messages: [Message] {
-        var msgs = [Message]()
-
-        for topicResponse in self.values.values {
-            for (_, partitionResponse) in topicResponse.partitions {
-                for msg in partitionResponse.messages {
-                    msgs.append(msg)
-                }
-            }
-        }
-        
-        return msgs
+    var topics: [TopicalFetchResponse] {
+        return _topics.values
     }
 }
 
@@ -328,12 +293,8 @@ class TopicalFetchResponse: KafkaClass {
         return _topicName.value ?? String()
     }
     
-    var partitions: [Int32: PartitionedFetchResponse] {
-        var values = [Int32: PartitionedFetchResponse]()
-        for value in _partitions.values {
-            values[value.partition] = value
-        }
-        return values
+    var partitions: [PartitionedFetchResponse] {
+        return _partitions.values
     }
     
     required init(inout bytes: [UInt8]) {
@@ -353,9 +314,10 @@ class TopicalFetchResponse: KafkaClass {
     }()
     
     lazy var description: String = {
-        return "\t\tTOPIC NAME(\(self._topicName.length )): \(self.topicName) => \(self._topicName.data)\n" +
+        return "\t\tTOPIC NAME(\(self._topicName.length )): " +
+                "\(self.topicName) => \(self._topicName.data)\n" +
             "\t\tPARTITIONS(\(self._partitions.length)):" +
-            self._partitions.description
+                self._partitions.description
     }()
 }
 

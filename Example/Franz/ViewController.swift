@@ -9,15 +9,17 @@
 import UIKit
 import Franz
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, HighLevelConsumerDelegate {
 
+    var cluster: Cluster!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         //"52.11.231.196": 9092,
         //"52.35.76.242": 9092,
         //"52.10.67.78": 9092,
 
-        let cluster = Cluster(
+        cluster = Cluster(
             brokers: [
                 ("127.0.0.1", 9092)
                 //("localhost", 9093),
@@ -27,56 +29,90 @@ class ViewController: UIViewController {
             clientId: "replica-test"
         )
         
-        /*
+        cluster.getHighLevelConsumer(
+            "replica",
+            partition: 0,
+            groupId: "replica-group",
+            delegate: self
+        )
 
-        //cluster.sendMessage("replica", partition: 0, message: "uhhh.")
-       */
-        cluster.joinGroup("replica-test", topics:["replica"]) { membership in
-            print("JOINING GROUP: \(membership.group.id)")
-            
-            cluster.listGroups { groupId, groupProtocolType in
-                print("LISTING GROUPS: \(groupId) => \(groupProtocolType)")
-            }
-            
-            membership.group.getState { state in
-                membership.sync(["replica": [0]]) {
-                    print("SYNC COMPLETE")
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
+            while true {
+                self.cluster.batchMessage("replica", partition: 0, message: "1")
+                self.cluster.batchMessage("replica", partition: 0, message: "2")
+                self.cluster.batchMessage("replica", partition: 0, message: "3")
+
+                do {
+                    try self.cluster.sendBatch("replica", partition: 0)
+                } catch ClusterError.NoBatchForTopicPartition(let topic, let partition) {
+                    print("Error: No Batch for Topic (\(topic)), (\(partition))")
+                    break
+                } catch {
+                    print("Error.")
+                    break
                 }
-                /*
-                cluster.consumeMessages("replica", partition: 0, groupId: groupId) { message in
-                    print("CONSUMING MESSAGE: \(message)")
-                }
-                */
+                sleep(1)
             }
         }
-
-        /*
-        cluster.consumeMessages("replica", partition: 0) { messages in
-            for message in messages {
-                print(message.value)
-            }
-        }
-
-        cluster.consumeMessages("replica", partition: 1) { messages in
-            for message in messages {
-                print(message.value)
-            }
-        }
+    }
         
-        cluster.listTopics { topics in
-            for topic in topics {
-                //print("TOPIC FOUND \(topic.name)")
-                cluster.getOffsets(topic.name, partition: 0) { offsets in
-                    //print("\tOFFSETS: \(offsets)")
-                    if offsets.count == 2 {
-                        cluster.getMessage(topic.name, partition: 0, offset: offsets[1] - 1) { message in
-                            //print("\t\tMESSAGE: \(message.value)")
-                        }
-                    }
-                }
-            }
+    func consumerDidReturnMessage(message: Message, offset: Int64) {
+        print(NSString(data: message.value, encoding: NSUTF8StringEncoding))
+    }
+    
+    func shouldRetryFailedFetch(
+        topic: String,
+        partition: Int32,
+        offset: Int64,
+        errorId: Int16,
+        errorDescription: String
+    ) -> Bool {
+        return true
+    }
+    
+    func consumerIsReady(consumer: Consumer) {
+        print("Consumer is Ready")
+        if let highLevelConsumer = consumer as? HighLevelConsumer {
+            highLevelConsumer.poll()
         }
-        */
+    }
+
+    func topicPartitionLeaderNotFound(topic: String, partition: Int32) {
+        print("Topic Partition Leader Not Found")
+    }
+    
+    func shouldCommitOffset(topic: String, partition: Int32, offset: Int64) -> Bool {
+        print("Should Commit Offset")
+        return true
+    }
+
+    func shouldAttachOffsetMetadata(topic: String, partition: Int32, offset: Int64) -> String? {
+        print("Should Attach Offset Metadata")
+        return "mooser"
+    }
+    
+    func offsetDidCommit(topic: String, partition: Int32, offset: Int64) {
+        print("Offset Did Commit")
+    }
+
+    func offsetCommitDidFail(
+        topic: String,
+        partition: Int32,
+        offset: Int64,
+        errorId: Int16,
+        errorDescription: String
+    ) {
+        print("Offset Commit Did Fail")
+    }
+    
+    func shouldRetryFailedOffsetCommit(
+        topic: String,
+        partition: Int32,
+        offset: Int64,
+        errorId: Int16,
+        errorDescription: String
+    ) -> Bool {
+        return false
     }
 
     override func didReceiveMemoryWarning() {

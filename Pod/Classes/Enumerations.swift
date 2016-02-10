@@ -9,8 +9,7 @@
 import Foundation
 
 /*
-Used to ask for all messages before a certain time (ms).
-Pulled in descending order.
+    Used to ask for all messages before a certain time (ms). Pulled in descending order.
 */
 enum TimeOffset {
     case Latest  /* the latest offset (i.e. the offset of the next coming message) */
@@ -30,8 +29,8 @@ enum TimeOffset {
 }
 
 
-/*
-the minimum number of bytes of messages that must be available to give a response.
+/**
+    The minimum number of bytes of messages that must be available to give a response.
 */
 enum MinBytes {
     case None
@@ -68,7 +67,9 @@ enum ReplicaId {
     }
 }
 
-
+/*
+    Built in Kafka error codes
+*/
 enum KafkaErrorCode: Int16 {
     case NoError = 0
     case Unknown = -1
@@ -103,8 +104,8 @@ enum KafkaErrorCode: Int16 {
     case GroupAuthorizationFailedCode = 30
     case ClusterAuthorizationFailedCode = 31
     
-    var code: Int {
-        return Int(self.rawValue)
+    var code: Int16 {
+        return self.rawValue
     }
     
     var description: String {
@@ -114,7 +115,8 @@ enum KafkaErrorCode: Int16 {
         case Unknown:
             return "An unexpected server error"
         case OffsetOutOfRange:
-            return "The requested offset is outside the range of offsets maintained by the server for the given topic/partition."
+            return "The requested offset is outside the range of offsets maintained" +
+                " by the server for the given topic/partition."
         case InvalidMessage:
             return "Message contents does not match its CRC"
         case UnknownTopicOrPartition:
@@ -122,9 +124,11 @@ enum KafkaErrorCode: Int16 {
         case InvalidMessageSize:
             return "Message has a negative size"
         case LeaderNotAvailable:
-            return "This error is thrown if we are in the middle of a leadership election and there is currently no leader for this partition and hence it is unavailable for writes."
+            return "This error is thrown if we are in the middle of a leadership election" +
+                " and there is currently no leader for this partition and hence it is unavailable for writes."
         case NotLeaderForPartition:
-            return "This error is thrown if the client attempts to send messages to a replica that is not the leader for some partition. It indicates that the clients metadata is out of date."
+            return "This error is thrown if the client attempts to send messages to a " +
+                " replica that is not the leader for some partition. It indicates that the clients metadata is out of date."
         case RequestTimedOut:
             return "This error is thrown if the request exceeds the user-specified time limit in the request."
         case BrokerNotAvailable:
@@ -282,31 +286,47 @@ public enum GroupProtocol {
     }
 }
 
-
+/**
+    Group States
+*/
 public enum GroupState: String {
+    /**
+        Returned when the join group phase has completed (i.e. all expected members 
+        of the group have sent JoinGroup requests) and the coordinator is awaiting 
+        group state from the leader. Unexpected coordinator requests return an error 
+        indicating that a rebalance is in progress.
+    */
     case AwaitingSync = "AwaitingSync"
+    /**
+        Returned when The coordinator is reading group data from Zookeeper (or some 
+        other storage) in order to transition groups from failed coordinators. Any 
+        heartbeat or join group requests are returned with an error indicating that 
+        the coordinator is not ready yet.
+    */
     case Initialize = "Initialize"
+    /**
+        Returned when the coordinator has received a JoinGroup request from at least 
+        one member and is awaiting JoinGroup requests from the rest of the group. 
+        Heartbeats or SyncGroup requests in this state return an error indicating 
+        that a rebalance is in progress.
+    */
     case Joining = "Joining"
+    /**
+        Returned when The coordinator either has an active generation or has no members 
+        and is awaiting the first JoinGroup. Heartbeats are accepted from members in 
+        this state and are used to keep group members active or to indicate that they 
+        need to join the group.
+    */
     case Stable = "Stable"
+    /**
+        Returned when there are no active members and group state has been cleaned up.
+    */
     case Down = "Down"
-    
-    var description: String {
-        switch self {
-        case AwaitingSync:
-            return "The join group phase has completed (i.e. all expected members of the group have sent JoinGroup requests) and the coordinator is awaiting group state from the leader. Unexpected coordinator requests return an error indicating that a rebalance is in progress."
-        case Initialize:
-            return "The coordinator is reading group data from Zookeeper (or some other storage) in order to transition groups from failed coordinators. Any heartbeat or join group requests are returned with an error indicating that the coordinator is not ready yet."
-        case Joining:
-            return "The coordinator has received a JoinGroup request from at least one member and is awaiting JoinGroup requests from the rest of the group. Heartbeats or SyncGroup requests in this state return an error indicating that a rebalance is in progress."
-        case Stable:
-            return "The coordinator either has an active generation or has no members and is awaiting the first JoinGroup. Heartbeats are accepted from members in this state and are used to keep group members active or to indicate that they need to join the group."
-        case Down:
-            return "There are no active members and group state has been cleaned up."
-        }
-    }
 }
 
-
+/**
+    Consumer Assignment Strategy
+*/
 public enum AssignmentStrategy: String {
     case Range = "_"
     case RoundRobin = "roundrobin"

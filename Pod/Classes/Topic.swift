@@ -9,7 +9,25 @@
 import Foundation
 
 
-public class Topic: KafkaClass {
+public class Topic: NSObject {
+    private var _name: String
+    private var _partitions: [Int32]
+    
+    public var name: String {
+        return _name
+    }
+    
+    public var partitions: [Int32] {
+        return _partitions
+    }
+    
+    internal init(name: String, partitions: [Int32]) {
+        self._name = name
+        self._partitions = partitions
+    }
+}
+
+internal class KafkaTopic: KafkaClass {
     private var _errorCode: KafkaInt16
     private var _topicName: KafkaString
     private var _partitionMetadata: KafkaArray<Partition>
@@ -22,7 +40,7 @@ public class Topic: KafkaClass {
         }
     }
     
-    public var partitions: [Int32: Partition] {
+    var partitions: [Int32: Partition] {
         
         var values = [Int32: Partition]()
         for value in _partitionMetadata.values {
@@ -32,7 +50,7 @@ public class Topic: KafkaClass {
         return values
     }
     
-    public var name: String? {
+    var name: String? {
         return _topicName.value
     }
     
@@ -56,7 +74,7 @@ public class Topic: KafkaClass {
         self._partitionMetadata = KafkaArray(values: partitionMetadata)
     }
     
-    required public init(inout bytes: [UInt8]) {
+    required init(inout bytes: [UInt8]) {
         _errorCode = KafkaInt16(bytes: &bytes)
         _topicName = KafkaString(bytes: &bytes)
         _partitionMetadata = KafkaArray(bytes: &bytes)
@@ -69,5 +87,4 @@ public class Topic: KafkaClass {
     var data: NSData {
         return NSData()
     }
-    
 }

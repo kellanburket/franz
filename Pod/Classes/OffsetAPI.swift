@@ -110,19 +110,19 @@ class TopicalOffsetMessage: KafkaClass {
     init(
         value: String,
         partitions: [Int32: (TimeOffset, Int32)]
-        ) {
-            _topicName = KafkaString(value: value)
-            var tempPartitions = [PartitionedOffsetMessage]()
-            for (partition, attributes) in partitions {
-                tempPartitions.append(
-                    PartitionedOffsetMessage(
-                        value: partition,
-                        time: attributes.0,
-                        maxNumberOfOffsets: attributes.1
-                    )
+    ) {
+        _topicName = KafkaString(value: value)
+        var tempPartitions = [PartitionedOffsetMessage]()
+        for (partition, attributes) in partitions {
+            tempPartitions.append(
+                PartitionedOffsetMessage(
+                    value: partition,
+                    time: attributes.0,
+                    maxNumberOfOffsets: attributes.1
                 )
-            }
-            _partitions = KafkaArray(values: tempPartitions)
+            )
+        }
+        _partitions = KafkaArray(values: tempPartitions)
     }
     
     required init(inout bytes: [UInt8]) {
@@ -142,9 +142,10 @@ class TopicalOffsetMessage: KafkaClass {
     }()
     
     lazy var description: String = {
-        return "\t\tTOPIC NAME(\(self._topicName.length)): \(self.topicName) => \(self._topicName.data)\n" +
+        return "\t\tTOPIC NAME(\(self._topicName.length)): " +
+                "\(self.topicName) => \(self._topicName.data)\n" +
             "\t\tPARTITIONS(\(self._partitions.length)):" +
-            self._partitions.description
+                self._partitions.description
     }()
 }
 
@@ -203,7 +204,6 @@ class PartitionedOffsetMessage: KafkaClass {
 
 
 class OffsetResponse: KafkaResponse {
-    
     var values: KafkaArray<TopicalPartitionedOffsets>
     
     required init(inout bytes: [UInt8]) {
@@ -215,16 +215,8 @@ class OffsetResponse: KafkaResponse {
         return values.description
     }
 
-    func getOffsets(topic: String, partition: Int32) -> [Int64] {
-        var offsets = [Int64]()
-        for value in values.values {
-            if value.topicName == topic {
-                for (_, partition) in value.partitionedOffsets {
-                    offsets += partition.offsets
-                }
-            }
-        }
-        return offsets
+    var topicalPartitionedOffsets: [TopicalPartitionedOffsets] {
+        return values.values
     }
 }
 
@@ -270,7 +262,6 @@ class TopicalPartitionedOffsets: KafkaClass {
 
 
 class PartitionedOffsets: KafkaClass {
-    
     private var _partition: KafkaInt32
     private var _errorCode: KafkaInt16
     private var _offsets: KafkaArray<KafkaInt64>

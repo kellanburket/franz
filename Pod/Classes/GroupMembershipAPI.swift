@@ -376,7 +376,10 @@ class GroupMemberAssignment: KafkaMetadata {
     }()
     
     lazy var description: String = {
-        return ""
+        return "\t\tVERSION(\(self._version.length)): \(self._version.data) => \(self._version.value)\n" +
+            "\t\tPARTITION ASSIGNMENT(\(self._partitionAssignment.length)):\n" +
+            self._partitionAssignment.description +
+            "\t\tUSER DATA\(self._userData.length): \(self._userData.data) => \(self._userData.value)\n"
     }()
 }
 
@@ -410,8 +413,8 @@ class PartitionAssignment: KafkaClass {
     }()
     
     lazy var description: String = {
-        return "\tTOPIC(\(self._topic.length)): \(self._topic.value)\n" +
-            "\tPARTITIONS(\(self._partitions.length)): \(self._partitions.values)"
+        return "\t\t\tTOPIC(\(self._topic.length)): \(self._topic.value)\n" +
+            "\t\t\tPARTITIONS(\(self._partitions.length)): \(self._partitions.values)"
     }()
 }
 
@@ -491,7 +494,10 @@ class SyncGroupResponse<T: KafkaMetadata>: KafkaResponse {
     }()
     
     override var description: String {
-        return "\tERROR(\(self._errorCode.length)): \(self.error?.description ?? String())"
+        return "SYNC GROUP RESPONSE(\(self.length))\n" +
+            "\tERROR(\(self._errorCode.length)): \(self.error?.description ?? String())\n" +
+            "\tMEMBER ASSIGNMENT(\(self._memberAssignment.length)):\n" +
+            self._memberAssignment.description
     }
 }
 

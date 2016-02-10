@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 public enum BrokerError: ErrorType {
     case NoConnection
     case NoGroupMembershipForBroker
@@ -21,7 +20,7 @@ class Broker: KafkaClass {
     private var _nodeId: KafkaInt32
     private var _host: KafkaString
     private var _port: KafkaInt32
-
+    
     private var _readQueues = [Int32: dispatch_queue_t]()
     
     private lazy var _metadataReadQueue = {
@@ -127,7 +126,8 @@ class Broker: KafkaClass {
         groupId: String,
         clientId: String,
         replicaId: ReplicaId,
-        callback: Message -> ()
+        _ callback: (Int64, [Message]) -> (),
+        _ errorCallback: (KafkaErrorCode -> ())? = nil
     ) throws {
         if let _ = groupMembership[groupId] {
             fetchGroupOffset(
@@ -136,42 +136,18 @@ class Broker: KafkaClass {
                 partition: partition,
                 clientId: clientId
             ) { offset in
-                print("Group Offset = \(offset)")
                 self.poll(
                     topic,
                     partition: partition,
                     offset: offset,
                     clientId: clientId,
-                    replicaId: replicaId
-                ) { offset, messages in
-                    for message in messages {
-                        callback(message)
-                    }
-                }
+                    replicaId: replicaId,
+                    callback,
+                    errorCallback
+                )
             }
         } else {
             throw BrokerError.NoGroupMembershipForBroker
-        }
-    }
-
-    func poll(
-        topic: String,
-        partition: Int32,
-        offset: Int64,
-        clientId: String,
-        replicaId: ReplicaId,
-        callback: Message -> ()
-    ) {
-        poll(
-            topic,
-            partition: partition,
-            offset: offset,
-            clientId: clientId,
-            replicaId: replicaId
-        ) { offset, messages in
-            for message in messages {
-                callback(message)
-            }
         }
     }
     
@@ -181,7 +157,8 @@ class Broker: KafkaClass {
         offset: Int64,
         clientId: String,
         replicaId: ReplicaId,
-        callback: (Int64, [Message]) -> ()
+        _ callback: (Int64, [Message]) -> (),
+        _ errorCallback: (KafkaErrorCode -> ())? = nil
     ) {
         let readQueue = getReadQueue(topic, partition: partition)
         
@@ -194,22 +171,33 @@ class Broker: KafkaClass {
             dispatch_async(readQueue) {
                 var mutableBytes = bytes
                 let response = FetchResponse(bytes: &mutableBytes)
-                for(topic, partitions) in response.topics {
-                    for(partition, partitionedResponse) in partitions {
-                        
-                        callback(
-                            partitionedResponse.offset,
-                            partitionedResponse.messages
-                        )
-
-                        self.poll(
-                            topic,
-                            partition: partition,
-                            offset: partitionedResponse.offset,
-                            clientId: clientId,
-                            replicaId: replicaId,
-                            callback: callback
-                        )
+                for responseTopic in response.topics {
+                    for responsePartition in responseTopic.partitions {
+                        if let error = responsePartition.error {
+                            if error.code == 0 {
+                                callback(
+                                    responsePartition.offset,
+                                    responsePartition.messages
+                                )
+                                
+                                self.poll(
+                                    topic,
+                                    partition: responsePartition.partition,
+                                    offset: responsePartition.offset,
+                                    clientId: clientId,
+                                    replicaId: replicaId,
+                                    callback,
+                                    errorCallback
+                                )
+                            } else {
+                                if let errorCallback = errorCallback {
+                                    errorCallback(error)
+                                }
+                            }
+                        } else {
+                            print("Unable to parse error.")
+                            print(response.description)
+                        }
                     }
                 }
             }
@@ -265,8 +253,21 @@ class Broker: KafkaClass {
             dispatch_async(readQueue) {
                 var mutableBytes = bytes
                 let response = FetchResponse(bytes: &mutableBytes)
-                //print(response.description)
-                callback(response.messages)
+                for responseTopic in response.topics {
+                    for responsePartition in responseTopic.partitions {
+                        if let error = responsePartition.error {
+                            if error.code == 0 {
+                                callback(responsePartition.messages)
+                            } else {
+                                print("ERROR: \(error.description)")
+                                print(response.description)
+                            }
+                        } else {
+                            print("Unable to parse error.")
+                            print(response.description)
+                        }
+                    }
+                }
             }
         }
     }
@@ -276,13 +277,15 @@ class Broker: KafkaClass {
         connect(clientId).write(request)
     }
     
-    func commitGroupOffset<T: KafkaMetadata>(
+    func commitGroupOffset(
         groupId: String,
         topic: String,
         partition: Int32,
         offset: Int64,
-        metadata: T,
-        clientId: String
+        metadata: String?,
+        clientId: String,
+        _ callback: (() -> ())? = nil,
+        _ errorCallback: (KafkaErrorCode -> ())? = nil
     ) {
         if let groupMembership = self.groupMembership[groupId] {
             let request = OffsetCommitRequest(
@@ -296,7 +299,20 @@ class Broker: KafkaClass {
                 dispatch_async(self._metadataReadQueue) {
                     var mutableBytes = bytes
                     let response = OffsetCommitResponse(bytes: &mutableBytes)
-                    print(response.description)
+                    for responseTopic in response.topics {
+                        for responsePartition in responseTopic.partitions {
+                            if let error = responsePartition.error {
+                                if error.code != 0 {
+                                    errorCallback?(error)
+                                } else {
+                                    callback?()
+                                }
+                            } else {
+                                print("Unable to parse error.")
+                                print(response.description)
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -318,20 +334,53 @@ class Broker: KafkaClass {
             connect(clientId).write(request) { bytes in
                 dispatch_async(self._metadataReadQueue) {
                     var mutableBytes = bytes
-                    let response = OffsetResponse(bytes: &mutableBytes)
-                    print(response.description)
+                    let response = OffsetFetchResponse(bytes: &mutableBytes)
+                    for responseTopic in response.topics {
+                        for responsePartition in responseTopic.partitions {
+                            if let error = responsePartition.error {
+                                if error.code == 0 {
+                                    callback(responsePartition.offset)
+                                } else {
+                                    print("ERROR: \(error.description)")
+                                    print(response.description)
+                                }
+                            } else {
+                                print("Unable to parse error.")
+                                print(response.description)
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 
-    func getOffsets(topic: String, partition: Int32, clientId: String, callback: [Int64] -> ()) {
+    func getOffsets(
+        topic: String,
+        partition: Int32,
+        clientId: String,
+        callback: [Int64] -> ()
+    ) {
         let request = OffsetRequest(topic: topic, partitions: [partition])
         connect(clientId).write(request) { bytes in
             dispatch_async(self._metadataReadQueue) {
                 var mutableBytes = bytes
                 let response = OffsetResponse(bytes: &mutableBytes)
-                callback(response.getOffsets(topic, partition: partition))
+                for topicalPartitionedOffsets in response.topicalPartitionedOffsets {
+                    for (_, partitionedOffsets) in topicalPartitionedOffsets.partitionedOffsets {
+                        if let error = partitionedOffsets.error {
+                            if error.code == 0 {
+                                callback(partitionedOffsets.offsets)
+                            } else {
+                                print("ERROR: \(error.description)")
+                                print(response.description)
+                            }
+                        } else {
+                            print("Unable to parse error.")
+                            print(response.description)
+                        }
+                    }
+                }
             }
         }
     }
@@ -343,11 +392,20 @@ class Broker: KafkaClass {
             dispatch_async(self._metadataReadQueue) {
                 var mutableBytes = bytes
                 let response = ListGroupsResponse(bytes: &mutableBytes)
-                print(response.description)
-                for (groupId, groupProtocol) in response.groups {
-                    if let listGroupsCallback = callback {
-                        listGroupsCallback(groupId, groupProtocol)
+                if let error = response.error {
+                    if error.code == 0 {
+                        for (groupId, groupProtocol) in response.groups {
+                            if let listGroupsCallback = callback {
+                                listGroupsCallback(groupId, groupProtocol)
+                            }
+                        }
+                    } else {
+                        print("ERROR: \(error.description)")
+                        print(response.description)
                     }
+                } else {
+                    print("Unable to parse error.")
+                    print(response.description)
                 }
             }
         }
@@ -363,10 +421,21 @@ class Broker: KafkaClass {
             dispatch_async(self._metadataReadQueue) {
                 var mutableBytes = bytes
                 let response = DescribeGroupsResponse(bytes: &mutableBytes)
-                print(response.description)
-                if let describeGroupCallback = callback {
-                    for (id, state) in response.states {
-                        describeGroupCallback(id, state)
+                for groupState in response.states {
+                    if let error = groupState.error {
+                        if error.code == 0 {
+                            if let describeGroupCallback = callback {
+                                if let id = groupState.id, state = groupState.state {
+                                    describeGroupCallback(id, state)
+                                }
+                            }
+                        } else {
+                            print("ERROR: \(error.description)")
+                            print(response.description)
+                        }
+                    } else {
+                        print("Unable to parse error.")
+                        print(response.description)
                     }
                 }
             }
@@ -390,30 +459,41 @@ class Broker: KafkaClass {
             dispatch_async(self._groupCoordinationQueue) {
                 var mutableBytes = bytes
                 let response = JoinGroupResponse(bytes: &mutableBytes)
-                print(response.description)
-
-                let group = Group(
-                    broker: self,
-                    clientId: clientId,
-                    groupProtocol: response.groupProtocol,
-                    groupId: groupId,
-                    generationId: response.generationId
-                )
+                //print(response.description)
                 
-                let groupMembership = GroupMembership(
-                    group: group,
-                    memberId: response.memberId
-                )
-                
-                self.groupMembership[groupId] = groupMembership
-                if let joinGroupCallback = callback {
-                    joinGroupCallback(groupMembership)
+                if let error = response.error {
+                    if error.code == 0 {
+                        let group = Group(
+                            broker: self,
+                            clientId: clientId,
+                            groupProtocol: response.groupProtocol,
+                            groupId: groupId,
+                            generationId: response.generationId
+                        )
+                        
+                        let groupMembership = GroupMembership(
+                            group: group,
+                            memberId: response.memberId
+                        )
+                        
+                        self.groupMembership[groupId] = groupMembership
+                        
+                        if let joinGroupCallback = callback {
+                            joinGroupCallback(groupMembership)
+                        }
+                    } else {
+                        print("ERROR: \(error.description)")
+                        print(response.description)
+                    }
+                } else {
+                    print("Unable to parse error.")
+                    print(response.description)
                 }
             }
         }
     }
     
-    func syncConsumerGroup(
+    func syncGroup(
         groupId: String,
         generationId: Int32,
         memberId: String,
@@ -440,7 +520,83 @@ class Broker: KafkaClass {
             dispatch_async(self._groupCoordinationQueue) {
                 var mutableBytes = bytes
                 let response = SyncGroupResponse<GroupMemberAssignment>(bytes: &mutableBytes)
-                print(response.description)
+                if let error = response.error {
+                    if error.code == 0 {
+                        if let syncGroupCallback = callback {
+                            syncGroupCallback()
+                        }
+                    } else {
+                        print("ERROR: \(error.description)")
+                        print(response.description)
+                    }
+                } else {
+                    print("Unable to parse error.")
+                    print(response.description)
+                }
+            }
+        }
+    }
+    
+    func leaveGroup(
+        groupId: String,
+        memberId: String,
+        clientId: String,
+        callback: (() -> ())? = nil
+    ) {
+        let request = LeaveGroupRequest(groupId: groupId, memberId: memberId)
+        
+        connect(clientId).write(request) { bytes in
+            dispatch_async(self._groupCoordinationQueue) {
+                var mutableBytes = bytes
+                let response = LeaveGroupResponse(bytes: &mutableBytes)
+                if let error = response.error {
+                    if error.code == 0 {
+                        if let leaveGroupCallback = callback {
+                            leaveGroupCallback()
+                        }
+                    } else {
+                        print("ERROR: \(error.description)")
+                        print(response.description)
+                    }
+                } else {
+                    print("Unable to parse error.")
+                    print(response.description)
+                }
+            }
+        }
+    }
+    
+    func heartbeatRequest(
+        groupId: String,
+        generationId: Int32,
+        memberId: String,
+        clientId: String,
+        callback: (() -> ())? = nil
+    ) {
+        let request = HeartbeatRequest(
+            groupId: groupId,
+            generationId: generationId,
+            memberId: memberId
+        )
+        
+        connect(clientId).write(request) { bytes in
+            dispatch_async(self._groupCoordinationQueue) {
+                var mutableBytes = bytes
+                let response = HeartbeatResponse(bytes: &mutableBytes)
+                //print(response.description)
+                if let error = response.error {
+                    if error.code == 0 {
+                        if let heartbeatCallback = callback {
+                            heartbeatCallback()
+                        }
+                    } else {
+                        print("ERROR: \(error.description)")
+                        print(response.description)
+                    }
+                } else {
+                    print("Unable to process error.")
+                    print(response.description)
+                }
             }
         }
     }

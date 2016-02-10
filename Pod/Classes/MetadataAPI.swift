@@ -9,14 +9,6 @@
 import Foundation
 
 
-enum MetadataError: ErrorType {
-    case NoSuchTopic(topic: String)
-    case NoSuchPartition(partition: Int32)
-    case NoSuchBroker(id: Int32)
-    case NoLeaderExistsForPartition(partition: Int32)
-}
-
-
 class TopicMetadataRequest: KafkaRequest {
 
     convenience init(topic: String) {
@@ -71,7 +63,7 @@ class TopicMetadataRequestMessage: KafkaClass {
 class MetadataResponse: KafkaResponse {
     
     private var _metadataBrokers: KafkaArray<Broker>
-    private var _topicMetadata: KafkaArray<Topic>
+    private var _topicMetadata: KafkaArray<KafkaTopic>
     
     var brokers: [Int32: Broker] {
         var values = [Int32: Broker]()
@@ -81,10 +73,12 @@ class MetadataResponse: KafkaResponse {
         return values
     }
     
-    var topics: [String: Topic] {
-        var values = [String: Topic]()
+    var topics: [String: KafkaTopic] {
+        var values = [String: KafkaTopic]()
         for value in _topicMetadata.values {
-            values[value.name ?? String()] = value
+            if let name = value.name {
+                values[name] = value
+            }
         }
         return values
     }
@@ -105,7 +99,7 @@ class MetadataResponse: KafkaResponse {
     
     required init(inout bytes: [UInt8]) {
         _metadataBrokers = KafkaArray<Broker>(bytes: &bytes)
-        _topicMetadata = KafkaArray<Topic>(bytes: &bytes)
+        _topicMetadata = KafkaArray<KafkaTopic>(bytes: &bytes)
         super.init(bytes: &bytes)
     }
 }

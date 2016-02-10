@@ -71,13 +71,6 @@ class ListedGroup: KafkaClass {
     }
     
     var groupProtocolType: String {
-        /*
-        if _protocolType.value == GroupProtocol.Consumer.value {
-        return GroupProtocol.Consumer
-        } else {
-        return GroupProtocol.Custom(name: _protocolType.value)
-        }
-        */
         return _protocolType.value ?? String()
     }
     
@@ -155,16 +148,10 @@ class DescribeGroupsRequestMessage: KafkaClass {
 
 
 class DescribeGroupsResponse: KafkaResponse {
-    private var _groups: KafkaArray<GroupResponse>
+    private var _groups: KafkaArray<GroupStateResponse>
     
-    var states: [String: GroupState] {
-        var values = [String: GroupState]()
-        for value in _groups.values {
-            if let id = value.id, state = value.state {
-                values[id] = state
-            }
-        }
-        return values
+    var states: [GroupStateResponse] {
+        return _groups.values
     }
     
     required init(inout bytes: [UInt8]) {
@@ -189,7 +176,7 @@ class DescribeGroupsResponse: KafkaResponse {
 }
 
 
-class GroupResponse: KafkaClass {
+class GroupStateResponse: KafkaClass {
     private var _errorCode: KafkaInt16
     private var _groupId: KafkaString
     private var _state: KafkaString

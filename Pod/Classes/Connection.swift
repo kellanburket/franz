@@ -194,19 +194,16 @@ class KafkaConnection: NSObject, NSStreamDelegate {
         if let activeInputStream = inputStream {
             let length = responseLengthSize + responseCorrelationIdSize
             var buffer = Array<UInt8>(count: Int(length), repeatedValue: 0)
-            
             if activeInputStream.hasBytesAvailable {
                 activeInputStream.read(&buffer, maxLength: Int(length))
             } else {
                 throw ConnectionError.BytesNoLongerAvailable
             }
             
-            //print("SIZE BUFFER: \(buffer)")
-            
             let sizeBytes = buffer.slice(0, length: Int(responseLengthSize))
             let responseLengthSizeInclusive = Int32(bytes: sizeBytes)
             
-            if responseLengthSizeInclusive > length {
+            if responseLengthSizeInclusive > 4 {
                 return (
                     responseLengthSizeInclusive - responseLengthSize,
                     Int32(bytes: buffer.slice(0, length: Int(responseCorrelationIdSize)))

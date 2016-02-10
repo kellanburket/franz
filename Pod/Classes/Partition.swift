@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class Partition: KafkaClass {
+class Partition: KafkaClass {
     private var _partitionErrorCode: KafkaInt16
     private var _partitionId: KafkaInt32
     private var _leader: KafkaInt32
@@ -23,7 +23,7 @@ public class Partition: KafkaClass {
         }
     }
     
-    public var id: Int32 {
+    var id: Int32 {
         return _partitionId.value
     }
     
@@ -82,7 +82,7 @@ public class Partition: KafkaClass {
         _isr = KafkaArray<KafkaInt32>(values: tempIsr)
     }
     
-    required public init(inout bytes: [UInt8]) {
+    required init(inout bytes: [UInt8]) {
         _partitionErrorCode = KafkaInt16(bytes: &bytes)
         _partitionId = KafkaInt32(bytes: &bytes)
         _leader = KafkaInt32(bytes: &bytes)

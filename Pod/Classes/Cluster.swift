@@ -8,7 +8,9 @@
 
 import Foundation
 
-
+/**
+    Cluster-related Errors
+*/
 public enum ClusterError: ErrorType {
     case NoBrokersAvailable
     case BrokerWithKeyNotInitialized(key: String)
@@ -17,9 +19,13 @@ public enum ClusterError: ErrorType {
     case NoLeaderFoundInResponseData
     case NoPartitionFoundInCluster(partition: Int32)
     case NoTopicFoundInCluster(topic: String)
+    case NoBatchForTopicPartition(topic: String, partition: Int32)
 }
 
 
+/*
+    The Kafka Cluster
+*/
 public class Cluster {
 
     private var _brokers = [String: Broker]()
@@ -27,6 +33,9 @@ public class Cluster {
     private var _clientId: String
     private var _nodeId: ReplicaId
     
+    /*
+        User-defined Client ID set at start up.
+    */
     public var clientId: String {
         return _clientId
     }
@@ -38,6 +47,13 @@ public class Cluster {
         )
     }()
     
+    /*
+        Initialize brokers
+    
+        - Parameter brokers:
+        - Parameter clientId:
+        - Parameter nodeId:
+    */
     public init(brokers: [(String, Int32)], clientId: String, nodeId: Int32? = nil) {
         for (ipv4, port) in brokers {
             self._brokers["\(ipv4):\(port)"] = Broker(ipv4: ipv4, port: port)
@@ -51,128 +67,13 @@ public class Cluster {
         }
     }
     
-    private func findTopicLeader(
-        topic: String,
-        partition: Int32,
-        _ callback: Broker -> (),
-        _ error: ErrorType -> ()
-    ) {
-        var dispatchBlocks = [dispatch_block_t]()
-
-        for (_, broker) in _brokers {
-            let dispatchBlock = dispatch_block_create(DISPATCH_BLOCK_INHERIT_QOS_CLASS) {
-                let connection = broker.connect(self.clientId)
-                let topicMetadataRequest = TopicMetadataRequest(topic: topic)
-                //print(topicMetadataRequest.description)
-                connection.write(topicMetadataRequest) { bytes in
-                    var mutableBytes = bytes
-                    let response = MetadataResponse(bytes: &mutableBytes)
-                    if let topicObj = response.topics[topic] {
-                        if let partitionObj = topicObj.partitions[partition] {
-                            if partitionObj.leader == -1 {
-                                error(ClusterError.LeaderNotFound(topic: topic, partition: partition))
-                                return
-                            } else if let leader = response.brokers[partitionObj.leader] {
-                                if let broker = self._brokers["\(leader.host):\(leader.port)"] {
-                                    broker.nodeId = leader.nodeId
-                                    callback(broker)
-                                    return
-                                } else {
-                                    self._brokers["\(leader.host):\(leader.port)"] = leader
-                                    callback(leader)
-                                    return
-                                }
-                            } else {
-                                error(ClusterError.NoLeaderFoundInResponseData)
-                            }
-                        } else {
-                            error(ClusterError.NoPartitionFoundInCluster(partition: partition))
-                        }
-                    } else {
-                        error(ClusterError.NoTopicFoundInCluster(topic: topic))
-                    }
-
-                    if dispatchBlocks.count > 0 {
-                        dispatch_async(self.dispatchQueue, dispatchBlocks.removeFirst())
-                    }
-                }
-            }
-            dispatchBlocks.append(dispatchBlock)
-        }
-
-        if dispatchBlocks.count > 0 {
-            dispatch_async(dispatchQueue, dispatchBlocks.removeFirst())
-        }
-    }
-    
-    private func doAdminRequest(request: KafkaRequest, _ callback: [UInt8] -> ()) {
-        var dispatchBlocks = [dispatch_block_t]()
-        for (_, broker) in _brokers {
-            let dispatchBlock = dispatch_block_create(DISPATCH_BLOCK_INHERIT_QOS_CLASS) {
-                let connection = broker.connect(self.clientId)
-                connection.write(request, callback: callback)
-            }
-            dispatchBlocks.append(dispatchBlock)
-        }
-        
-        if dispatchBlocks.count > 0 {
-            dispatch_async(dispatchQueue, dispatchBlocks.removeFirst())
-        }
-    }
-
-    public func consumeMessages(
-        topics: [String: [Int32: Int64]],
-        callback: Message -> ()
-    ) {
-        for (topic, partitions) in topics {
-            for(partition, offset) in partitions {
-                findTopicLeader(topic, partition: partition, { leader in
-                    leader.poll(
-                        topic,
-                        partition: partition,
-                        offset: offset,
-                        clientId: self.clientId,
-                        replicaId: self._nodeId,
-                        callback: callback
-                    )
-                }, { error in
-                    print(error)
-                })
-            }
-        }
-    }
-    
-    public func consumeMessages(
-        topic: String,
-        partition: Int32 = 0,
-        offset: Int64 = 0,
-        callback: Message -> ()
-    ) {
-        consumeMessages([topic: [partition: offset]], callback: callback)
-    }
-
-    public func consumeMessages(
-        topic: String,
-        partition: Int32,
-        groupId: String,
-        callback: Message -> ()
-    ) {
-        getGroupCoordinator(groupId) { coordinator in
-            do {
-                try coordinator.poll(
-                    topic,
-                    partition: partition,
-                    groupId: groupId,
-                    clientId: self.clientId,
-                    replicaId: self._nodeId,
-                    callback: callback
-                )
-            } catch {
-                print("Unable to find consumer group with id '\(groupId)'")
-            }
-        }
-    }
-    
+    /**
+        Send an unbatched message to a topic-partition
+     
+        - Parameter topic:
+        - Parameter partition:
+        - Parameter message:
+     */
     public func sendMessage(topic: String, partition: Int32 = 0, message: String) {
         findTopicLeader(topic, partition: partition, { leader in
             let messages = MessageSet(values: [MessageSetItem(value: message)])
@@ -186,21 +87,39 @@ public class Cluster {
             print(error)
         })
     }
-    
+
+    /**
+        Queue a message to a particular topic-partition
+
+        - Parameter topic:
+        - Parameter partition:
+        - Parameter message:
+     */
     public func batchMessage(topic: String, partition: Int32, message: String) {
         let messageSetItem = MessageSetItem(value: message)
         if var topicPartitions = _batches[topic] {
-            if var partition = topicPartitions[partition] {
-                partition.append(messageSetItem)
+            if var topicPartition = topicPartitions[partition] {
+                topicPartition.append(messageSetItem)
+                topicPartitions[partition] = topicPartition
+                _batches[topic] = topicPartitions
             } else {
                topicPartitions[partition] = [messageSetItem]
+                _batches[topic] = topicPartitions
             }
         } else {
             _batches[topic] = [partition: [messageSetItem]]
         }
     }
-    
-    public func sendBatch(topic: String, partition: Int32) {
+
+    /**
+        Send batch of queued messages for topic-partition
+
+        - Parameter topic:
+        - Parameter partition;
+     
+        - Throws ClusterError.NoBatchForTopicPartition
+     */
+    public func sendBatch(topic: String, partition: Int32) throws {
         if let topicBatch = _batches[topic], partitionBatch = topicBatch[partition] {
             findTopicLeader(topic, partition: partition, { leader in
                 leader.send(
@@ -209,37 +128,69 @@ public class Cluster {
                     batch: MessageSet(values: partitionBatch),
                     clientId: self.clientId
                 )
+                self._batches[topic] = nil
             }, { error in
                 print(error)
             })
+        } else {
+            throw ClusterError.NoBatchForTopicPartition(topic: topic, partition: partition)
         }
     }
-    
+
+    /**
+        List all available topics
+
+        - Parameter callback:
+     */
     public func listTopics(callback: [Topic] -> ()) {
         doAdminRequest(TopicMetadataRequest()) { bytes in
             var mutableBytes = bytes
             let response = MetadataResponse(bytes: &mutableBytes)
             var topics = [Topic]()
-            for (_, topic) in response.topics {
-                topics.append(topic)
+            for (name, topic) in response.topics {
+                var partitions = [Int32]()
+                for (partition, _) in topic.partitions {
+                    partitions.append(partition)
+                }
+                topics.append(Topic(name: name, partitions: partitions))
             }
             callback(topics)
         }
     }
 
+    /**
+        Get offsets for topic partition
+
+        - Parameter topic:
+        - Parameter partition:
+        - Parameter callback:
+     */
     public func getOffsets(
         topic: String,
         partition: Int32,
         callback: [Int64] -> ()
     ) {
         findTopicLeader(topic, partition: partition, { leader in
-            leader.getOffsets(topic, partition: partition, clientId: self.clientId, callback: callback)
+            leader.getOffsets(
+                topic,
+                partition: partition,
+                clientId: self.clientId,
+                callback: callback
+            )
         }, { error in
             print(error)
         })
     }
-    
-    public func getMessage(
+
+    /**
+        Consume messages starting at a particular topic-partition-offset until last message
+
+        - Parameter topic:
+        - Parameter partition:
+        - Parameter offset:
+        - Parameter callback:
+     */
+    public func getMessages(
         topic: String,
         partition: Int32,
         offset: Int64,
@@ -262,17 +213,181 @@ public class Cluster {
         })
     }
 
+    /**
+        List available groups
+
+        - Parameter callback:
+     */
     public func listGroups(callback: (String, String) -> ()) {
         for (_, broker) in _brokers {
             dispatch_async(dispatchQueue) {
-                // For Some Reason this request needs to be called twice. Not sure why.
                 broker.listGroups(self.clientId) { a, b in
                     callback(a, b)
                 }
             }
         }
     }
+ 
+    /**
+        Initialize a Simple Conusmer
+     
+        - Parameter topic:
+        - Parameter partition:
+        - Parameter delegate:
+
+        - Returns: an uninitialized Simple Consumer
+     */
+    public func getSimpleConsumer(
+        topic: String,
+        partition: Int32,
+        delegate: ConsumerDelegate
+    ) -> SimpleConsumer {
+        let consumer = SimpleConsumer(
+            topic: topic,
+            partition: partition,
+            clientId: clientId,
+            delegate: delegate
+        )
+        
+        findTopicLeader(topic, partition: partition, { leader in
+            consumer.broker = leader
+
+            consumer.delegate.consumerIsReady(consumer)
+        }, { error in
+            consumer.delegate.topicPartitionLeaderNotFound?(topic, partition: partition)
+        })
+        
+        return consumer
+    }
     
+    /**
+        Initialize a High Level Consumer
+     
+        - Parameter topic:
+        - Parameter partition:
+        - Parameter groupId:
+        - Parameter delegate:
+
+        - Returns: an unitialized HighLevelConsumer
+     */
+    public func getHighLevelConsumer(
+        topic: String,
+        partition: Int32,
+        groupId: String,
+        delegate: HighLevelConsumerDelegate
+    ) -> HighLevelConsumer {
+        let consumer = HighLevelConsumer(
+            topic: topic,
+            partition: partition,
+            clientId: clientId,
+            delegate: delegate
+        )
+        
+        joinGroup(groupId, topic: topic, { broker, membership in
+            consumer.broker = broker
+            consumer.membership = membership
+
+            membership.group.getState { groupId, state in
+                switch state {
+                case .AwaitingSync:
+                    membership.sync([topic: [partition]], data: NSData()) {
+                        consumer.delegate.consumerIsReady(consumer)
+                    }
+                case .Stable:
+                    consumer.delegate.consumerIsReady(consumer)
+                default:
+                    print("State of Group is: \(state)")
+                }
+            }
+        }, { error in
+            consumer.delegate.topicPartitionLeaderNotFound?(topic, partition: partition)
+        })
+        
+        return consumer
+    }
+    
+    internal func joinGroup(
+        id: String,
+        topic: String,
+        _ callback: (Broker, GroupMembership) -> (),
+        _ error: KafkaErrorCode -> ()
+    ) {
+        getGroupCoordinator(id) { broker in
+            broker.joinGroup(id, subscription: [topic], clientId: self.clientId) { groupMembership in
+                callback(broker, groupMembership)
+            }
+        }
+    }
+    
+    private func findTopicLeader(
+        topic: String,
+        partition: Int32,
+        _ callback: Broker -> (),
+        _ error: ErrorType -> ()
+        ) {
+            var dispatchBlocks = [dispatch_block_t]()
+            
+            for (_, broker) in _brokers {
+                let dispatchBlock = dispatch_block_create(DISPATCH_BLOCK_INHERIT_QOS_CLASS) {
+                    let connection = broker.connect(self.clientId)
+                    let topicMetadataRequest = TopicMetadataRequest(topic: topic)
+                    //print(topicMetadataRequest.description)
+                    connection.write(topicMetadataRequest) { bytes in
+                        var mutableBytes = bytes
+                        let response = MetadataResponse(bytes: &mutableBytes)
+                        if let topicObj = response.topics[topic] {
+                            if let partitionObj = topicObj.partitions[partition] {
+                                if partitionObj.leader == -1 {
+                                    error(ClusterError.LeaderNotFound(topic: topic, partition: partition))
+                                    return
+                                } else if let leader = response.brokers[partitionObj.leader] {
+                                    if let broker = self._brokers["\(leader.host):\(leader.port)"] {
+                                        broker.nodeId = leader.nodeId
+                                        callback(broker)
+                                        return
+                                    } else {
+                                        self._brokers["\(leader.host):\(leader.port)"] = leader
+                                        callback(leader)
+                                        return
+                                    }
+                                } else {
+                                    error(ClusterError.NoLeaderFoundInResponseData)
+                                }
+                            } else {
+                                error(ClusterError.NoPartitionFoundInCluster(partition: partition))
+                            }
+                        } else {
+                            error(ClusterError.NoTopicFoundInCluster(topic: topic))
+                        }
+                        
+                        if dispatchBlocks.count > 0 {
+                            dispatch_async(self.dispatchQueue, dispatchBlocks.removeFirst())
+                        }
+                    }
+                }
+                dispatchBlocks.append(dispatchBlock)
+            }
+            
+            if dispatchBlocks.count > 0 {
+                dispatch_async(dispatchQueue, dispatchBlocks.removeFirst())
+            }
+    }
+    
+    private func doAdminRequest(request: KafkaRequest, _ callback: [UInt8] -> ()) {
+        var dispatchBlocks = [dispatch_block_t]()
+        for (_, broker) in _brokers {
+            let dispatchBlock = dispatch_block_create(DISPATCH_BLOCK_INHERIT_QOS_CLASS) {
+                let connection = broker.connect(self.clientId)
+                connection.write(request, callback: callback)
+            }
+            dispatchBlocks.append(dispatchBlock)
+        }
+        
+        if dispatchBlocks.count > 0 {
+            dispatch_async(dispatchQueue, dispatchBlocks.removeFirst())
+        }
+    }
+
     private func getGroupCoordinator(id: String, callback: Broker -> ()) {
         doAdminRequest(GroupCoordinatorRequest(id: id)) { bytes in
             var mutableBytes = bytes
@@ -286,18 +401,6 @@ public class Cluster {
                 callback(broker)
             } else {
                 print("Broker: \(host):\(port) Not Found.")
-            }
-        }
-    }
-    
-    public func joinGroup(
-        id: String,
-        topics: [String],
-        callback: (GroupMembership -> ())? = nil
-    ) {
-        getGroupCoordinator(id) { broker in
-            broker.joinGroup(id, subscription: topics, clientId: self.clientId) { groupMembership in
-                callback?(groupMembership)
             }
         }
     }

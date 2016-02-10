@@ -34,14 +34,6 @@ class MessageSet: KafkaClass {
         }
     }
     
-    func addMessage(message: String, key: String? = nil) {
-        
-    }
-    
-    func addMessage(data: NSData, key: String? = nil) {
-        
-    }
-    
     lazy var length: Int = {
         return self.valueLength + 4
     }()
@@ -66,6 +58,7 @@ class MessageSet: KafkaClass {
         data.appendData(self.valueLengthData)
         
         for value in self._values {
+            print("Appending \(value)")
             data.appendData(value.data)
         }
         
@@ -85,7 +78,7 @@ class MessageSet: KafkaClass {
 
 class MessageSetItem: KafkaClass {
     var _offset: KafkaInt64
-    var _value: Message
+    var _value: KafkaMessage
     var _size: KafkaInt32?
     
     var offset: Int64 {
@@ -93,23 +86,23 @@ class MessageSetItem: KafkaClass {
     }
     
     var message: Message {
-        return _value
+        return Message(data: _value.value, key: _value.key)
     }
     
     init(value: String, key: String? = nil, offset: Int = 0) {
         self._offset = KafkaInt64(value: Int64(offset))
-        self._value = Message(value: value, key: key)
+        self._value = KafkaMessage(value: value, key: key)
     }
 
-    init(data: NSData, key: String? = nil, offset: Int = 0) {
+    init(data: NSData, key: NSData? = nil, offset: Int = 0) {
         self._offset = KafkaInt64(value: Int64(offset))
-        self._value = Message(data: data, key: key)
+        self._value = KafkaMessage(data: data, key: key)
     }
 
     required init(inout bytes: [UInt8]) {
         _offset = KafkaInt64(bytes: &bytes)
         _size = KafkaInt32(bytes: &bytes)
-        _value = Message(bytes: &bytes)
+        _value = KafkaMessage(bytes: &bytes)
     }
     
     lazy var messageSizeData: NSData = {
@@ -143,29 +136,60 @@ class MessageSetItem: KafkaClass {
     }
 }
 
-
-public class Message: KafkaClass {
+class KafkaMessage: KafkaClass {
     private var _key: KafkaBytes
     private var _value: KafkaBytes
     private var _magicByte: KafkaInt8
     private var _attributes: KafkaInt8
     private var _crc: KafkaUInt32! = nil
+    
+    /**
+        Message data
+    */
+    var value: NSData {
+        return _value.valueData
+    }
 
-    public init(data: NSData, key: String? = nil) {
+    /**
+        Message key
+     */
+    var key: NSData? {
+        return _key.valueData
+    }
+
+    /**
+        Initialize a new message using raw bytes
+
+        - Parameter data:   an NSData object
+        - Parameter key:    an optional key String. Can be used for partition assignment.
+     */
+    init(data: NSData, key: NSData? = nil) {
         self._attributes = KafkaInt8(value: CompressionCodec.None.rawValue)
         self._magicByte = KafkaInt8(value: 0)
-        self._key = KafkaBytes(value: key ?? "")
+        self._key = KafkaBytes(data: key)
         self._value = KafkaBytes(data: data)
     }
     
-    public init(value: String, key: String? = nil) {
+    /**
+        Initialize a new message from a string
+
+        - Parameter value:  String value
+        - Parameter key:    an optional key String. Can be used for partition assignment.
+     */
+    init(value: String, key: String? = nil) {
         self._attributes = KafkaInt8(value: CompressionCodec.None.rawValue)
         self._magicByte = KafkaInt8(value: 0)
-        self._key = KafkaBytes(value: key ?? "")
-        self._value = KafkaBytes(value: value ?? "")
+        self._key = KafkaBytes(value: key)
+        self._value = KafkaBytes(value: value)
     }
-    
-    public required init(inout bytes: [UInt8]) {
+
+    /**
+        Initialize a new message from raw bytes received from a pull request
+
+        - Parameter value:  String value
+        - Parameter key:    an optional key String. Can be used for partition assignment.
+     */
+    required init(inout bytes: [UInt8]) {
         _crc = KafkaUInt32(bytes: &bytes)
         _magicByte = KafkaInt8(bytes: &bytes)
         _attributes = KafkaInt8(bytes: &bytes)
@@ -205,5 +229,39 @@ public class Message: KafkaClass {
             "\t\t\t\t\t\tATTRIBUTES(\(self._attributes.length)): \(self._attributes.value) => \(self._attributes.data)\n" +
             "\t\t\t\t\t\tKEY(\(self._key.length)): \(self._key.value) => \(self._key.data)\n" +
             "\t\t\t\t\t\tVALUE(\(self._value.length)): \(self._value.value) => \(self._value.data)\n"
+    }
+}
+
+
+/**
+    A Message pulled from the Kafka Server
+*/
+public class Message: NSObject {
+    private var _key: NSData?
+    private var _value: NSData
+    
+    /**
+        Message data
+    */
+    public var value: NSData {
+        return _value ?? NSData()
+    }
+
+    /**
+        Message key
+     */
+    public var key: NSData? {
+        return _key
+    }
+
+    /**
+        Initialize a new message using raw bytes
+     
+        - Parameter data:   an NSData object
+        - Parameter key:    an optional key String. Can be used for partition assignment.
+    */
+    internal init(data: NSData, key: NSData? = nil) {
+        self._key = key
+        self._value = data
     }
 }
