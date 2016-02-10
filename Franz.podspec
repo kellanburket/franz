@@ -20,10 +20,10 @@ Pod::Spec.new do |s|
 Franz is an Apache Kafka 0.9.0 client for iOS and OSx. Franz supports both simple and high-level consumers.
                        DESC
 
-  s.homepage         = "https://github.com/kellanburket/Franz"
+  s.homepage         = "https://github.com/kellanburket/franz"
   s.license          = 'MIT'
   s.author           = { "kellanburket" => "kellan.burket@gmail.com" }
-  s.source           = { :git => "https://github.com/kellanburket/Franz.git", :tag => s.version.to_s }
+  s.source           = { :git => "https://github.com/kellanburket/franz.git", :tag => s.version.to_s }
 
   s.requires_arc = true
 
