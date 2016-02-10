@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
   s.name             = "Franz"
   s.version          = "0.1.0"
-  s.summary          = "A short description of Franz."
+  s.summary          = "An Apache Kafka Client for iOS and OSX."
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -17,12 +17,13 @@ Pod::Spec.new do |s|
 #   * Write the description between the DESC delimiters below.
 #   * Finally, don't worry about the indent, CocoaPods strips it!  
   s.description      = <<-DESC
+Franz is an Apache Kafka 0.9.0 client for iOS and OSx. Franz supports both simple and high-level consumers.
                        DESC
 
   s.homepage         = "https://github.com/kellanburket/Franz"
   s.license          = 'MIT'
   s.author           = { "kellanburket" => "kellan.burket@gmail.com" }
-  s.source           = { :git => "https://github.com/<GITHUB_USERNAME>/Franz.git", :tag => s.version.to_s }
+  s.source           = { :git => "https://github.com/kellanburket/Franz.git", :tag => s.version.to_s }
 
   s.requires_arc = true
 
@@ -30,8 +31,4 @@ Pod::Spec.new do |s|
   s.resource_bundles = {
     'Franz' => ['Pod/Assets/*.png']
   }
-
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
 end

@@ -15,16 +15,10 @@ class ViewController: UIViewController, HighLevelConsumerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //"52.11.231.196": 9092,
-        //"52.35.76.242": 9092,
-        //"52.10.67.78": 9092,
-
+        
         cluster = Cluster(
             brokers: [
                 ("127.0.0.1", 9092)
-                //("localhost", 9093),
-                //("localhost", 9094),
-                //("localhost", 9095)
             ],
             clientId: "replica-test"
         )

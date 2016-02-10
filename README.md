@@ -7,9 +7,13 @@
 
 ## Usage
 
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
+Franz is an Apache Kafka 0.9.0 client for iOS and OSx.
 
-## Requirements
+Franz supports Apache Kafka's simple and high-level consumer models.
+
+The current release of Franz should be considered beta. It is not necessarily ready for production code.
+
+To run the example project, clone the repo, and run `pod install` from the Example directory first. 
 
 ## Installation
 
