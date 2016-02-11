@@ -32,7 +32,6 @@ Franz is an Apache Kafka 0.9.0 client for iOS and OSx. Franz supports both simpl
     'Franz' => ['Pod/Assets/*.png']
   }
 
-  platform :ios, '9.0'
-  platform :osx, '10.0'
+  s.platforms { :ios => '9.0', :osx => '10.0' }
   use_frameworks!
 end
