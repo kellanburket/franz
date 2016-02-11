@@ -33,5 +33,5 @@ Franz is an Apache Kafka 0.9.0 client for iOS and OSx. Franz supports both simpl
   }
 
   s.platforms = { :ios => '9.0', :osx => '10.0' }
-  use_frameworks!
+  s.use_frameworks!
 end
