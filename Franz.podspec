@@ -16,10 +16,7 @@ Pod::Spec.new do |s|
 #   * Try to keep it short, snappy and to the point.
 #   * Write the description between the DESC delimiters below.
 #   * Finally, don't worry about the indent, CocoaPods strips it!  
-  s.description      = <<-DESC
-Franz is an Apache Kafka 0.9.0 client for iOS and OSx. Franz supports both simple and high-level consumers.
-                       DESC
-
+  s.description      = "Franz is an Apache Kafka 0.9.0 client for iOS and OSx. Franz supports both simple and high-level consumers."
   s.homepage         = "https://github.com/kellanburket/franz"
   s.license          = 'MIT'
   s.author           = { "kellanburket" => "kellan.burket@gmail.com" }
