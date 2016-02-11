@@ -29,5 +29,5 @@ Pod::Spec.new do |s|
     'Franz' => ['Pod/Assets/*.png']
   }
 
-  s.platforms = { :ios => '9.0', :osx => '10.0' }
+  s.platforms = { :ios => '9.0' }
 end
