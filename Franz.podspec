@@ -30,5 +30,4 @@ Pod::Spec.new do |s|
   }
 
   s.platforms = { :ios => '9.0', :osx => '10.0' }
-  s.use_frameworks!
 end
