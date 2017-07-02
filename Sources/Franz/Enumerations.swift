@@ -265,7 +265,12 @@ enum ApiKey: Int16 {
 
 
 enum ApiVersion: Int16 {
-    case defaultVersion = 0
+	static var defaultVersion: ApiVersion {
+		return v0
+	}
+	case v0 = 0
+	case v1 = 1
+	case v2 = 2
 }
 
 

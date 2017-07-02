@@ -30,7 +30,7 @@ class OffsetCommitRequest: KafkaRequest {
     }
     
     init(value: OffsetCommitRequestMessage) {
-        super.init(apiKey: ApiKey.offsetCommitRequest, value: value)
+		super.init(apiKey: ApiKey.offsetCommitRequest, value: value, apiVersion: .v2)
     }
 }
 

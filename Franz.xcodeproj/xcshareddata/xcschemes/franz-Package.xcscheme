@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "franz::franz"
-               BuildableName = "franz.framework"
+               BuildableName = "Franz.framework"
                BlueprintName = "Franz"
                ReferencedContainer = "container:Franz.xcodeproj">
             </BuildableReference>
@@ -58,7 +58,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "franz::franz"
-            BuildableName = "franz.framework"
+            BuildableName = "Franz.framework"
             BlueprintName = "Franz"
             ReferencedContainer = "container:Franz.xcodeproj">
          </BuildableReference>
