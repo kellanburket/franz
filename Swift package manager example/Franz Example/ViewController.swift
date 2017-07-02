@@ -37,22 +37,22 @@ class ViewController: UIViewController, HighLevelConsumerDelegate {
 		
 		let consumer = cluster.getHighLevelConsumer("replica", partition: 0, groupId: "replica-group", delegate: self)
 		
-//		DispatchQueue.main.async {
-//			while true {
-//				self.cluster.batchMessage("replica", partition: 0, message: "1")
-//				self.cluster.batchMessage("replica", partition: 0, message: "2")
-//				self.cluster.batchMessage("replica", partition: 0, message: "3")
-//				
-//				do {
-//					try self.cluster.sendBatch("replica", partition: 0)
-//				} catch ClusterError.noBatchForTopicPartition(let topic, let partition) {
-//					print("Error: No batch for topic \(topic), \(partition)")
-//				} catch {
-//					print("Error")
-//				}
-//				sleep(1)
-//			}
-//		}
+		DispatchQueue.main.async {
+			while true {
+				self.cluster.batchMessage("replica", partition: 0, message: "1")
+				self.cluster.batchMessage("replica", partition: 0, message: "2")
+				self.cluster.batchMessage("replica", partition: 0, message: "3")
+				
+				do {
+					try self.cluster.sendBatch("replica", partition: 0)
+				} catch ClusterError.noBatchForTopicPartition(let topic, let partition) {
+					print("Error: No batch for topic \(topic), \(partition)")
+				} catch {
+					print("Error")
+				}
+				sleep(1)
+			}
+		}
 	}
 
 	override func didReceiveMemoryWarning() {
