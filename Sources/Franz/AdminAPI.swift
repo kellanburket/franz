@@ -46,10 +46,10 @@ class ListGroupsResponse: KafkaResponse {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-		data.append(self._errorCode.data as Data)
-		data.append(self._groups.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+		data.append(self._errorCode.data)
+		data.append(self._groups.data)
+        return data
     }()
     
     override var description: String {
@@ -87,10 +87,10 @@ class ListedGroup: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-		data.append(self._groupId.data as Data)
-		data.append(self._protocolType.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+		data.append(self._groupId.data)
+		data.append(self._protocolType.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -136,9 +136,9 @@ class DescribeGroupsRequestMessage: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-		data.append(self._groupIds.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+		data.append(self._groupIds.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -164,9 +164,9 @@ class DescribeGroupsResponse: KafkaResponse {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        data.append(self._groups.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._groups.data)
+        return data
     }()
     
     override var description: String {
@@ -240,10 +240,10 @@ class GroupStateResponse: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-		data.append(self._groupId.data as Data)
-		data.append(self._protocolType.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+		data.append(self._groupId.data)
+		data.append(self._protocolType.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -296,8 +296,8 @@ class GroupMemberResponse: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        return data as Data
+        var data = Data(capacity: self.length)
+        return data
     }()
     
     lazy var description: String = {

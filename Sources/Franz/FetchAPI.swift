@@ -147,14 +147,14 @@ class FetchRequestMessage: KafkaClass {
     }()
     
     lazy var data: Data = {
-        var data = NSMutableData(capacity: self.length)!
-        data.append(self._replicaId.data as Data)
-        data.append(self._maxWaitTime.data as Data)
-        data.append(self._minBytes.data as Data)
-        data.append(self._topics.data as Data)
+        var data = Data(capacity: self.length)
+        data.append(self._replicaId.data)
+        data.append(self._maxWaitTime.data)
+        data.append(self._minBytes.data)
+        data.append(self._topics.data)
         
         //print(self.description)
-        return data as Data
+        return data
     }()
     
     lazy var description: String = {
@@ -200,10 +200,10 @@ class TopicalFetchMessage: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        data.append(self._topicName.data as Data)
-        data.append(self._partitions.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._topicName.data)
+        data.append(self._partitions.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -249,11 +249,11 @@ class PartitionedFetchMessage: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        data.append(self._partition.data as Data)
-        data.append(self._fetchOffset.data as Data)
-        data.append(self._maxBytes.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._partition.data)
+        data.append(self._fetchOffset.data)
+        data.append(self._maxBytes.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -307,10 +307,10 @@ class TopicalFetchResponse: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        data.append(self._topicName.data as Data)
-        data.append(self._partitions.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._topicName.data)
+        data.append(self._partitions.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -364,13 +364,13 @@ class PartitionedFetchResponse: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        data.append(self._partition.data as Data)
-        data.append(self._errorCode.data as Data)
-        data.append(self._highwaterMarkOffset.data as Data)
-        data.append(self._messageSetSize.data as Data)
-        data.append(self._messageSet.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._partition.data)
+        data.append(self._errorCode.data)
+        data.append(self._highwaterMarkOffset.data)
+        data.append(self._messageSetSize.data)
+        data.append(self._messageSet.data)
+        return data
     }()
     
     lazy var description: String = {

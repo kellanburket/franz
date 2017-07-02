@@ -51,7 +51,7 @@ class TopicMetadataRequestMessage: KafkaClass {
     }()
     
     lazy var data: Data = {
-        return (self.values.data as Data)
+        return (self.values.data)
     }()
 
     lazy var description: String = {

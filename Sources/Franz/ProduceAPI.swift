@@ -67,13 +67,13 @@ class ProduceRequestMessage: KafkaClass {
     }
     
     var data: Data {
-        let data = NSMutableData(capacity: length)!
+        var data = Data(capacity: length)
 
-        data.append(requestAcks.data as Data)
-        data.append(timeout.data as Data)
-        data.append(values.data as Data)
+        data.append(requestAcks.data)
+        data.append(timeout.data)
+        data.append(values.data)
         
-        return data as Data
+        return data
     }
 
     var description: String {
@@ -196,12 +196,12 @@ class KafkaTopicalMessageSet: KafkaClass {
     }
     
     var data: Data {
-        let data = NSMutableData(capacity: Int(length))!
+        var data = Data(capacity: length)
         
-        data.append(topic.data as Data)
-        data.append(values.data as Data)
+        data.append(topic.data)
+        data.append(values.data)
         
-        return data as Data
+        return data
     }
     
     var description: String {
@@ -230,12 +230,12 @@ class KafkaPartitionedMessageSet: KafkaClass {
     }
     
     var data: Data {
-        let data = NSMutableData(capacity: Int(length))!
+        var data = Data(capacity: length)
         
-        data.append(partition.data as Data)
-        data.append(value.data as Data)
+        data.append(partition.data)
+        data.append(value.data)
         
-        return data as Data
+        return data
     }
     
     var description: String {

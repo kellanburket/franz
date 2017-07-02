@@ -49,11 +49,11 @@ class MessageSet: KafkaClass {
     }()
     
     lazy var valueLengthData: Data = {
-        return (Int32(self.valueLength).data as Data)
+        return (Int32(self.valueLength).data)
     }()
     
     lazy var data: Data = {
-        var data = NSMutableData(capacity: self.length)!
+        var data = Data(capacity: self.length)
         
         data.append(self.valueLengthData)
         
@@ -62,7 +62,7 @@ class MessageSet: KafkaClass {
             data.append(value.data)
         }
         
-        return data as Data
+        return data
     }()
     
     var description: String {
@@ -106,7 +106,7 @@ class MessageSetItem: KafkaClass {
     }
     
     lazy var messageSizeData: Data = {
-        return (Int32(self._value.length).data as Data)
+        return (Int32(self._value.length).data)
     }()
     
     let messageSizeDataLength = 4
@@ -119,12 +119,12 @@ class MessageSetItem: KafkaClass {
     }()
     
     lazy var data: Data = {
-        var data = NSMutableData(capacity: self.length)!
+        var data = Data(capacity: self.length)
         
-        data.append(self._offset.data as Data)
+        data.append(self._offset.data)
         data.append(self.messageSizeData)
         data.append(self._value.data)
-        return data as Data
+        return data
     }()
     
     var description: String {
@@ -147,14 +147,14 @@ class KafkaMessage: KafkaClass {
         Message data
     */
     var value: Data {
-        return _value.valueData as Data
+        return _value.valueData
     }
 
     /**
         Message key
      */
     var key: Data? {
-        return _key.valueData as Data
+        return _key.valueData
     }
 
     /**
@@ -209,18 +209,18 @@ class KafkaMessage: KafkaClass {
     }()
     
     lazy var data: Data = {
-        var valueData = NSMutableData(capacity: Int(self.valueLength))!
-        valueData.append(self._magicByte.data as Data)
-        valueData.append(self._attributes.data as Data)
-        valueData.append(self._key.data as Data)
-        valueData.append(self._value.data as Data)
+        var valueData = Data(capacity: self.valueLength)
+        valueData.append(self._magicByte.data)
+        valueData.append(self._attributes.data)
+        valueData.append(self._key.data)
+        valueData.append(self._value.data)
         
-		self._crc = KafkaUInt32(value: CRC32(data: valueData as Data).crc)
+		self._crc = KafkaUInt32(value: CRC32(data: valueData).crc)
         
-        var data = NSMutableData(capacity: Int(self.length))!
-        data.append(self._crc.data as Data)
-        data.append(valueData as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._crc.data)
+        data.append(valueData)
+        return data
     }()
     
     var description: String {

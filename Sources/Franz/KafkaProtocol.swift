@@ -42,7 +42,7 @@ class KafkaFixedLengthType<T: FixedLengthDatable>: KafkaType {
     }()
     
     lazy var data: Data = {
-        return (self.value.data as Data)
+        return (self.value.data)
     }()
 }
 
@@ -79,7 +79,7 @@ class KafkaVariableLengthType<T: VariableLengthDatable, E: FixedLengthDatable>: 
     }()
     
     lazy var valueData: Data = {
-        return self.value?.data ?? ((((((((NSData(data: ((((((E(-1).data as Data) as Data) as Data) as Data) as Data) as Data) as Data) as Data) as Data) as Data) as Data) as Data) as Data) as Data) as Data)
+		return self.value?.data ?? E(-1).data
     }()
 
     lazy var valueDataLength: Int = {
@@ -91,14 +91,14 @@ class KafkaVariableLengthType<T: VariableLengthDatable, E: FixedLengthDatable>: 
     }()
 
     lazy var data: Data = {
-        let finalData = NSMutableData(capacity: self.length)!
+        var finalData = Data(capacity: self.length)
         if let value = self.value {
-            finalData.append(E(self.valueData.count).data as Data)
+            finalData.append(E(self.valueData.count).data)
             finalData.append(self.valueData)
         } else {
             finalData.append(self.valueData)
         }
-        return finalData as Data
+        return finalData
     }()
 
     let sizeDataLength = MemoryLayout<E>.size
@@ -140,28 +140,26 @@ class KafkaArray<T: KafkaType>: KafkaType, Readable {
     }()
 
     lazy var valuesData: Data = {
-        var valuesData = NSMutableData(
-            capacity: self.valuesDataLength
-        )!
+        var valuesData = Data(capacity: self.valuesDataLength)
         
         for value in self.values {
             valuesData.append(value.data)
         }
         
-        return valuesData as Data
+        return valuesData
     }()
 
     let sizeDataLength = 4
 
     lazy var data: Data = {
-        var finalData = NSMutableData(capacity: self.length)!
+        var finalData = Data(capacity: self.length)
 
         let sizeData = Int32(self.values.count).data
         
-        finalData.append(sizeData as Data)
+        finalData.append(sizeData)
         finalData.append(self.valuesData)
 
-        return finalData as Data
+        return finalData
     }()
     
     lazy var description: String = {

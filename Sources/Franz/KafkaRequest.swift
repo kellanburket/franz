@@ -65,25 +65,25 @@ class KafkaRequest: NSObject {
     }
     
     var sizeData: Data {
-        return Int32(self.length).data as Data
+        return Int32(self.length).data
     }
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
+        var data = Data(capacity: self.length)
         
         data.append(self.sizeData)
-        data.append(self._apiKey.data as Data)
-        data.append(self._apiVersion.data as Data)
-        data.append(self.correlationId.data as Data)
-        data.append(self.clientId.data as Data)
+        data.append(self._apiKey.data)
+        data.append(self._apiVersion.data)
+        data.append(self.correlationId.data)
+        data.append(self.clientId.data)
         
         if let value = self.value {
-            data.append(value.data as Data)
+            data.append(value.data)
         }
         
         //print("REQUEST LENGTH: \(data.length)")
         //print(self.description)
-        return data as Data
+        return data
     }()
     
     override var description: String {

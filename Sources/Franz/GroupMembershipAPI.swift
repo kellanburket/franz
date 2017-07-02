@@ -79,13 +79,13 @@ class JoinGroupRequestMessage<T: KafkaMetadata>: KafkaClass {
     }()
     
     lazy var data: Data = {
-        var data = NSMutableData(capacity: self.length)!
-        data.append(self._groupId.data as Data)
-        data.append(self._sessionTimeout.data as Data)
-        data.append(self._memberId.data as Data)
-        data.append(self._protocolType.data as Data)
-        data.append(self._groupProtocols.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._groupId.data)
+        data.append(self._sessionTimeout.data)
+        data.append(self._memberId.data)
+        data.append(self._protocolType.data)
+        data.append(self._groupProtocols.data)
+        return data
     }()
     
     var groupId: String {
@@ -129,10 +129,10 @@ class JoinGroupProtocol<T: KafkaMetadata>: KafkaClass {
     }()
     
     lazy var data: Data = {
-        var data = NSMutableData(capacity: self.length)!
-        data.append(self._protocolName.data as Data)
-        data.append(self._protocolMetadata.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._protocolName.data)
+        data.append(self._protocolMetadata.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -190,16 +190,16 @@ class ConsumerGroupMetadata: KafkaMetadata {
     }()
     
     fileprivate lazy var sizeData: Data = {
-        return (Int32(self.valueDataLength).data as Data)
+        return (Int32(self.valueDataLength).data)
     }()
     
     lazy var data: Data = {
-        var data = NSMutableData(capacity: self.length)!
+        var data = Data(capacity: self.length)
         data.append(self.sizeData)
-        data.append(self._version.data as Data)
-        data.append(self._subscription.data as Data)
-        data.append(self._userData.data as Data)
-        return data as Data
+        data.append(self._version.data)
+        data.append(self._subscription.data)
+        data.append(self._userData.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -297,10 +297,10 @@ class Member: KafkaClass {
     }()
     
     lazy var data: Data = {
-        var data = NSMutableData(capacity: self.length)!
-        data.append(self._memberName.data as Data)
-        data.append(self._memberMetadata.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._memberName.data)
+        data.append(self._memberMetadata.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -368,11 +368,11 @@ class GroupMemberAssignment: KafkaMetadata {
     }()
     
     lazy var data: Data = {
-        var data = NSMutableData(capacity: self.length)!
-        data.append(self._version.data as Data)
-        data.append(self._partitionAssignment.data as Data)
-        data.append(self._userData.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._version.data)
+        data.append(self._partitionAssignment.data)
+        data.append(self._userData.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -406,10 +406,10 @@ class PartitionAssignment: KafkaClass {
     }()
     
     lazy var data: Data = {
-        var data = NSMutableData(capacity: self.length)!
-        data.append(self._topic.data as Data)
-        data.append(self._partitions.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._topic.data)
+        data.append(self._partitions.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -452,12 +452,12 @@ class SyncGroupRequestMessage<T: KafkaMetadata>: KafkaClass {
     }()
     
     lazy var data: Data = {
-        var data = NSMutableData(capacity: self.length)!
-        data.append(self._groupId.data as Data)
-        data.append(self._generationId.data as Data)
-        data.append(self._memberId.data as Data)
-        data.append(self._groupAssignment.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._groupId.data)
+        data.append(self._generationId.data)
+        data.append(self._memberId.data)
+        data.append(self._groupAssignment.data)
+        return data
     }()
     
     var groupId: String {
@@ -549,11 +549,11 @@ class HeartbeatRequestMessage: KafkaClass {
     }()
     
     lazy var data: Data = {
-        var data = NSMutableData(capacity: self.length)!
-        data.append(self._groupId.data as Data)
-        data.append(self._generationId.data as Data)
-        data.append(self._memberId.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._groupId.data)
+        data.append(self._generationId.data)
+        data.append(self._memberId.data)
+        return data
     }()
     
     var groupId: String {
@@ -633,10 +633,10 @@ class LeaveGroupRequestMessage: KafkaClass {
     }()
     
     lazy var data: Data = {
-        var data = NSMutableData(capacity: self.length)!
-        data.append(self._groupId.data as Data)
-        data.append(self._memberId.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._groupId.data)
+        data.append(self._memberId.data)
+        return data
     }()
     
     var groupId: String {

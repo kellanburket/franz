@@ -58,10 +58,10 @@ class OffsetFetchRequestMessage: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        data.append(self._consumerGroup.data as Data)
-        data.append(self._topics.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._consumerGroup.data)
+        data.append(self._topics.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -102,10 +102,10 @@ class OffsetFetchTopic: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        data.append(self._topicName.data as Data)
-        data.append(self._partitions.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._topicName.data)
+        data.append(self._partitions.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -134,9 +134,9 @@ class OffsetFetchResponse: KafkaResponse {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        data.append(self._topics.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._topics.data)
+        return data
     }()
     
     override var description: String {
@@ -169,10 +169,10 @@ class OffsetFetchTopicResponse: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        data.append(self._topicName.data as Data)
-        data.append(self._partitions.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._topicName.data)
+        data.append(self._partitions.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -224,12 +224,12 @@ class OffsetFetchPartitionOffset: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        data.append(self._partition.data as Data)
-        data.append(self._offset.data as Data)
-        data.append(self._metadata.data as Data)
-        data.append(self._errorCode.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._partition.data)
+        data.append(self._offset.data)
+        data.append(self._metadata.data)
+        data.append(self._errorCode.data)
+        return data
     }()
     
     lazy var description: String = {

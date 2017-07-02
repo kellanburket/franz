@@ -38,9 +38,9 @@ class GroupCoordinatorRequestMessage: KafkaClass {
     }()
     
     lazy var data: Data = {
-        var data = NSMutableData(capacity: self.length)!
-        data.append(self._groupId.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._groupId.data)
+        return data
     }()
     
     var id: String {
@@ -92,12 +92,12 @@ class GroupCoordinatorResponse: KafkaResponse {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        data.append(self._errorCode.data as Data)
-        data.append(self._coordinatorId.data as Data)
-        data.append(self._coordinatorHost.data as Data)
-        data.append(self._coordinatorPort.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._errorCode.data)
+        data.append(self._coordinatorId.data)
+        data.append(self._coordinatorHost.data)
+        data.append(self._coordinatorPort.data)
+        return data
     }()
     
     override var description: String {

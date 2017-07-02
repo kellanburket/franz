@@ -78,13 +78,13 @@ class OffsetCommitRequestMessage: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        data.append(self._consumerGroupId.data as Data)
-        data.append(self._consumerGroupGenerationId.data as Data)
-        data.append(self._consumerId.data as Data)
-        data.append(self._retentionTime.data as Data)
-        data.append(self._topics.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._consumerGroupId.data)
+        data.append(self._consumerGroupGenerationId.data)
+        data.append(self._consumerId.data)
+        data.append(self._retentionTime.data )
+        data.append(self._topics.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -122,10 +122,10 @@ class OffsetCommitTopic: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        data.append(self._topicName.data as Data)
-        data.append(self._partitions.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._topicName.data)
+        data.append(self._partitions.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -158,11 +158,11 @@ class OffsetCommitPartitionOffset: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        data.append(self._partition.data as Data)
-        data.append(self._offset.data as Data)
-        data.append(self._metadata.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._partition.data)
+        data.append(self._offset.data)
+        data.append(self._metadata.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -189,8 +189,8 @@ class OffsetCommitResponse: KafkaResponse {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        return data as Data
+        var data = Data(capacity: self.length)
+        return data
     }()
     
     override var description: String {
@@ -217,8 +217,8 @@ class OffsetCommitTopicResponse: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        return data as Data
+        var data = Data(capacity: self.length)
+        return data
     }()
     
     lazy var description: String = {
@@ -251,8 +251,8 @@ class OffsetCommitPartitionResponse: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        return data as Data
+        var data = Data(capacity: self.length)
+        return data
     }()
     
     lazy var description: String = {

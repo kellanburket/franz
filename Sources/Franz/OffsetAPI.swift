@@ -84,10 +84,10 @@ class OffsetRequestMessage: KafkaClass {
     }()
     
     lazy var data: Data = {
-        var data = NSMutableData(capacity: self.length)!
-        data.append(self._replicaId.data as Data)
-        data.append(self._topics.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._replicaId.data)
+        data.append(self._topics.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -135,10 +135,10 @@ class TopicalOffsetMessage: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        data.append(self._topicName.data as Data)
-        data.append(self._partitions.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._topicName.data)
+        data.append(self._partitions.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -186,11 +186,11 @@ class PartitionedOffsetMessage: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        data.append(self._partition.data as Data)
-        data.append(self._time.data as Data)
-        data.append(self._maxNumberOfOffsets.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._partition.data)
+        data.append(self._time.data)
+        data.append(self._maxNumberOfOffsets.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -247,10 +247,10 @@ class TopicalPartitionedOffsets: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        data.append(self._topicName.data as Data)
-        data.append(self._partitions.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._topicName.data)
+        data.append(self._partitions.data)
+        return data
     }()
     
     lazy var description: String = {
@@ -295,11 +295,11 @@ class PartitionedOffsets: KafkaClass {
     }()
     
     lazy var data: Data = {
-        let data = NSMutableData(capacity: self.length)!
-        data.append(self._partition.data as Data)
-        data.append(self._errorCode.data as Data)
-        data.append(self._offsets.data as Data)
-        return data as Data
+        var data = Data(capacity: self.length)
+        data.append(self._partition.data)
+        data.append(self._errorCode.data)
+        data.append(self._offsets.data)
+        return data
     }()
     
     lazy var description: String = {
