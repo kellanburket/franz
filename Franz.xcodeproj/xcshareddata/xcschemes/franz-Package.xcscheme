@@ -34,7 +34,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "franz::franzTests"
-               BuildableName = "franzasTests.xctest"
+               BuildableName = "FranzTests.xctest"
                BlueprintName = "FranzTests"
                ReferencedContainer = "container:Franz.xcodeproj">
             </BuildableReference>

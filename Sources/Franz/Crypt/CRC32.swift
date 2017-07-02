@@ -128,7 +128,7 @@ func crc32(_ crc: UInt32, buffer: UnsafePointer<UInt8>?, length: Int) -> UInt32 
         repeat {
             DO1()
 			len -= 1
-        } while len - 1 != 0
+        } while len != 0
     }
     
     return crc1 ^ 0xffffffff;

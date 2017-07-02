@@ -1,7 +1,7 @@
 import XCTest
-@testable import franz
+@testable import Franz
 
-class franzTests: XCTestCase {
+class FranzTests: XCTestCase {
     func testClusterClientId() {
 		let cluster = Cluster(brokers: [("192.0.0.1", 9092)], clientId: "Test")
 		
