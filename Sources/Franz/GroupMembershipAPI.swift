@@ -97,15 +97,14 @@ class JoinGroupRequestMessage<T: KafkaMetadata>: KafkaClass {
     }
     
     lazy var description: String = {
-        return "\tGROUP ID(\(self._groupId.length)): " +
-                "\(self.groupId) => \(self._groupId.data)\n" +
-            "\tSESSION TIMEPOUT(\(self._sessionTimeout.length)): " +
-                "\(self._sessionTimeout.value) => \(self._sessionTimeout.data)\n" +
-            "\tMEMBER ID(\(self._memberId.length)): " +
-                "\(self._memberId.value) => \(self._memberId.data)\n" +
-            "\tPROTOCOL TYPE(\(self._protocolType.length)): \(self.protocolType) => \(self._protocolType.data)\n" +
-            "\tGROUP PROTOCOLS(\(self._groupProtocols.length)):\n" +
-            self._groupProtocols.description
+		return """
+			GROUP ID(\(self._groupId.length)): \(self.groupId) => \(self._groupId.data)
+			SESSION TIMEPOUT(\(self._sessionTimeout.length)): \(self._sessionTimeout.value) => \(self._sessionTimeout.data)
+			MEMBER ID(\(self._memberId.length)): \(self._memberId.value ?? "nil") => \(self._memberId.data)
+			PROTOCOL TYPE(\(self._protocolType.length)): \(self.protocolType) => \(self._protocolType.data)
+			GROUP PROTOCOLS(\(self._groupProtocols.length)):
+			\(self._groupProtocols.description)
+		"""
     }()
 }
 
@@ -136,10 +135,11 @@ class JoinGroupProtocol<T: KafkaMetadata>: KafkaClass {
     }()
     
     lazy var description: String = {
-        return "\t\tPROTOCOL NAME(\(self._protocolName.length)): " +
-            "\(self._protocolName.value) => \(self._protocolName.data)\n" +
-            "\t\tPROTOCOL METADATA(\(self._protocolMetadata.length)):\n" +
-            self._protocolMetadata.description
+		return """
+			PROTOCOL NAME(\(self._protocolName.length)): \(self._protocolName.value ?? "nil") => \(self._protocolName.data)
+			PROTOCOL METADATA(\(self._protocolMetadata.length)):
+			\(self._protocolMetadata.description)
+		"""
     }()
 
 }
@@ -376,10 +376,12 @@ class GroupMemberAssignment: KafkaMetadata {
     }()
     
     lazy var description: String = {
-        return "\t\tVERSION(\(self._version.length)): \(self._version.data) => \(self._version.value)\n" +
-            "\t\tPARTITION ASSIGNMENT(\(self._partitionAssignment.length)):\n" +
-            self._partitionAssignment.description +
-            "\t\tUSER DATA\(self._userData.length): \(self._userData.data) => \(self._userData.value)\n"
+		return """
+			VERSION(\(self._version.length)): \(self._version.data) => \(self._version.value)
+			PARTITION ASSIGNMENT(\(self._partitionAssignment.length)):
+			\(self._partitionAssignment.description)
+			USER DATA\(self._userData.length): \(self._userData.data) => \(String(describing: self._userData.value))
+		"""
     }()
 }
 
@@ -413,8 +415,10 @@ class PartitionAssignment: KafkaClass {
     }()
     
     lazy var description: String = {
-        return "\t\t\tTOPIC(\(self._topic.length)): \(self._topic.value)\n" +
-            "\t\t\tPARTITIONS(\(self._partitions.length)): \(self._partitions.values)"
+		return """
+			TOPIC(\(self._topic.length)): \(self._topic.value ?? "nil")
+			PARTITIONS(\(self._partitions.length)): \(self._partitions.values)
+		"""
     }()
 }
 

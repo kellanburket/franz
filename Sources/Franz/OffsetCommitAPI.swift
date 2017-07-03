@@ -89,9 +89,9 @@ class OffsetCommitRequestMessage: KafkaClass {
     
     lazy var description: String = {
         return "OFFSET COMMIT REQUEST:\n" +
-            "\tCONSUMER GROUP ID: \(self._consumerGroupId.value)\n" +
+            "\tCONSUMER GROUP ID: \(self._consumerGroupId.value ?? "nil")\n" +
             "\tCONSUMER GROUP GENERATION ID: \(self._consumerGroupGenerationId.value)\n" +
-            "\tCONSUMER ID ID: \(self._consumerId.value)\n" +
+			"\tCONSUMER ID ID: \(self._consumerId.value ?? "nil")\n" +
             "\tRETENTION TIME ID: \(self._retentionTime.value)\n" +
             "\tTOPICS:\n" +
             self._topics.description
@@ -222,7 +222,7 @@ class OffsetCommitTopicResponse: KafkaClass {
     }()
     
     lazy var description: String = {
-        return "\tTOPIC: \(self._topicName.value)" +
+        return "\tTOPIC: \(self._topicName.value ?? "nil")" +
             "\tPARTITIONS:\n" +
             self._partitions.description
     }()

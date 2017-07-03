@@ -247,14 +247,16 @@ class GroupStateResponse: KafkaClass {
     }()
     
     lazy var description: String = {
-        return "\tERROR CODE: \(self.error?.code ?? 0)\n" +
-            "\tERROR DESCRIPTION: \(self.error?.description ?? String())\n" +
-            "\tGROUP ID(\(self._groupId.length)): \(self.id ?? "") => \(self._groupId.data)\n" +
-            "\tSTATE(\(self._state.length)): \(self.state) => \(self._state.data)\n" +
-            "\tPROTOCOL TYPE(\(self._protocolType.length)): \(self._protocolType.value ?? "") => \(self._protocolType.data)\n" +
-            "\tPROTOCOL(\(self._protocol.length)): \(self.kafkaProtocol ?? "") => \(self._protocol.data)\n" +
-            "\tMEMBERS(\(self._members.length)):\n" +
-            self._members.description
+		return """
+			ERROR CODE: \(self.error?.code ?? 0)
+			ERROR DESCRIPTION: \(self.error?.description ?? String())
+			GROUP ID(\(self._groupId.length)): \(self.id ?? "") => \(self._groupId.data)
+			STATE(\(self._state.length)): \(String(describing: self.state)) => \(self._state.data)
+			PROTOCOL TYPE(\(self._protocolType.length)): \(self._protocolType.value ?? "nil") => \(self._protocolType.data)
+			PROTOCOL(\(self._protocol.length)): \(self.kafkaProtocol ?? "nil") => \(self._protocol.data)
+			MEMBERS(\(self._members.length)):
+			\(self._members.description)
+		"""
     }()
 }
 
@@ -301,10 +303,12 @@ class GroupMemberResponse: KafkaClass {
     }()
     
     lazy var description: String = {
-        return "\t\tMEMBER ID: \(self.memberId)\n" +
-            "\t\tCLIENT ID: \(self.clientId)\n" +
-            "\t\tCLIENT HOST: \(self.host)\n" +
-            "\t\tMEMBER METADATA: \(self._memberMetadata.value)\n" +
-            "\t\tMEMBER METADATA: \(self._memberAssignment.value)\n"
+		return """
+			MEMBER ID: \(self.memberId)
+			CLIENT ID: \(self.clientId)
+			CLIENT HOST: \(self.host)
+			MEMBER METADATA: \(String(describing: self._memberMetadata.value))
+			MEMBER METADATA: \(String(describing: self._memberAssignment.value))
+		"""
     }()
 }

@@ -95,7 +95,6 @@
 		OBJ_33 /* Variables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Variables.swift; sourceTree = "<group>"; };
 		OBJ_34 /* Wildcard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wildcard.swift; sourceTree = "<group>"; };
 		OBJ_37 /* FranzTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FranzTests.swift; sourceTree = "<group>"; };
-		OBJ_38 /* Example */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Example; sourceTree = SOURCE_ROOT; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		OBJ_9 /* AdminAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminAPI.swift; sourceTree = "<group>"; };
 		"franz::franz::Product" /* Franz.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Franz.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -162,7 +161,6 @@
 				OBJ_6 /* Package.swift */,
 				OBJ_7 /* Sources */,
 				OBJ_35 /* Tests */,
-				OBJ_38 /* Example */,
 				OBJ_40 /* Products */,
 			);
 			sourceTree = "<group>";

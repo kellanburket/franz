@@ -55,12 +55,13 @@ internal class KafkaTopic: KafkaClass {
     }
     
     var description: String {
-        let defaultValue = "nil"
-        var description = "TOPIC METADATA\n\t" +
-            "ERROR CODE: \(error?.code ?? 0)\n\t" +
-            "ERROR DESCRIPTION: \(error?.description ?? defaultValue)\n\t" +
-        "TOPIC: \(name)\n"
-        
+		var description = """
+			TOPIC METADATA
+			ERROR CODE: \(error?.code ?? 0)
+			ERROR DESCRIPTION: \(error?.description ?? "nil")
+			TOPIC: \(name ?? "nil")
+		"""
+		
         for (_, partition) in partitions {
             description += "----------\n\(partition.description)\n"
         }

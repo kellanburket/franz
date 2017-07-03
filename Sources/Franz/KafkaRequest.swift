@@ -87,14 +87,16 @@ class KafkaRequest: NSObject {
     }()
     
     override var description: String {
-        let value = self.value?.description ?? String()
-        
-        return "REQUEST(\(length)):\n" +
-            "\tSIZE(\(sizeDataLength)): \(sizeData)\n" +
-            "\tAPI_KEY(\(_apiKey.length)): \(_apiKey.data)\n" +
-            "\tAPI_VERSION(\(_apiVersion.length)): \(_apiVersion.data)\n" +
-            "\tCORRELATION_ID(\(_correlationId.length)): \(correlationId.data)\n" +
-            "\tCLIENT_ID(\(clientId.length)): \(_clientId?.value) => \(_clientId?.data)\n" +
-            value
+        let value = self.value?.description ?? "nil"
+		
+		return """
+			REQUEST(\(length)):
+				SIZE(\(sizeDataLength)): \(sizeData)
+				API_KEY(\(_apiKey.length)): \(_apiKey.data)
+				API_VERSION(\(_apiVersion.length)): \(_apiVersion.data)
+				CORRELATION_ID(\(_correlationId.length)): \(correlationId.data)
+				CLIENT_ID(\(clientId.length)): \(clientId.value ?? "nil") => \(clientId.data)
+				\(value))
+		"""
     }
 }

@@ -314,7 +314,7 @@ class RegExp {
         return mOptions
     }
     
-    fileprivate func setOptions(_ flags: String) -> UInt {
+    fileprivate func setOptions(_ flags: String) {
         var options: UInt = 0
         
         for character in flags.characters {
@@ -339,8 +339,6 @@ class RegExp {
         }
         
         self.options = options
-        
-        return options;
     }
     
 	fileprivate func removeLinebreaks( _ input: inout String) {
@@ -361,8 +359,8 @@ class RegExp {
             regExp = nil
         }
         
-        if error != nil {
-			print("!!Error: There was an problem matching `\(pattern)`: \(error)")
+        if let error = error {
+			print("!!Error: There was an problem matching `\(pattern )`: \(error)")
             return nil
         } else {
             return regExp
@@ -534,7 +532,7 @@ private let irregulars: [String:String] = [
     "goose": "geese"
 ]
 
-infix operator =~ { associativity left precedence 140 }
+infix operator =~ : AdditionPrecedence
 
 /**
  Checks if the input matches the pattern

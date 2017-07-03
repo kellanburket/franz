@@ -87,7 +87,7 @@ class KafkaVariableLengthType<T: VariableLengthDatable, E: FixedLengthDatable>: 
     }()
 
     lazy var description: String = {
-        return "(\(self.length)): \(self.value) => \(self.data)"
+		return "(\(self.length)): \(String(describing: self.value)) => \(self.data)"
     }()
 
     lazy var data: Data = {

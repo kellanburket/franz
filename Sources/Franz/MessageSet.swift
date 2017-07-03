@@ -227,8 +227,8 @@ class KafkaMessage: KafkaClass {
         return "\t\t\t\t\t\tMAGIC_BYTE(\(self._crc.length)): \(self._crc.value) => \(self._crc.data)\n" +
             "\t\t\t\t\t\tMAGIC_BYTE(\(self._magicByte.length)): \(self._magicByte.value) => \(self._magicByte.data)\n" +
             "\t\t\t\t\t\tATTRIBUTES(\(self._attributes.length)): \(self._attributes.value) => \(self._attributes.data)\n" +
-            "\t\t\t\t\t\tKEY(\(self._key.length)): \(self._key.value) => \(self._key.data)\n" +
-            "\t\t\t\t\t\tVALUE(\(self._value.length)): \(self._value.value) => \(self._value.data)\n"
+            "\t\t\t\t\t\tKEY(\(self._key.length)): \(self._key.value?.description ?? "nil") => \(self._key.data)\n" +
+		"\t\t\t\t\t\tVALUE(\(self._value.length)): \(self._value.value?.description ?? "nil") => \(self._value.data)\n"
     }
 }
 
