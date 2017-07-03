@@ -35,20 +35,22 @@ class ViewController: UIViewController, HighLevelConsumerDelegate {
 			clientId: "replica-test"
 		)
 		
-		let consumer = cluster.getHighLevelConsumer("replica", partition: 0, groupId: "replica-group", delegate: self)
+		_ = cluster.getHighLevelConsumer("replica", partition: 0, groupId: "replica-group", delegate: self)
 		
-		DispatchQueue.main.async {
+		DispatchQueue(label: "testMessages").async {
 			while true {
-				self.cluster.batchMessage("replica", partition: 0, message: "1")
-				self.cluster.batchMessage("replica", partition: 0, message: "2")
-				self.cluster.batchMessage("replica", partition: 0, message: "3")
-				
-				do {
-					try self.cluster.sendBatch("replica", partition: 0)
-				} catch ClusterError.noBatchForTopicPartition(let topic, let partition) {
-					print("Error: No batch for topic \(topic), \(partition)")
-				} catch {
-					print("Error")
+				DispatchQueue.main.sync {
+					self.cluster.batchMessage("replica", partition: 0, message: "1")
+					self.cluster.batchMessage("replica", partition: 0, message: "2")
+					self.cluster.batchMessage("replica", partition: 0, message: "3")
+					
+					do {
+						try self.cluster.sendBatch("replica", partition: 0)
+					} catch ClusterError.noBatchForTopicPartition(let topic, let partition) {
+						print("Error: No batch for topic \(topic), \(partition)")
+					} catch {
+						print("Error")
+					}
 				}
 				sleep(1)
 			}
