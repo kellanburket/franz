@@ -26,7 +26,8 @@ pod "Franz"
 
 ## Author
 
-kellanburket, kellan.burket@gmail.com
+Kellan Cummings
+Luke Lau
 
 ## License
 
