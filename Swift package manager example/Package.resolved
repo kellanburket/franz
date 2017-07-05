@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Franz",
+        "repositoryURL": "/Users/luke/Documents/franz",
+        "state": {
+          "branch": null,
+          "revision": "d648f4868d0b449c37fd5fac5e783e66cf35cc1b",
+          "version": "0.2.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
