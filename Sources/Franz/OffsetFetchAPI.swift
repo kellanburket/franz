@@ -31,8 +31,8 @@ class OffsetFetchRequest: KafkaRequest {
 
 class OffsetFetchRequestMessage: KafkaClass {
     
-    fileprivate var _consumerGroup: KafkaString
-    fileprivate var _topics: KafkaArray<OffsetFetchTopic>
+    private var _consumerGroup: KafkaString
+    private var _topics: KafkaArray<OffsetFetchTopic>
     
     init(
         consumerGroup: String,
@@ -74,8 +74,8 @@ class OffsetFetchRequestMessage: KafkaClass {
 
 class OffsetFetchTopic: KafkaClass {
     
-    fileprivate var _topicName: KafkaString
-    fileprivate var _partitions: KafkaArray<KafkaInt32>
+    private var _topicName: KafkaString
+    private var _partitions: KafkaArray<KafkaInt32>
     
     init(
         topic: String,
@@ -118,7 +118,7 @@ class OffsetFetchTopic: KafkaClass {
 
 class OffsetFetchResponse: KafkaResponse {
     
-    fileprivate var _topics: KafkaArray<OffsetFetchTopicResponse>
+    private var _topics: KafkaArray<OffsetFetchTopicResponse>
     
     required init(bytes: inout [UInt8]) {
         _topics = KafkaArray(bytes: &bytes)
@@ -148,8 +148,8 @@ class OffsetFetchResponse: KafkaResponse {
 
 
 class OffsetFetchTopicResponse: KafkaClass {
-    fileprivate var _topicName: KafkaString
-    fileprivate var _partitions: KafkaArray<OffsetFetchPartitionOffset>
+    private var _topicName: KafkaString
+    private var _partitions: KafkaArray<OffsetFetchPartitionOffset>
     
     var topic: String {
         return _topicName.value ?? String()
@@ -184,10 +184,10 @@ class OffsetFetchTopicResponse: KafkaClass {
 
 
 class OffsetFetchPartitionOffset: KafkaClass {
-    fileprivate var _partition: KafkaInt32
-    fileprivate var _offset: KafkaInt64
-    fileprivate var _metadata: KafkaString
-    fileprivate var _errorCode: KafkaInt16
+    private var _partition: KafkaInt32
+    private var _offset: KafkaInt64
+    private var _metadata: KafkaString
+    private var _errorCode: KafkaInt16
     
     var error: KafkaErrorCode? {
         if _offset.value == -1 {

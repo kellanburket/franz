@@ -10,13 +10,13 @@ import Foundation
 
 class KafkaRequest: NSObject {
 
-    static fileprivate var _correlationIdIndex: Int32 = 0
+    static private var _correlationIdIndex: Int32 = 0
     
-    fileprivate var _apiKey: KafkaInt16
-    fileprivate var _apiVersion: KafkaInt16
-    fileprivate var _clientId: KafkaString?
-    fileprivate var _correlationId: KafkaInt32
-    fileprivate var value: KafkaClass?
+    private var _apiKey: KafkaInt16
+    private var _apiVersion: KafkaInt16
+    private var _clientId: KafkaString?
+    private var _correlationId: KafkaInt32
+    private var value: KafkaClass?
     
     var clientId: KafkaString {
         get {

@@ -36,11 +36,11 @@ class OffsetCommitRequest: KafkaRequest {
 
 class OffsetCommitRequestMessage: KafkaClass {
 
-    fileprivate var _consumerGroupId: KafkaString
-    fileprivate var _consumerGroupGenerationId: KafkaInt32
-    fileprivate var _consumerId: KafkaString
-    fileprivate var _retentionTime: KafkaInt64
-    fileprivate var _topics: KafkaArray<OffsetCommitTopic>
+    private var _consumerGroupId: KafkaString
+    private var _consumerGroupGenerationId: KafkaInt32
+    private var _consumerId: KafkaString
+    private var _retentionTime: KafkaInt64
+    private var _topics: KafkaArray<OffsetCommitTopic>
  
     init(
         consumerGroupId: String,
@@ -100,8 +100,8 @@ class OffsetCommitRequestMessage: KafkaClass {
 
 
 class OffsetCommitTopic: KafkaClass {
-    fileprivate var _topicName: KafkaString
-    fileprivate var _partitions: KafkaArray<OffsetCommitPartitionOffset>
+    private var _topicName: KafkaString
+    private var _partitions: KafkaArray<OffsetCommitPartitionOffset>
 
     init(topic: String, partitions: [Int32:(Int64, String?)]) {
         _topicName = KafkaString(value: topic)
@@ -135,9 +135,9 @@ class OffsetCommitTopic: KafkaClass {
 
 
 class OffsetCommitPartitionOffset: KafkaClass {
-    fileprivate var _partition: KafkaInt32
-    fileprivate var _offset: KafkaInt64
-    fileprivate var _metadata: KafkaString
+    private var _partition: KafkaInt32
+    private var _offset: KafkaInt64
+    private var _metadata: KafkaString
 
     init(partition: Int32, offset: Int64, metadata: String?) {
         _partition = KafkaInt32(value: partition)
@@ -173,7 +173,7 @@ class OffsetCommitPartitionOffset: KafkaClass {
 
 class OffsetCommitResponse: KafkaResponse {
     
-    fileprivate var _topics: KafkaArray<OffsetCommitTopicResponse>
+    private var _topics: KafkaArray<OffsetCommitTopicResponse>
     
     required init(bytes: inout [UInt8]) {
         _topics = KafkaArray(bytes: &bytes)
@@ -200,8 +200,8 @@ class OffsetCommitResponse: KafkaResponse {
 
 class OffsetCommitTopicResponse: KafkaClass {
     
-    fileprivate var _topicName: KafkaString
-    fileprivate var _partitions: KafkaArray<OffsetCommitPartitionResponse>
+    private var _topicName: KafkaString
+    private var _partitions: KafkaArray<OffsetCommitPartitionResponse>
     
     required init(bytes: inout [UInt8]) {
         _topicName = KafkaString(bytes: &bytes)
@@ -230,8 +230,8 @@ class OffsetCommitTopicResponse: KafkaClass {
 
 class OffsetCommitPartitionResponse: KafkaClass {
     
-    fileprivate var _partition: KafkaInt32
-    fileprivate var _errorCode: KafkaInt16
+    private var _partition: KafkaInt32
+    private var _errorCode: KafkaInt16
     
     var partition: Int32 {
         return _partition.value

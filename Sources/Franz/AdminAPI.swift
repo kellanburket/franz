@@ -17,8 +17,8 @@ class ListGroupsRequest: KafkaRequest {
 
 class ListGroupsResponse: KafkaResponse {
     
-    fileprivate var _errorCode: KafkaInt16
-    fileprivate var _groups: KafkaArray<ListedGroup>
+    private var _errorCode: KafkaInt16
+    private var _groups: KafkaArray<ListedGroup>
     
     var error: KafkaErrorCode? {
         return KafkaErrorCode(rawValue: _errorCode.value)
@@ -63,8 +63,8 @@ class ListGroupsResponse: KafkaResponse {
 
 
 class ListedGroup: KafkaClass {
-    fileprivate var _groupId: KafkaString
-    fileprivate var _protocolType: KafkaString
+    private var _groupId: KafkaString
+    private var _protocolType: KafkaString
     
     var id: String {
         return _groupId.value ?? String()
@@ -117,7 +117,7 @@ class DescribeGroupsRequest: KafkaRequest {
 
 
 class DescribeGroupsRequestMessage: KafkaClass {
-    fileprivate var _groupIds: KafkaArray<KafkaString>
+    private var _groupIds: KafkaArray<KafkaString>
     
     init(groupIds: [String]) {
         var values = [KafkaString]()
@@ -148,7 +148,7 @@ class DescribeGroupsRequestMessage: KafkaClass {
 
 
 class DescribeGroupsResponse: KafkaResponse {
-    fileprivate var _groups: KafkaArray<GroupStateResponse>
+    private var _groups: KafkaArray<GroupStateResponse>
     
     var states: [GroupStateResponse] {
         return _groups.values
@@ -177,12 +177,12 @@ class DescribeGroupsResponse: KafkaResponse {
 
 
 class GroupStateResponse: KafkaClass {
-    fileprivate var _errorCode: KafkaInt16
-    fileprivate var _groupId: KafkaString
-    fileprivate var _state: KafkaString
-    fileprivate var _protocolType: KafkaString
-    fileprivate var _protocol: KafkaString
-    fileprivate var _members: KafkaArray<GroupMemberResponse>
+    private var _errorCode: KafkaInt16
+    private var _groupId: KafkaString
+    private var _state: KafkaString
+    private var _protocolType: KafkaString
+    private var _protocol: KafkaString
+    private var _members: KafkaArray<GroupMemberResponse>
     
     var id: String? {
         return _groupId.value
@@ -262,11 +262,11 @@ class GroupStateResponse: KafkaClass {
 
 
 class GroupMemberResponse: KafkaClass {
-    fileprivate var _memberId: KafkaString
-    fileprivate var _clientId: KafkaString
-    fileprivate var _clientHost: KafkaString
-    fileprivate var _memberMetadata: KafkaBytes
-    fileprivate var _memberAssignment: KafkaBytes
+    private var _memberId: KafkaString
+    private var _clientId: KafkaString
+    private var _clientHost: KafkaString
+    private var _memberMetadata: KafkaBytes
+    private var _memberAssignment: KafkaBytes
     
     var memberId: String {
         return _memberId.value ?? String()

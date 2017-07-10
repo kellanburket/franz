@@ -31,31 +31,31 @@ enum ConnectionError: Error {
 
 class KafkaConnection: NSObject, StreamDelegate {
     
-    fileprivate var ipv4: String
+    private var ipv4: String
 
     var apiVersion: ApiVersion {
         return ApiVersion.defaultVersion
     }
 
-    fileprivate var _requestCallbacks = [Int32: RequestCallback]()
-    fileprivate var _broker: Broker
+    private var _requestCallbacks = [Int32: RequestCallback]()
+    private var _broker: Broker
     
-    fileprivate var clientId: String
+    private var clientId: String
     
-    fileprivate var readStream: Unmanaged<CFReadStream>?
-    fileprivate var writeStream: Unmanaged<CFWriteStream>?
+    private var readStream: Unmanaged<CFReadStream>?
+    private var writeStream: Unmanaged<CFWriteStream>?
 
-    fileprivate var inputStream: InputStream?
-    fileprivate var outputStream: OutputStream?
+    private var inputStream: InputStream?
+    private var outputStream: OutputStream?
     
-    fileprivate var port: Int32
+    private var port: Int32
     
-    fileprivate let responseLengthSize: Int32 = 4
-    fileprivate let responseCorrelationIdSize: Int32 = 4
+    private let responseLengthSize: Int32 = 4
+    private let responseCorrelationIdSize: Int32 = 4
 
-    fileprivate var _inputStreamQueue: DispatchQueue
-    fileprivate var _outputStreamQueue: DispatchQueue
-    fileprivate var _writeRequestBlocks = [()->()]()
+    private var _inputStreamQueue: DispatchQueue
+    private var _outputStreamQueue: DispatchQueue
+    private var _writeRequestBlocks = [()->()]()
     
     init(ipv4: String, port: Int32, broker: Broker, clientId: String) {
         self.ipv4 = ipv4
@@ -100,7 +100,7 @@ class KafkaConnection: NSObject, StreamDelegate {
         self.outputStream?.open()
     }
     
-    fileprivate func read(_ timeout: Double = 3000) {
+    private func read(_ timeout: Double = 3000) {
         //print("Read Block Added")
         _inputStreamQueue.async {
             //print("\tBeginning Input Stream Read")
@@ -189,7 +189,7 @@ class KafkaConnection: NSObject, StreamDelegate {
         }
     }
     
-    fileprivate func getMessageMetadata() throws -> (Int32, Int32) {
+    private func getMessageMetadata() throws -> (Int32, Int32) {
         if let activeInputStream = inputStream {
             let length = responseLengthSize + responseCorrelationIdSize
             var buffer = Array<UInt8>(repeating: 0, count: Int(length))

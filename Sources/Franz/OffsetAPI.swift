@@ -51,8 +51,8 @@ class OffsetRequest: KafkaRequest {
 
 class OffsetRequestMessage: KafkaClass {
     
-    fileprivate var _replicaId: KafkaInt32
-    fileprivate var _topics: KafkaArray<TopicalOffsetMessage>
+    private var _replicaId: KafkaInt32
+    private var _topics: KafkaArray<TopicalOffsetMessage>
     
     var replicaId: Int32 {
         return _replicaId.value
@@ -100,8 +100,8 @@ class OffsetRequestMessage: KafkaClass {
 
 
 class TopicalOffsetMessage: KafkaClass {
-    fileprivate var _topicName: KafkaString
-    fileprivate var _partitions: KafkaArray<PartitionedOffsetMessage>
+    private var _topicName: KafkaString
+    private var _partitions: KafkaArray<PartitionedOffsetMessage>
     
     var topicName: String {
         return _topicName.value ?? String()
@@ -151,9 +151,9 @@ class TopicalOffsetMessage: KafkaClass {
 
 
 class PartitionedOffsetMessage: KafkaClass {
-    fileprivate var _partition: KafkaInt32
-    fileprivate var _time: KafkaInt64
-    fileprivate var _maxNumberOfOffsets: KafkaInt32
+    private var _partition: KafkaInt32
+    private var _time: KafkaInt64
+    private var _maxNumberOfOffsets: KafkaInt32
     
     var partition: Int32 {
         return _partition.value
@@ -222,8 +222,8 @@ class OffsetResponse: KafkaResponse {
 
 
 class TopicalPartitionedOffsets: KafkaClass {
-    fileprivate var _topicName: KafkaString
-    fileprivate var _partitions: KafkaArray<PartitionedOffsets>
+    private var _topicName: KafkaString
+    private var _partitions: KafkaArray<PartitionedOffsets>
     
     var topicName: String {
         return _topicName.value ?? String()
@@ -262,9 +262,9 @@ class TopicalPartitionedOffsets: KafkaClass {
 
 
 class PartitionedOffsets: KafkaClass {
-    fileprivate var _partition: KafkaInt32
-    fileprivate var _errorCode: KafkaInt16
-    fileprivate var _offsets: KafkaArray<KafkaInt64>
+    private var _partition: KafkaInt32
+    private var _errorCode: KafkaInt16
+    private var _offsets: KafkaArray<KafkaInt64>
     
     var partition: Int32 {
         return _partition.value

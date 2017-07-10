@@ -17,41 +17,41 @@ public enum BrokerError: Error {
 class Broker: KafkaClass {
     var groupMembership = [String: GroupMembership]()
 
-    fileprivate var _nodeId: KafkaInt32
-    fileprivate var _host: KafkaString
-    fileprivate var _port: KafkaInt32
+    private var _nodeId: KafkaInt32
+    private var _host: KafkaString
+    private var _port: KafkaInt32
     
-    fileprivate var _readQueues = [Int32: DispatchQueue]()
+    private var _readQueues = [Int32: DispatchQueue]()
     
-	fileprivate lazy var _metadataReadQueue: DispatchQueue = {
+	private lazy var _metadataReadQueue: DispatchQueue = {
         return DispatchQueue(
             label: "metadata.read.stream.franz",
             attributes: []
         )
     }()
 
-    fileprivate lazy var _metadataWriteQueue: DispatchQueue = {
+    private lazy var _metadataWriteQueue: DispatchQueue = {
         return DispatchQueue(
             label: "metadata.write.stream.franz",
             attributes: []
         )
     }()
 
-    fileprivate lazy var _adminReadQueue: DispatchQueue = {
+    private lazy var _adminReadQueue: DispatchQueue = {
         return DispatchQueue(
             label: "admin.read.stream.franz",
             attributes: []
         )
     }()
 
-    fileprivate lazy var _groupCoordinationQueue: DispatchQueue = {
+    private lazy var _groupCoordinationQueue: DispatchQueue = {
         return DispatchQueue(
             label: "group.read.stream.franz",
             attributes: []
         )
     }()
 
-    fileprivate var _connection: KafkaConnection?
+    private var _connection: KafkaConnection?
 
     var nodeId: Int32 {
         get {
@@ -601,7 +601,7 @@ class Broker: KafkaClass {
         }
     }
     
-    fileprivate func getReadQueue(_ topic: String, partition: Int32) -> DispatchQueue {
+    private func getReadQueue(_ topic: String, partition: Int32) -> DispatchQueue {
         var readQueue: DispatchQueue
         if let pq = _readQueues[partition] {
             readQueue = pq
