@@ -51,8 +51,8 @@ class OffsetRequest: KafkaRequest {
 
 class OffsetRequestMessage: KafkaClass {
     
-    var _replicaId: KafkaInt32
-    var _topics: KafkaArray<TopicalOffsetMessage>
+    fileprivate var _replicaId: KafkaInt32
+    fileprivate var _topics: KafkaArray<TopicalOffsetMessage>
     
     var replicaId: Int32 {
         return _replicaId.value
@@ -100,8 +100,8 @@ class OffsetRequestMessage: KafkaClass {
 
 
 class TopicalOffsetMessage: KafkaClass {
-    var _topicName: KafkaString
-    var _partitions: KafkaArray<PartitionedOffsetMessage>
+    fileprivate var _topicName: KafkaString
+    fileprivate var _partitions: KafkaArray<PartitionedOffsetMessage>
     
     var topicName: String {
         return _topicName.value ?? String()
@@ -151,9 +151,9 @@ class TopicalOffsetMessage: KafkaClass {
 
 
 class PartitionedOffsetMessage: KafkaClass {
-    var _partition: KafkaInt32
-    var _time: KafkaInt64
-    var _maxNumberOfOffsets: KafkaInt32
+    fileprivate var _partition: KafkaInt32
+    fileprivate var _time: KafkaInt64
+    fileprivate var _maxNumberOfOffsets: KafkaInt32
     
     var partition: Int32 {
         return _partition.value
@@ -222,8 +222,8 @@ class OffsetResponse: KafkaResponse {
 
 
 class TopicalPartitionedOffsets: KafkaClass {
-    var _topicName: KafkaString
-    var _partitions: KafkaArray<PartitionedOffsets>
+    fileprivate var _topicName: KafkaString
+    fileprivate var _partitions: KafkaArray<PartitionedOffsets>
     
     var topicName: String {
         return _topicName.value ?? String()
@@ -262,9 +262,9 @@ class TopicalPartitionedOffsets: KafkaClass {
 
 
 class PartitionedOffsets: KafkaClass {
-    var _partition: KafkaInt32
-    var _errorCode: KafkaInt16
-    var _offsets: KafkaArray<KafkaInt64>
+    fileprivate var _partition: KafkaInt32
+    fileprivate var _errorCode: KafkaInt16
+    fileprivate var _offsets: KafkaArray<KafkaInt64>
     
     var partition: Int32 {
         return _partition.value

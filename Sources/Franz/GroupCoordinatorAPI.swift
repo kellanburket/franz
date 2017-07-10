@@ -23,7 +23,7 @@ class GroupCoordinatorRequest: KafkaRequest {
 
 class GroupCoordinatorRequestMessage: KafkaClass {
     
-    var _groupId: KafkaString
+    fileprivate var _groupId: KafkaString
     
     init(groupId: String) {
         _groupId = KafkaString(value: groupId)

@@ -97,8 +97,8 @@ class ProduceResponse: KafkaResponse {
 
 class TopicalResponse: KafkaClass {
     
-    var _topicName: KafkaString
-    var _partitions: KafkaArray<PartitionedResponse>
+    fileprivate var _topicName: KafkaString
+    fileprivate var _partitions: KafkaArray<PartitionedResponse>
     
     var topicName: String {
         return _topicName.value ?? String()
@@ -135,9 +135,9 @@ class TopicalResponse: KafkaClass {
 }
 
 class PartitionedResponse: KafkaClass {
-    var _partition: KafkaInt32
-    var _errorCode: KafkaInt16
-    var _offset: KafkaInt64
+    fileprivate var _partition: KafkaInt32
+    fileprivate var _errorCode: KafkaInt16
+    fileprivate var _offset: KafkaInt64
 
     required init(bytes: inout [UInt8]) {
         _partition = KafkaInt32(bytes: &bytes)

@@ -101,10 +101,10 @@ class FetchRequest: KafkaRequest {
 
 class FetchRequestMessage: KafkaClass {
 
-    var _replicaId: KafkaInt32
-    var _maxWaitTime: KafkaInt32
-    var _minBytes: KafkaInt32
-    var _topics: KafkaArray<TopicalFetchMessage>
+    fileprivate var _replicaId: KafkaInt32
+    fileprivate var _maxWaitTime: KafkaInt32
+    fileprivate var _minBytes: KafkaInt32
+    fileprivate var _topics: KafkaArray<TopicalFetchMessage>
 
     var replicaId: Int32 {
         return _replicaId.value
@@ -168,8 +168,8 @@ class FetchRequestMessage: KafkaClass {
 }
 
 class TopicalFetchMessage: KafkaClass {
-    var _topicName: KafkaString
-    var _partitions: KafkaArray<PartitionedFetchMessage>
+    fileprivate var _topicName: KafkaString
+    fileprivate var _partitions: KafkaArray<PartitionedFetchMessage>
 
     var topicName: String {
         return _topicName.value ?? String()
@@ -215,9 +215,9 @@ class TopicalFetchMessage: KafkaClass {
 }
 
 class PartitionedFetchMessage: KafkaClass {
-    var _partition: KafkaInt32
-    var _fetchOffset: KafkaInt64
-    var _maxBytes: KafkaInt32 = KafkaInt32(value: 6400)
+    fileprivate var _partition: KafkaInt32
+    fileprivate var _fetchOffset: KafkaInt64
+    fileprivate var _maxBytes: KafkaInt32 = KafkaInt32(value: 6400)
     
     var partition: Int32 {
         return _partition.value
@@ -268,7 +268,7 @@ class PartitionedFetchMessage: KafkaClass {
 
 class FetchResponse: KafkaResponse {
     
-    var _topics: KafkaArray<TopicalFetchResponse>
+    fileprivate var _topics: KafkaArray<TopicalFetchResponse>
     
 	required init( bytes: inout [UInt8]) {
         _topics = KafkaArray(bytes: &bytes)
@@ -286,8 +286,8 @@ class FetchResponse: KafkaResponse {
 
 
 class TopicalFetchResponse: KafkaClass {
-    var _topicName: KafkaString
-    var _partitions: KafkaArray<PartitionedFetchResponse>
+    fileprivate var _topicName: KafkaString
+    fileprivate var _partitions: KafkaArray<PartitionedFetchResponse>
     
     var topicName: String {
         return _topicName.value ?? String()
@@ -324,11 +324,11 @@ class TopicalFetchResponse: KafkaClass {
 
 class PartitionedFetchResponse: KafkaClass {
 
-    var _partition: KafkaInt32
-    var _errorCode: KafkaInt16
-    var _highwaterMarkOffset: KafkaInt64
-    var _messageSetSize: KafkaInt32
-    var _messageSet: MessageSet
+    fileprivate var _partition: KafkaInt32
+    fileprivate var _errorCode: KafkaInt16
+    fileprivate var _highwaterMarkOffset: KafkaInt64
+    fileprivate var _messageSetSize: KafkaInt32
+    fileprivate var _messageSet: MessageSet
     
     var partition: Int32 {
         return _partition.value

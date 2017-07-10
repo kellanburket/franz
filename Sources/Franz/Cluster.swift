@@ -28,10 +28,10 @@ public enum ClusterError: Error {
 */
 open class Cluster {
 
-    var _brokers = [String: Broker]()
-    var _batches = [String: [Int32: [MessageSetItem]]]()
-    var _clientId: String
-    var _nodeId: ReplicaId
+    fileprivate var _brokers = [String: Broker]()
+    fileprivate var _batches = [String: [Int32: [MessageSetItem]]]()
+    fileprivate var _clientId: String
+    fileprivate var _nodeId: ReplicaId
     
     /*
         User-defined Client ID set at start up.
@@ -319,7 +319,7 @@ open class Cluster {
         }
     }
     
-    func findTopicLeader(
+    fileprivate func findTopicLeader(
         _ topic: String,
         partition: Int32,
         _ callback: @escaping (Broker) -> (),
@@ -373,7 +373,7 @@ open class Cluster {
             }
     }
     
-    func doAdminRequest(_ request: KafkaRequest, _ callback: @escaping ([UInt8]) -> ()) {
+    fileprivate func doAdminRequest(_ request: KafkaRequest, _ callback: @escaping ([UInt8]) -> ()) {
         var dispatchBlocks = [()->()]()
         for (_, broker) in _brokers {
 			let dispatchBlock = DispatchWorkItem(qos: .unspecified, flags: []) {
@@ -388,7 +388,7 @@ open class Cluster {
         }
     }
 
-    func getGroupCoordinator(_ id: String, callback: @escaping (Broker) -> ()) {
+    fileprivate func getGroupCoordinator(_ id: String, callback: @escaping (Broker) -> ()) {
         doAdminRequest(GroupCoordinatorRequest(id: id)) { bytes in
             var mutableBytes = bytes
             let response = GroupCoordinatorResponse(bytes: &mutableBytes)

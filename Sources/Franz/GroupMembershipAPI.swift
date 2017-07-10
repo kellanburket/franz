@@ -36,11 +36,11 @@ class GroupMembershipRequest<T: KafkaMetadata>: KafkaRequest {
 
 class JoinGroupRequestMessage<T: KafkaMetadata>: KafkaClass {
     
-    var _groupId: KafkaString
-    var _sessionTimeout: KafkaInt32
-    var _memberId: KafkaString
-    var _protocolType: KafkaString
-    var _groupProtocols: KafkaArray<JoinGroupProtocol<T>>
+    fileprivate var _groupId: KafkaString
+    fileprivate var _sessionTimeout: KafkaInt32
+    fileprivate var _memberId: KafkaString
+    fileprivate var _protocolType: KafkaString
+    fileprivate var _groupProtocols: KafkaArray<JoinGroupProtocol<T>>
     
     init(
         groupId: String,
@@ -109,8 +109,8 @@ class JoinGroupRequestMessage<T: KafkaMetadata>: KafkaClass {
 }
 
 class JoinGroupProtocol<T: KafkaMetadata>: KafkaClass {
-    var _protocolName: KafkaString
-    var _protocolMetadata: T
+    fileprivate var _protocolName: KafkaString
+    fileprivate var _protocolMetadata: T
 
     init(name: String, metadata: T) {
         _protocolName = KafkaString(value: name)
@@ -146,9 +146,9 @@ class JoinGroupProtocol<T: KafkaMetadata>: KafkaClass {
 
 class ConsumerGroupMetadata: KafkaMetadata {
     
-    var _version: KafkaInt16
-    var _subscription: KafkaArray<KafkaString>
-    var _userData: KafkaBytes
+    fileprivate var _version: KafkaInt16
+    fileprivate var _subscription: KafkaArray<KafkaString>
+    fileprivate var _userData: KafkaBytes
     
     static var protocolType: GroupProtocol {
         return GroupProtocol.consumer
@@ -189,7 +189,7 @@ class ConsumerGroupMetadata: KafkaMetadata {
             self._userData.length
     }()
     
-    lazy var sizeData: Data = {
+    fileprivate lazy var sizeData: Data = {
         return (Int32(self.valueDataLength).data)
     }()
     
@@ -215,12 +215,12 @@ class ConsumerGroupMetadata: KafkaMetadata {
 
 class JoinGroupResponse: KafkaResponse {
     
-    var _errorCode: KafkaInt16
-    var _generationId: KafkaInt32
-    var _groupProtocol: KafkaString
-    var _leaderId: KafkaString
-    var _memberId: KafkaString
-    var _members: KafkaArray<Member>
+    fileprivate var _errorCode: KafkaInt16
+    fileprivate var _generationId: KafkaInt32
+    fileprivate var _groupProtocol: KafkaString
+    fileprivate var _leaderId: KafkaString
+    fileprivate var _memberId: KafkaString
+    fileprivate var _members: KafkaArray<Member>
     
     var error: KafkaErrorCode? {
         return KafkaErrorCode(rawValue: _errorCode.value)
@@ -275,8 +275,8 @@ class JoinGroupResponse: KafkaResponse {
 }
 
 class Member: KafkaClass {
-    var _memberName: KafkaString
-    var _memberMetadata: KafkaBytes
+    fileprivate var _memberName: KafkaString
+    fileprivate var _memberMetadata: KafkaBytes
     
     var name: String {
         return _memberName.value ?? String()
@@ -334,9 +334,9 @@ class SyncGroupRequest<T: KafkaMetadata>: KafkaRequest {
 }
 
 class GroupMemberAssignment: KafkaMetadata {
-    var _version: KafkaInt16
-    var _partitionAssignment: KafkaArray<PartitionAssignment>
-    var _userData: KafkaBytes
+    fileprivate var _version: KafkaInt16
+    fileprivate var _partitionAssignment: KafkaArray<PartitionAssignment>
+    fileprivate var _userData: KafkaBytes
 
     static var protocolType: GroupProtocol {
         return GroupProtocol.consumer
@@ -386,8 +386,8 @@ class GroupMemberAssignment: KafkaMetadata {
 }
 
 class PartitionAssignment: KafkaClass {
-    var _topic: KafkaString
-    var _partitions: KafkaArray<KafkaInt32>
+    fileprivate var _topic: KafkaString
+    fileprivate var _partitions: KafkaArray<KafkaInt32>
     
     init(topic: String, partitions: [Int32]) {
         _topic = KafkaString(value: topic)
@@ -424,10 +424,10 @@ class PartitionAssignment: KafkaClass {
 
 class SyncGroupRequestMessage<T: KafkaMetadata>: KafkaClass {
     
-    var _groupId: KafkaString
-    var _generationId: KafkaInt32
-    var _memberId: KafkaString
-    var _groupAssignment: KafkaArray<T>
+    fileprivate var _groupId: KafkaString
+    fileprivate var _generationId: KafkaInt32
+    fileprivate var _memberId: KafkaString
+    fileprivate var _groupAssignment: KafkaArray<T>
 
     init(
         groupId: String,
@@ -476,8 +476,8 @@ class SyncGroupRequestMessage<T: KafkaMetadata>: KafkaClass {
 
 class SyncGroupResponse<T: KafkaMetadata>: KafkaResponse {
     
-    var _errorCode: KafkaInt16
-    var _memberAssignment: T
+    fileprivate var _errorCode: KafkaInt16
+    fileprivate var _memberAssignment: T
     
     required init(bytes: inout [UInt8]) {
         _errorCode = KafkaInt16(bytes: &bytes)
@@ -530,9 +530,9 @@ class HeartbeatRequest: KafkaRequest {
 
 class HeartbeatRequestMessage: KafkaClass {
     
-    var _groupId: KafkaString
-    var _generationId: KafkaInt32
-    var _memberId: KafkaString
+    fileprivate var _groupId: KafkaString
+    fileprivate var _generationId: KafkaInt32
+    fileprivate var _memberId: KafkaString
 
     init(groupId: String, generationId: Int32, memberId: String) {
         _groupId = KafkaString(value: groupId)
@@ -572,7 +572,7 @@ class HeartbeatRequestMessage: KafkaClass {
 
 class HeartbeatResponse: KafkaResponse {
     
-    var _errorCode: KafkaInt16
+    fileprivate var _errorCode: KafkaInt16
     
     required init(bytes: inout [UInt8]) {
         _errorCode = KafkaInt16(bytes: &bytes)
@@ -618,8 +618,8 @@ class LeaveGroupRequest: KafkaRequest {
 
 
 class LeaveGroupRequestMessage: KafkaClass {
-    var _groupId: KafkaString
-    var _memberId: KafkaString
+    fileprivate var _groupId: KafkaString
+    fileprivate var _memberId: KafkaString
     
     init(groupId: String, memberId: String) {
         _groupId = KafkaString(value: groupId)
@@ -655,7 +655,7 @@ class LeaveGroupRequestMessage: KafkaClass {
 
 class LeaveGroupResponse: KafkaResponse {
     
-    var _errorCode: KafkaInt16
+    fileprivate var _errorCode: KafkaInt16
     
     required init(bytes: inout [UInt8]) {
         _errorCode = KafkaInt16(bytes: &bytes)

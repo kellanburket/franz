@@ -17,8 +17,8 @@ class ListGroupsRequest: KafkaRequest {
 
 class ListGroupsResponse: KafkaResponse {
     
-    var _errorCode: KafkaInt16
-    var _groups: KafkaArray<ListedGroup>
+    fileprivate var _errorCode: KafkaInt16
+    fileprivate var _groups: KafkaArray<ListedGroup>
     
     var error: KafkaErrorCode? {
         return KafkaErrorCode(rawValue: _errorCode.value)
@@ -63,8 +63,8 @@ class ListGroupsResponse: KafkaResponse {
 
 
 class ListedGroup: KafkaClass {
-    var _groupId: KafkaString
-    var _protocolType: KafkaString
+    fileprivate var _groupId: KafkaString
+    fileprivate var _protocolType: KafkaString
     
     var id: String {
         return _groupId.value ?? String()
@@ -117,7 +117,7 @@ class DescribeGroupsRequest: KafkaRequest {
 
 
 class DescribeGroupsRequestMessage: KafkaClass {
-    var _groupIds: KafkaArray<KafkaString>
+    fileprivate var _groupIds: KafkaArray<KafkaString>
     
     init(groupIds: [String]) {
         var values = [KafkaString]()
@@ -148,7 +148,7 @@ class DescribeGroupsRequestMessage: KafkaClass {
 
 
 class DescribeGroupsResponse: KafkaResponse {
-    var _groups: KafkaArray<GroupStateResponse>
+    fileprivate var _groups: KafkaArray<GroupStateResponse>
     
     var states: [GroupStateResponse] {
         return _groups.values
@@ -177,12 +177,12 @@ class DescribeGroupsResponse: KafkaResponse {
 
 
 class GroupStateResponse: KafkaClass {
-    var _errorCode: KafkaInt16
-    var _groupId: KafkaString
-    var _state: KafkaString
-    var _protocolType: KafkaString
-    var _protocol: KafkaString
-    var _members: KafkaArray<GroupMemberResponse>
+    fileprivate var _errorCode: KafkaInt16
+    fileprivate var _groupId: KafkaString
+    fileprivate var _state: KafkaString
+    fileprivate var _protocolType: KafkaString
+    fileprivate var _protocol: KafkaString
+    fileprivate var _members: KafkaArray<GroupMemberResponse>
     
     var id: String? {
         return _groupId.value
@@ -262,11 +262,11 @@ class GroupStateResponse: KafkaClass {
 
 
 class GroupMemberResponse: KafkaClass {
-    var _memberId: KafkaString
-    var _clientId: KafkaString
-    var _clientHost: KafkaString
-    var _memberMetadata: KafkaBytes
-    var _memberAssignment: KafkaBytes
+    fileprivate var _memberId: KafkaString
+    fileprivate var _clientId: KafkaString
+    fileprivate var _clientHost: KafkaString
+    fileprivate var _memberMetadata: KafkaBytes
+    fileprivate var _memberAssignment: KafkaBytes
     
     var memberId: String {
         return _memberId.value ?? String()
