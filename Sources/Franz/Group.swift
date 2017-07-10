@@ -12,12 +12,12 @@ import Foundation
     Base class for all Client Groups.
 */
 open class Group {
-    private var _broker: Broker
-    private var _clientId: String
-    private var _groupProtocol: GroupProtocol
-    private var _groupId: String
-    private var _generationId: Int32
-    private var _version: ApiVersion = ApiVersion.defaultVersion
+    fileprivate var _broker: Broker
+    fileprivate var _clientId: String
+    fileprivate var _groupProtocol: GroupProtocol
+    fileprivate var _groupId: String
+    fileprivate var _generationId: Int32
+    fileprivate var _version: ApiVersion = ApiVersion.defaultVersion
 
     private var _state: GroupState?
 

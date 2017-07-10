@@ -139,7 +139,7 @@ func ==(lhs: CRC32, rhs: CRC32) -> Bool {
 }
 
 final class CRC32: Hashable {
-    private var initialized = false
+    fileprivate var initialized = false
     private(set) var crc: UInt32 = 0
     
     var hashValue: Int {

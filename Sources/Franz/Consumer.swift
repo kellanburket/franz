@@ -12,7 +12,7 @@ import Foundation
     Base consumer delegate. Used by SimpleConsumer.
 */
 @objc public protocol ConsumerDelegate {
-    /**g
+    /**
         Called when the consumer has consumed a new Message
      
         - Parameter message:  the returned message
@@ -138,9 +138,9 @@ import Foundation
 open class Consumer: NSObject {
     internal var broker: Broker?
 
-    private var _topic: String
-    private var _partition: Int32
-    private var _clientId: String
+    fileprivate var _topic: String
+    fileprivate var _partition: Int32
+    fileprivate var _clientId: String
     
     internal init(topic: String, partition: Int32, clientId: String) {
         self._topic = topic
