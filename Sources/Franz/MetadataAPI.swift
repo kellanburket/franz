@@ -62,8 +62,8 @@ class TopicMetadataRequestMessage: KafkaClass {
 
 class MetadataResponse: KafkaResponse {
     
-    fileprivate var _metadataBrokers: KafkaArray<Broker>
-    fileprivate var _topicMetadata: KafkaArray<KafkaTopic>
+    var _metadataBrokers: KafkaArray<Broker>
+    var _topicMetadata: KafkaArray<KafkaTopic>
     
     var brokers: [Int32: Broker] {
         var values = [Int32: Broker]()

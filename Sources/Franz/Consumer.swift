@@ -138,9 +138,9 @@ import Foundation
 open class Consumer: NSObject {
     internal var broker: Broker?
 
-    fileprivate var _topic: String
-    fileprivate var _partition: Int32
-    fileprivate var _clientId: String
+    var _topic: String
+    var _partition: Int32
+    var _clientId: String
     
     internal init(topic: String, partition: Int32, clientId: String) {
         self._topic = topic

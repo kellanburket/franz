@@ -10,8 +10,8 @@ import Foundation
 
 
 open class Topic: NSObject {
-    fileprivate var _name: String
-    fileprivate var _partitions: [Int32]
+    var _name: String
+    var _partitions: [Int32]
     
     open var name: String {
         return _name
@@ -28,9 +28,9 @@ open class Topic: NSObject {
 }
 
 internal class KafkaTopic: KafkaClass {
-    fileprivate var _errorCode: KafkaInt16
-    fileprivate var _topicName: KafkaString
-    fileprivate var _partitionMetadata: KafkaArray<Partition>
+    var _errorCode: KafkaInt16
+    var _topicName: KafkaString
+    var _partitionMetadata: KafkaArray<Partition>
     
     var error: KafkaErrorCode? {
         if let error = KafkaErrorCode(rawValue: _errorCode.value) {

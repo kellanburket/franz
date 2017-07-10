@@ -13,11 +13,11 @@ import Foundation
  */
 class RegExp {
     
-    fileprivate var pattern: String = ""
-    fileprivate var replacement: String = ""
-    fileprivate var options: UInt = 0
-    fileprivate var mOptions: UInt = 0
-    fileprivate var regExp: NSRegularExpression?
+    var pattern: String = ""
+    var replacement: String = ""
+    var options: UInt = 0
+    var mOptions: UInt = 0
+    var regExp: NSRegularExpression?
     
     /**
      Initialize a new Regular Expression object with a pattern and options. The following flags are permitted:
@@ -127,7 +127,7 @@ class RegExp {
         }
     }
     
-    fileprivate func getAllMatches(_ input: String, reverse: Bool,  onMatch: (NSTextCheckingResult, Int) -> Void) {
+    func getAllMatches(_ input: String, reverse: Bool,  onMatch: (NSTextCheckingResult, Int) -> Void) {
         if let regExp = doRegExp() {
             var results = regExp.matches(
                 in: input,
@@ -145,7 +145,7 @@ class RegExp {
         }
     }
     
-    fileprivate func getFirstMatch(_ input: String, onMatch: (NSTextCheckingResult) -> Void) {
+    func getFirstMatch(_ input: String, onMatch: (NSTextCheckingResult) -> Void) {
         if let regExp = doRegExp() {
             
             let range = makeRange(input)
@@ -162,11 +162,11 @@ class RegExp {
         }
     }
     
-    fileprivate func getMatches(_ input: String, onMatch: (NSTextCheckingResult, Int) -> Void) {
+    func getMatches(_ input: String, onMatch: (NSTextCheckingResult, Int) -> Void) {
         getAllMatches(input, reverse: false, onMatch: onMatch)
     }
     
-    fileprivate func getReverseMatches(_ input: String, onMatch: (NSTextCheckingResult, Int) -> Void) {
+    func getReverseMatches(_ input: String, onMatch: (NSTextCheckingResult, Int) -> Void) {
         getAllMatches(input, reverse: true, onMatch: onMatch)
     }
     
@@ -259,7 +259,7 @@ class RegExp {
     }
     
     /* Utility functions for finding substring ranges */
-    fileprivate func makeRange(_ input: String) -> NSRange {
+    func makeRange(_ input: String) -> NSRange {
         let capacity = input.utf16.count
         return NSMakeRange(0, capacity)
     }
@@ -302,7 +302,7 @@ class RegExp {
     }
     
     ///TODO: Find out what these do and use them or don't
-    fileprivate func setMatchingOptions(_ flags: String) -> UInt {
+    func setMatchingOptions(_ flags: String) -> UInt {
         /*
         NSMatchingOptions.ReportProgress
         NSMatchingOptions.ReportCompletion
@@ -314,7 +314,7 @@ class RegExp {
         return mOptions
     }
     
-    fileprivate func setOptions(_ flags: String) {
+    func setOptions(_ flags: String) {
         var options: UInt = 0
         
         for character in flags.characters {
@@ -341,11 +341,11 @@ class RegExp {
         self.options = options
     }
     
-	fileprivate func removeLinebreaks( _ input: inout String) {
+	func removeLinebreaks( _ input: inout String) {
 		input = input.replacingOccurrences(of: "\r\n", with: "\n", options: [.literal], range: nil)
     }
     
-    fileprivate func doRegExp() -> NSRegularExpression? {
+    func doRegExp() -> NSRegularExpression? {
         
         var error: NSError?
         

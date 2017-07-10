@@ -9,11 +9,11 @@
 import Foundation
 
 class Partition: KafkaClass {
-    fileprivate var _partitionErrorCode: KafkaInt16
-    fileprivate var _partitionId: KafkaInt32
-    fileprivate var _leader: KafkaInt32
-    fileprivate var _replicas: KafkaArray<KafkaInt32>
-    fileprivate var _isr: KafkaArray<KafkaInt32>
+    var _partitionErrorCode: KafkaInt16
+    var _partitionId: KafkaInt32
+    var _leader: KafkaInt32
+    var _replicas: KafkaArray<KafkaInt32>
+    var _isr: KafkaArray<KafkaInt32>
 
     var error: KafkaErrorCode? {
         if let error = KafkaErrorCode(rawValue: _partitionErrorCode.value) {

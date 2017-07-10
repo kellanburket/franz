@@ -10,7 +10,7 @@ import Foundation
 
 
 class MessageSet: KafkaClass {
-    fileprivate var _values: [MessageSetItem]
+    var _values: [MessageSetItem]
     
     var messages: [Message] {
         var messages = [Message]()
@@ -137,11 +137,11 @@ class MessageSetItem: KafkaClass {
 }
 
 class KafkaMessage: KafkaClass {
-    fileprivate var _key: KafkaBytes
-    fileprivate var _value: KafkaBytes
-    fileprivate var _magicByte: KafkaInt8
-    fileprivate var _attributes: KafkaInt8
-    fileprivate var _crc: KafkaUInt32! = nil
+    var _key: KafkaBytes
+    var _value: KafkaBytes
+    var _magicByte: KafkaInt8
+    var _attributes: KafkaInt8
+    var _crc: KafkaUInt32! = nil
     
     /**
         Message data
@@ -237,8 +237,8 @@ class KafkaMessage: KafkaClass {
     A Message pulled from the Kafka Server
 */
 open class Message: NSObject {
-    fileprivate var _key: Data?
-    fileprivate var _value: Data
+    var _key: Data?
+    var _value: Data
     
     /**
         Message data
