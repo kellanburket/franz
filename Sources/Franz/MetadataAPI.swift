@@ -83,7 +83,7 @@ class MetadataResponse: KafkaResponse {
         return values
     }
     
-    override var description: String {
+    var description: String {
         var description = "BROKERS:\n"
         for (_, broker) in brokers {
             description += "-----------\n\(broker.description)\n"
@@ -100,6 +100,5 @@ class MetadataResponse: KafkaResponse {
     required init(bytes: inout [UInt8]) {
         _metadataBrokers = KafkaArray<Broker>(bytes: &bytes)
         _topicMetadata = KafkaArray<KafkaTopic>(bytes: &bytes)
-        super.init(bytes: &bytes)
     }
 }

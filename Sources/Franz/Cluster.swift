@@ -46,7 +46,20 @@ open class Cluster {
             attributes: []
         )
     }()
-    
+	
+	///Used for swapping in fake brokers during testing
+	internal var brokers: [Broker] {
+		get {
+			return Array(_brokers.values)
+		}
+		set {
+			_brokers = [String: Broker]()
+			for broker in newValue {
+				_brokers["\(broker.ipv4):\(broker.port)"] = broker
+			}
+		}
+	}
+	
     /*
         Initialize brokers
     
@@ -136,6 +149,12 @@ open class Cluster {
             throw ClusterError.noBatchForTopicPartition(topic: topic, partition: partition)
         }
     }
+	
+	var targetTopics = Set<String>()
+	
+	func addTargetTopics(topics: [String]) {
+		targetTopics.formUnion(topics)
+	}
 
     /**
         List all available topics
@@ -143,19 +162,17 @@ open class Cluster {
         - Parameter callback:
      */
     open func listTopics(_ callback: @escaping ([Topic]) -> ()) {
-        doAdminRequest(TopicMetadataRequest()) { bytes in
-            var mutableBytes = bytes
-            let response = MetadataResponse(bytes: &mutableBytes)
-            var topics = [Topic]()
-            for (name, topic) in response.topics {
-                var partitions = [Int32]()
-                for (partition, _) in topic.partitions {
-                    partitions.append(partition)
-                }
-                topics.append(Topic(name: name, partitions: partitions))
-            }
-            callback(topics)
-        }
+		_brokers.first?.value.getTopicMetadata(topics: Array(targetTopics), clientId: clientId) { response in
+			var topics = [Topic]()
+			for (name, topic) in response.topics {
+				var partitions = [PartitionId]()
+				for (partition, _) in topic.partitions {
+					partitions.append(partition)
+				}
+				topics.append(Topic(name: name, partitions: partitions))
+			}
+			callback(topics)
+		}
     }
 
     /**
@@ -171,8 +188,7 @@ open class Cluster {
         callback: @escaping ([Int64]) -> ()
     ) {
         findTopicLeader(topic, partition: partition, { leader in
-            leader.getOffsets(
-                topic,
+			leader.getOffsets(for: topic,
                 partition: partition,
                 clientId: self.clientId,
                 callback: callback
@@ -221,7 +237,7 @@ open class Cluster {
     open func listGroups(_ callback: @escaping (String, String) -> ()) {
         for (_, broker) in _brokers {
             dispatchQueue.async {
-                broker.listGroups(self.clientId) { a, b in
+				broker.listGroups(clientId: self.clientId) { a, b in
                     callback(a, b)
                 }
             }
@@ -237,7 +253,8 @@ open class Cluster {
 
         - Returns: an uninitialized Simple Consumer
      */
-    open func getSimpleConsumer(
+	@available(*, deprecated, message: "Use getConsumer instead")
+    public func getSimpleConsumer(
         _ topic: String,
         partition: Int32,
         delegate: ConsumerDelegate
@@ -270,7 +287,8 @@ open class Cluster {
 
         - Returns: an unitialized HighLevelConsumer
      */
-    open func getHighLevelConsumer(
+	@available(*, deprecated, message: "Use getConsumer instead")
+    public func getHighLevelConsumer(
         _ topic: String,
         partition: Int32,
         groupId: String,
@@ -283,37 +301,54 @@ open class Cluster {
             delegate: delegate
         )
         
-        joinGroup(groupId, topic: topic, { broker, membership in
-            consumer.broker = broker
-            consumer.membership = membership
-
-            membership.group.getState { groupId, state in
-                switch state {
-                case .AwaitingSync:
-                    membership.sync([topic: [partition]], data: Data()) {
-                        consumer.delegate.consumerIsReady(consumer)
-                    }
-                case .Stable:
-                    consumer.delegate.consumerIsReady(consumer)
-                default:
-                    print("State of Group is: \(state)")
-                }
-            }
-        }, { error in
+		joinGroup(id: groupId, topics: [topic], callback: { broker, membership in
+			consumer.broker = broker
+			consumer.membership = membership
+			
+			membership.group.getState { groupId, state in
+				switch state {
+				case .AwaitingSync:
+					self.assignRoundRobin(members: membership.members.map { $0.memberId }, topics: [topic]) { assignments in
+						membership.sync(assignments[membership.memberId]!, data: Data()) {
+							consumer.delegate.consumerIsReady(consumer)
+						}
+					}
+				case .Stable:
+					consumer.delegate.consumerIsReady(consumer)
+				default:
+					print("State of Group is: \(state)")
+				}
+			}
+		}, error: { error in
             consumer.delegate.topicPartitionLeaderNotFound?(topic, partition: partition)
         })
         
         return consumer
     }
+	
+	public func getConsumer(topics: [TopicName], groupId: String) -> Consumer {
+		let consumer = Consumer(cluster: self, groupId: groupId)
+		joinGroup(id: groupId, topics: topics, callback: { broker, membership in
+			consumer.broker = broker
+			consumer.membership = membership
+			consumer.joinedGroupSemaphore.signal()
+			membership.group.getState { groupId, state in
+				if state == GroupState.AwaitingSync {
+					self.assignRoundRobin(members: membership.members.map { $0.memberId }, topics: topics) { assignments in
+						membership.sync(assignments[membership.memberId]!, data: Data()) {}
+					}
+				}
+			}
+		}, error: { error in
+			
+		})
+		return consumer
+	}
     
-    internal func joinGroup(
-        _ id: String,
-        topic: String,
-        _ callback: @escaping (Broker, GroupMembership) -> (),
-        _ error: (KafkaErrorCode) -> ()
+    internal func joinGroup(id: String, topics: [TopicName], callback: @escaping (Broker, GroupMembership) -> (), error: (KafkaErrorCode) -> ()
     ) {
-        getGroupCoordinator(id) { broker in
-            broker.joinGroup(id, subscription: [topic], clientId: self.clientId) { groupMembership in
+		getGroupCoordinator(groupId: id) { broker in
+			broker.join(groupId: id, subscription: topics, clientId: self.clientId) { groupMembership in
                 callback(broker, groupMembership)
             }
         }
@@ -324,84 +359,69 @@ open class Cluster {
         partition: Int32,
         _ callback: @escaping (Broker) -> (),
         _ error: @escaping (Error) -> ()
-        ) {
-            var dispatchBlocks = [()->()]()
-            
-            for (_, broker) in _brokers {
-				let dispatchBlock = DispatchWorkItem(qos: .unspecified, flags: []) {
-                    let connection = broker.connect(self.clientId)
-                    let topicMetadataRequest = TopicMetadataRequest(topic: topic)
-                    //print(topicMetadataRequest.description)
-                    connection.write(topicMetadataRequest) { bytes in
-                        var mutableBytes = bytes
-                        let response = MetadataResponse(bytes: &mutableBytes)
-                        if let topicObj = response.topics[topic] {
-                            if let partitionObj = topicObj.partitions[partition] {
-                                if partitionObj.leader == -1 {
-                                    error(ClusterError.leaderNotFound(topic: topic, partition: partition))
-                                    return
-                                } else if let leader = response.brokers[partitionObj.leader] {
-                                    if let broker = self._brokers["\(leader.host):\(leader.port)"] {
-                                        broker.nodeId = leader.nodeId
-                                        callback(broker)
-                                        return
-                                    } else {
-                                        self._brokers["\(leader.host):\(leader.port)"] = leader
-                                        callback(leader)
-                                        return
-                                    }
-                                } else {
-                                    error(ClusterError.noLeaderFoundInResponseData)
-                                }
-                            } else {
-                                error(ClusterError.noPartitionFoundInCluster(partition: partition))
-                            }
-                        } else {
-                            error(ClusterError.noTopicFoundInCluster(topic: topic))
-                        }
-                        
-                        if dispatchBlocks.count > 0 {
-                            self.dispatchQueue.async(execute: dispatchBlocks.removeFirst())
-                        }
-                    }
-                }
-                dispatchBlocks.append(dispatchBlock.perform)
-            }
-            
-            if dispatchBlocks.count > 0 {
-                dispatchQueue.async(execute: dispatchBlocks.removeFirst())
-            }
-    }
-    
-    private func doAdminRequest(_ request: KafkaRequest, _ callback: @escaping ([UInt8]) -> ()) {
-        var dispatchBlocks = [()->()]()
-        for (_, broker) in _brokers {
+		) {
+		var dispatchBlocks = [()->()]()
+		
+		for (_, broker) in _brokers {
 			let dispatchBlock = DispatchWorkItem(qos: .unspecified, flags: []) {
-                let connection = broker.connect(self.clientId)
-                connection.write(request, callback: callback)
-            }
-            dispatchBlocks.append(dispatchBlock.perform)
-        }
-        
-        if dispatchBlocks.count > 0 {
-            dispatchQueue.async(execute: dispatchBlocks.removeFirst())
-        }
-    }
-
-    private func getGroupCoordinator(_ id: String, callback: @escaping (Broker) -> ()) {
-        doAdminRequest(GroupCoordinatorRequest(id: id)) { bytes in
-            var mutableBytes = bytes
-            let response = GroupCoordinatorResponse(bytes: &mutableBytes)
-            //print(response.description)
-            
-            let host = response.host
-            let port = response.port
-            
-            if let broker = self._brokers["\(host):\(port)"] {
-                callback(broker)
-            } else {
-                print("Broker: \(host):\(port) Not Found.")
-            }
-        }
-    }
+				
+				broker.getTopicMetadata(topics: [topic], clientId: self.clientId) { response in
+					if let topicObj = response.topics[topic] {
+						if let partitionObj = topicObj.partitions[partition] {
+							if partitionObj.leader == -1 {
+								error(ClusterError.leaderNotFound(topic: topic, partition: partition))
+								return
+							} else if let leader = response.brokers[partitionObj.leader] {
+								if let broker = self._brokers["\(leader.host):\(leader.port)"] {
+									broker.nodeId = leader.nodeId
+									callback(broker)
+									return
+								} else {
+									self._brokers["\(leader.host):\(leader.port)"] = leader
+									callback(leader)
+									return
+								}
+							} else {
+								error(ClusterError.noLeaderFoundInResponseData)
+							}
+						} else {
+							error(ClusterError.noPartitionFoundInCluster(partition: partition))
+						}
+					} else {
+						error(ClusterError.noTopicFoundInCluster(topic: topic))
+					}
+					
+					if dispatchBlocks.count > 0 {
+						self.dispatchQueue.async(execute: dispatchBlocks.removeFirst())
+					}
+				}
+				
+			}
+			dispatchBlocks.append(dispatchBlock.perform)
+		}
+		
+		if dispatchBlocks.count > 0 {
+			dispatchQueue.async(execute: dispatchBlocks.removeFirst())
+		}
+	}
+	
+	func getGroupCoordinator(groupId: String, callback: @escaping (Broker) -> Void) {
+		_brokers.first?.value.getGroupCoordinator(groupId: groupId, clientId: clientId) { response in
+			let host = response.host
+			let port = response.port
+			
+			if let broker = self._brokers["\(host):\(port)"] {
+				callback(broker)
+			} else {
+				print("Broker: \(host):\(port) Not Found.")
+			}
+		}
+	}
+	
+	func getParitions(for topics: [TopicName], completion: @escaping ([TopicName: [Partition]]) -> Void) {
+		_brokers.first?.value.getTopicMetadata(topics: topics, clientId: clientId) { response in
+			let partitions = response.topics.mapValues { $0.partitions.map({ $0.value }) }
+			completion(partitions)
+		}
+	}
 }

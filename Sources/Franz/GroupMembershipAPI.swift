@@ -257,10 +257,9 @@ class JoinGroupResponse: KafkaResponse {
         _leaderId = KafkaString(bytes: &bytes)
         _memberId = KafkaString(bytes: &bytes)
         _members = KafkaArray(bytes: &bytes)
-        super.init(bytes: &bytes)
     }
     
-    override var description: String {
+    var description: String {
         let error = self.error?.description ?? String()
         
         return "JOIN GROUP RESPONSE:\n" +
@@ -277,6 +276,10 @@ class JoinGroupResponse: KafkaResponse {
 class Member: KafkaClass {
     private var _memberName: KafkaString
     private var _memberMetadata: KafkaBytes
+	
+	var memberId: MemberId {
+		return _memberName.value!
+	}
     
     var name: String {
         return _memberName.value ?? String()
@@ -335,14 +338,14 @@ class SyncGroupRequest<T: KafkaMetadata>: KafkaRequest {
 
 class GroupMemberAssignment: KafkaMetadata {
     private var _version: KafkaInt16
-    private var _partitionAssignment: KafkaArray<PartitionAssignment>
+    let partitionAssignment: KafkaArray<PartitionAssignment>
     private var _userData: KafkaBytes
 
     static var protocolType: GroupProtocol {
         return GroupProtocol.consumer
     }
 
-    init(topics: [String: [Int32]], userData: Data, version: ApiVersion) {
+    init(topics: [TopicName: [PartitionId]], userData: Data, version: ApiVersion) {
         _version = KafkaInt16(value: version.rawValue)
 
         var values = [PartitionAssignment]()
@@ -351,26 +354,26 @@ class GroupMemberAssignment: KafkaMetadata {
                 PartitionAssignment(topic: topic, partitions: partitions)
             )
         }
-        _partitionAssignment = KafkaArray(values: values)
+        partitionAssignment = KafkaArray(values: values)
 		_userData = KafkaBytes(value: userData)
     }
 
     required init(bytes: inout [UInt8]) {
         _version = KafkaInt16(bytes: &bytes)
-        _partitionAssignment = KafkaArray(bytes: &bytes)
+        partitionAssignment = KafkaArray(bytes: &bytes)
         _userData = KafkaBytes(bytes: &bytes)
     }
     
     lazy var length: Int = {
         return self._version.length +
-            self._partitionAssignment.length +
+            self.partitionAssignment.length +
             self._userData.length
     }()
     
     lazy var data: Data = {
         var data = Data(capacity: self.length)
         data.append(self._version.data)
-        data.append(self._partitionAssignment.data)
+        data.append(self.partitionAssignment.data)
         data.append(self._userData.data)
         return data
     }()
@@ -378,49 +381,51 @@ class GroupMemberAssignment: KafkaMetadata {
     lazy var description: String = {
 		return """
 			VERSION(\(self._version.length)): \(self._version.data) => \(self._version.value)
-			PARTITION ASSIGNMENT(\(self._partitionAssignment.length)):
-			\(self._partitionAssignment.description)
+			PARTITION ASSIGNMENT(\(self.partitionAssignment.length)):
+			\(self.partitionAssignment.description)
 			USER DATA\(self._userData.length): \(self._userData.data) => \(String(describing: self._userData.value))
 		"""
     }()
 }
 
 class PartitionAssignment: KafkaClass {
-    private var _topic: KafkaString
-    private var _partitions: KafkaArray<KafkaInt32>
+    let topic: KafkaString
+    let partitions: KafkaArray<KafkaInt32>
     
     init(topic: String, partitions: [Int32]) {
-        _topic = KafkaString(value: topic)
+        self.topic = KafkaString(value: topic)
         var values = [KafkaInt32]()
         for partition in partitions {
             values.append(KafkaInt32(value: partition))
         }
-        _partitions = KafkaArray(values: values)
+        self.partitions = KafkaArray(values: values)
     }
 
     required init(bytes: inout [UInt8]) {
-        _topic = KafkaString(bytes: &bytes)
-        _partitions = KafkaArray(bytes: &bytes)
+        topic = KafkaString(bytes: &bytes)
+        partitions = KafkaArray(bytes: &bytes)
     }
     
     lazy var length: Int = {
-        return self._topic.length + self._partitions.length
+        return self.topic.length + self.partitions.length
     }()
     
     lazy var data: Data = {
         var data = Data(capacity: self.length)
-        data.append(self._topic.data)
-        data.append(self._partitions.data)
+        data.append(self.topic.data)
+        data.append(self.partitions.data)
         return data
     }()
     
     lazy var description: String = {
 		return """
-			TOPIC(\(self._topic.length)): \(self._topic.value ?? "nil")
-			PARTITIONS(\(self._partitions.length)): \(self._partitions.values)
+			TOPIC(\(self.topic.length)): \(self.topic.value ?? "nil")
+			PARTITIONS(\(self.partitions.length)): \(self.partitions.values)
 		"""
     }()
 }
+
+typealias MemberId = String
 
 class SyncGroupRequestMessage<T: KafkaMetadata>: KafkaClass {
     
@@ -477,16 +482,15 @@ class SyncGroupRequestMessage<T: KafkaMetadata>: KafkaClass {
 class SyncGroupResponse<T: KafkaMetadata>: KafkaResponse {
     
     private var _errorCode: KafkaInt16
-    private var _memberAssignment: T
+    let memberAssignment: T
     
     required init(bytes: inout [UInt8]) {
         _errorCode = KafkaInt16(bytes: &bytes)
-        _memberAssignment = T(bytes: &bytes)
-        super.init(bytes: &bytes)
+        memberAssignment = T(bytes: &bytes)
     }
     
     lazy var length: Int = {
-        return self._errorCode.length + self._memberAssignment.length
+        return self._errorCode.length + self.memberAssignment.length
     }()
     
     lazy var data: Data = {
@@ -497,11 +501,11 @@ class SyncGroupResponse<T: KafkaMetadata>: KafkaResponse {
         return KafkaErrorCode(rawValue: self._errorCode.value)
     }()
     
-    override var description: String {
+    var description: String {
         return "SYNC GROUP RESPONSE(\(self.length))\n" +
             "\tERROR(\(self._errorCode.length)): \(self.error?.description ?? String())\n" +
-            "\tMEMBER ASSIGNMENT(\(self._memberAssignment.length)):\n" +
-            self._memberAssignment.description
+            "\tMEMBER ASSIGNMENT(\(self.memberAssignment.length)):\n" +
+            self.memberAssignment.description
     }
 }
 
@@ -576,7 +580,6 @@ class HeartbeatResponse: KafkaResponse {
     
     required init(bytes: inout [UInt8]) {
         _errorCode = KafkaInt16(bytes: &bytes)
-        super.init(bytes: &bytes)
     }
     
     lazy var length: Int = {
@@ -591,7 +594,7 @@ class HeartbeatResponse: KafkaResponse {
         return KafkaErrorCode(rawValue: self._errorCode.value)
     }()
     
-    override var description: String {
+    var description: String {
         return "\tERROR(\(self._errorCode.length)): \(self.error?.description ?? String())"
     }
 }
@@ -659,7 +662,6 @@ class LeaveGroupResponse: KafkaResponse {
     
     required init(bytes: inout [UInt8]) {
         _errorCode = KafkaInt16(bytes: &bytes)
-        super.init(bytes: &bytes)
     }
     
     lazy var length: Int = {
@@ -674,7 +676,7 @@ class LeaveGroupResponse: KafkaResponse {
         return KafkaErrorCode(rawValue: self._errorCode.value)
     }()
     
-    override var description: String {
+    var description: String {
         return "\tERROR(\(self._errorCode.length)): \(self.error?.description ?? String())"
     }
 }

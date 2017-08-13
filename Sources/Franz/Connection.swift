@@ -29,7 +29,18 @@ enum ConnectionError: Error {
     case bytesNoLongerAvailable
 }
 
-class KafkaConnection: NSObject, StreamDelegate {
+internal protocol Connection {
+	init(ipv4: String, port: Int32, broker: Broker, clientId: String)
+	func write(_ request: KafkaRequest, callback: RequestCallback?)
+}
+
+extension Connection {
+	func write(_ request: KafkaRequest, callback: RequestCallback? = nil) {
+		write(request, callback: callback)
+	}
+}
+
+class KafkaConnection: NSObject, Connection, StreamDelegate {
     
     private var ipv4: String
 
@@ -57,7 +68,7 @@ class KafkaConnection: NSObject, StreamDelegate {
     private var _outputStreamQueue: DispatchQueue
     private var _writeRequestBlocks = [()->()]()
     
-    init(ipv4: String, port: Int32, broker: Broker, clientId: String) {
+	required init(ipv4: String, port: Int32, broker: Broker, clientId: String) {
         self.ipv4 = ipv4
         self.clientId = clientId
         self._broker = broker

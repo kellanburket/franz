@@ -8,13 +8,57 @@
 
 import Foundation
 
-public enum BrokerError: Error {
+enum BrokerError: Error {
     case noConnection
     case noGroupMembershipForBroker
+	case fetchFailed
+	case kafkaError(KafkaErrorCode)
 }
+//
+//protocol BrokerProtocol {
+//
+//	//MARK: Offset API
+//	func getOffsets(for topic: TopicName, partition: PartitionId, clientId: String, callback: @escaping ([Offset]) -> ())
+//	func getGroupCoordinator(groupId: String, clientId: String, callback: @escaping (GroupCoordinatorResponse) -> Void)
+//	func commitGroupOffset(groupId: String, topics: [TopicName: [PartitionId: (Offset, OffsetCommitRequest.Metadata?)]], clientId: String, callback: (() -> Void)?)
+//
+//	//MARK: Groups API
+//	func join(groupId: String, subscription: [String], clientId: String, callback: ((GroupMembership) -> ())?)
+//	func listGroups(clientId: String, callback: ((String, String) -> ())?)
+//	func describeGroups(_ groupId: String, clientId: String, callback: ((String, GroupState) -> ())?)
+//	func syncGroup(_ groupId: String, generationId: Int32, memberId: String, topics: [TopicName: [PartitionId]], userData: Data, clientId: String, version: ApiVersion, callback: ((GroupMemberAssignment) -> ())?)
+//	func leaveGroup(_ groupId: String, memberId: String, clientId: String, callback: (() -> ())?)
+//
+//	//MARK: Metadata API
+//	func getTopicMetadata(topics: [TopicName], clientId: String, completion: @escaping (MetadataResponse) -> Void)
+//
+//	//MARK: Consumer API
+//	func fetch(_ topic: TopicName, partition: PartitionId, clientId: String, callback: @escaping ([Message]) -> ())
+//	func fetch(_ topic: TopicName, partition: PartitionId, offset: Offset, clientId: String, replicaId: ReplicaId, callback: @escaping ([Message]) -> ())
+//	func fetch(topics: [TopicName: [PartitionId: Offset]], clientId: String, replicaId: ReplicaId, callback: @escaping ([Message]) -> ())
+//
+//	func poll(topics: [TopicName: [PartitionId]], groupId: String, clientId: String, replicaId: ReplicaId, callback: @escaping (TopicName, PartitionId, Offset, [Message]) -> (), errorCallback: ((BrokerError) -> Void)?)
+//	func poll(topics: [TopicName: [PartitionId: Offset]], clientId: String, replicaId: ReplicaId, callback: @escaping (TopicName, PartitionId, Offset, [Message]) -> (), errorCallback: ((BrokerError) -> Void)?)
+//
+//	//MARK: Producer API
+//	func send(_ topic: TopicName, partition: PartitionId, batch: MessageSet, clientId: String)
+//
+//	func heartbeatRequest(_ groupId: String, generationId: Int32, memberId: String, clientId: String, callback: (() -> ())?)
+//
+//	var nodeId: Int32 { get set }
+//	var ipv4: String { get }
+//	var port: Int32 { get }
+//}
+//
+//extension BrokerProtocol {
+//	func commitGroupOffset(groupId: String, topics: [TopicName: [PartitionId: (Offset, OffsetCommitRequest.Metadata?)]], clientId: String) {
+//		commitGroupOffset(groupId: groupId, topics: topics, clientId: clientId, callback: nil)
+//	}
+//}
 
 
 class Broker: KafkaClass {
+	
     var groupMembership = [String: GroupMembership]()
 
     private var _nodeId: KafkaInt32
@@ -51,7 +95,7 @@ class Broker: KafkaClass {
         )
     }()
 
-    private var _connection: KafkaConnection?
+    private var _connection: Connection?
 
     var nodeId: Int32 {
         get {
@@ -104,10 +148,10 @@ class Broker: KafkaClass {
     }
     
     var data: Data {
-        return Data()
+        return _nodeId.data + _host.data + _port.data
     }
 
-    func connect(_ clientId: String) -> KafkaConnection {
+    func connect(_ clientId: String) -> Connection {
         if _connection == nil {
             _connection = KafkaConnection(
                 ipv4: ipv4,
@@ -120,134 +164,66 @@ class Broker: KafkaClass {
         return _connection!
     }
 
-    func poll(
-        _ topic: String,
-        partition: Int32,
-        groupId: String,
-        clientId: String,
-        replicaId: ReplicaId,
-        _ callback: @escaping (Int64, [Message]) -> (),
-        _ errorCallback: ((KafkaErrorCode) -> ())? = nil
-    ) throws {
-        if let _ = groupMembership[groupId] {
-            fetchGroupOffset(
-                groupId,
-                topic: topic,
-                partition: partition,
-                clientId: clientId
-            ) { offset in
-                self.poll(
-                    topic,
-                    partition: partition,
-                    offset: offset,
-                    clientId: clientId,
-                    replicaId: replicaId,
-                    callback,
-                    errorCallback
-                )
-            }
-        } else {
-            throw BrokerError.noGroupMembershipForBroker
-        }
+	func poll(topics: [TopicName: [PartitionId]], groupId: String, clientId: String, replicaId: ReplicaId, callback: @escaping (TopicName, PartitionId, Offset, [Message]) -> (), errorCallback: ((BrokerError) -> Void)? = nil) {
+        guard groupMembership[groupId] != nil else {
+			errorCallback?(.noGroupMembershipForBroker)
+			return
+		}
+		fetchOffsets(groupId: groupId, topics: topics, clientId: clientId) { topicsWithOffsets in
+			self.poll(topics: topicsWithOffsets, clientId: clientId, replicaId: replicaId, callback: callback, errorCallback: errorCallback)
+		}
     }
-    
-    func poll(
-        _ topic: String,
-        partition: Int32,
-        offset: Int64,
-        clientId: String,
-        replicaId: ReplicaId,
-        _ callback: @escaping (Int64, [Message]) -> (),
-        _ errorCallback: ((KafkaErrorCode) -> ())? = nil
-    ) {
-        let readQueue = getReadQueue(topic, partition: partition)
-        
-        let request = FetchRequest(
-            partitions: [topic: [partition: offset]],
-            replicaId: replicaId
-        )
-        
+	
+	func poll(topics: [TopicName: [PartitionId: Offset]], clientId: String, replicaId: ReplicaId, callback: @escaping (TopicName, PartitionId, Offset, [Message]) -> (), errorCallback: ((BrokerError) -> Void)? = nil) {
+		
+		let request = FetchRequest(topics: topics, replicaId: replicaId)
+		
         connect(clientId).write(request) { bytes in
-            readQueue.async {
-                var mutableBytes = bytes
-                let response = FetchResponse(bytes: &mutableBytes)
-                for responseTopic in response.topics {
-                    for responsePartition in responseTopic.partitions {
-                        if let error = responsePartition.error {
-                            if error.code == 0 {
-                                callback(
-                                    responsePartition.offset,
-                                    responsePartition.messages
-                                )
-                                
-                                self.poll(
-                                    topic,
-                                    partition: responsePartition.partition,
-                                    offset: responsePartition.offset,
-                                    clientId: clientId,
-                                    replicaId: replicaId,
-                                    callback,
-                                    errorCallback
-                                )
-                            } else {
-                                if let errorCallback = errorCallback {
-                                    errorCallback(error)
-                                }
-                            }
-                        } else {
-                            print("Unable to parse error.")
-                            print(response.description)
-                        }
-                    }
-                }
-            }
+			var mutableBytes = bytes
+			let response = FetchResponse(bytes: &mutableBytes)
+			
+			var topicsWithNewOffsets = topics
+			
+			for responseTopic in response.topics {
+				for responsePartition in responseTopic.partitions {
+					
+					//Update offset for that partition
+					topicsWithNewOffsets[responseTopic.topicName]?[responsePartition.partition] = responsePartition.offset
+					
+					if let error = responsePartition.error {
+						if error.code == 0 {
+							callback(
+								responseTopic.topicName,
+								responsePartition.partition,
+								responsePartition.offset,
+								responsePartition.messages
+							)
+						} else {
+							errorCallback?(.kafkaError(error))
+						}
+					} else {
+						errorCallback?(.fetchFailed)
+					}
+				}
+			}
+			
+			//Poll again with new offsets
+			self.poll(topics: topicsWithNewOffsets, clientId: clientId, replicaId: replicaId, callback: callback, errorCallback: errorCallback)
         }
     }
+	
+	func fetch(_ topic: TopicName, partition: PartitionId, clientId: String, callback: @escaping ([Message]) -> ()) {
+		fetch(topic, partition: partition, offset: 0, clientId: clientId, replicaId: ReplicaId.none, callback: callback)
+	}
 
-    func fetch(
-        _ topic: String,
-        partition: Int32,
-        offset: Int64,
-        clientId: String,
-        replicaId: ReplicaId,
-        callback: @escaping ([Message]) -> ()
-    ) {
-        fetch(
-            [topic: [partition: offset]],
-            clientId: clientId,
-            replicaId: replicaId,
-            callback: callback
-        )
-    }
-
-    func fetch(
-        _ topic: String,
-        partition: Int32,
-        clientId: String,
-        callback: @escaping ([Message]) -> ()
-    ) {
-        fetch(
-            topic,
-            partition: partition,
-            offset: 0,
-            clientId: clientId,
-            replicaId: ReplicaId.none,
-            callback: callback
-        )
+    func fetch(_ topic: TopicName, partition: PartitionId, offset: Offset, clientId: String, replicaId: ReplicaId, callback: @escaping ([Message]) -> ()) {
+		fetch(topics: [topic: [partition: offset]], clientId: clientId, replicaId: replicaId, callback: callback)
     }
     
-    func fetch(
-        _ topics: [String: [Int32:Int64]],
-        clientId: String,
-        replicaId: ReplicaId,
-        callback: @escaping ([Message]) -> ()
-    ) {
+    func fetch(topics: [TopicName: [PartitionId: Offset]], clientId: String, replicaId: ReplicaId, callback: @escaping ([Message]) -> ()) {
         let readQueue = getReadQueue("topics", partition: 0)
-        
-        let request = FetchRequest(
-            partitions: topics,
-            replicaId: replicaId
-        )
+		
+		let request = FetchRequest(topics: topics, replicaId: replicaId)
         
         connect(clientId).write(request) { bytes in
             readQueue.async {
@@ -272,95 +248,67 @@ class Broker: KafkaClass {
         }
     }
     
-    func send(_ topic: String, partition: Int32, batch: MessageSet, clientId: String) {
+    func send(_ topic: TopicName, partition: PartitionId, batch: MessageSet, clientId: String) {
         let request = ProduceRequest(values: [topic: [partition: batch]])
         connect(clientId).write(request)
     }
+	
+	func commitGroupOffset(groupId: String, topics: [TopicName: [PartitionId: (Offset, OffsetCommitRequest.Metadata?)]], clientId: String, callback: (() -> Void)? = nil) {
+		guard let groupMembership = self.groupMembership[groupId] else { return }
+		
+		let request = OffsetCommitRequest(consumerGroupId: groupId, generationId: groupMembership.group.generationId, consumerId: groupMembership.memberId, topics: topics)
+		
+		connect(clientId).write(request) { bytes in
+			self._metadataReadQueue.async {
+				var mutableBytes = bytes
+				let response = OffsetCommitResponse(bytes: &mutableBytes)
+				for responseTopic in response.topics {
+					for responsePartition in responseTopic.partitions {
+						if let error = responsePartition.error {
+							if error.code == 0 {
+								callback?()
+							} else {
+								print("Error with offset commit \(error)")
+							}
+						} else {
+							print("Unable to parse error.")
+							print(response.description)
+						}
+					}
+				}
+			}
+		}
+	}
     
-    func commitGroupOffset(
-        _ groupId: String,
-        topic: String,
-        partition: Int32,
-        offset: Int64,
-        metadata: String?,
-        clientId: String,
-        _ callback: (() -> ())? = nil,
-        _ errorCallback: ((KafkaErrorCode) -> ())? = nil
-    ) {
-        if let groupMembership = self.groupMembership[groupId] {
-            let request = OffsetCommitRequest(
-                consumerGroupId: groupId,
-                generationId: groupMembership.group.generationId,
-                consumerId: groupMembership.memberId,
-                topics: [topic: [partition: (offset, metadata)]]
-            )
-            
-            connect(clientId).write(request) { bytes in
-                self._metadataReadQueue.async {
-                    var mutableBytes = bytes
-                    let response = OffsetCommitResponse(bytes: &mutableBytes)
-                    for responseTopic in response.topics {
-                        for responsePartition in responseTopic.partitions {
-                            if let error = responsePartition.error {
-                                if error.code != 0 {
-                                    errorCallback?(error)
-                                } else {
-                                    callback?()
-                                }
-                            } else {
-                                print("Unable to parse error.")
-                                print(response.description)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    func fetchGroupOffset(
-        _ groupId: String,
-        topic: String,
-        partition: Int32,
-        clientId: String,
-        callback: @escaping (Int64) -> ()
-    ) {
+    func fetchOffsets(groupId: String, topics: [TopicName: [PartitionId]], clientId: String, callback: @escaping ([TopicName: [PartitionId: Offset]]) -> ()) {
         if let _ = self.groupMembership[groupId] {
             let request = OffsetFetchRequest(
                 consumerGroupId: groupId,
-                topics: [topic: [partition]]
+                topics: topics
             )
 
             connect(clientId).write(request) { bytes in
                 self._metadataReadQueue.async {
                     var mutableBytes = bytes
                     let response = OffsetFetchResponse(bytes: &mutableBytes)
-                    for responseTopic in response.topics {
-                        for responsePartition in responseTopic.partitions {
-                            if let error = responsePartition.error {
-                                if error.code == 0 {
-                                    callback(responsePartition.offset)
-                                } else {
-                                    print("ERROR: \(error.description)")
-                                    print(response.description)
-                                }
-                            } else {
-                                print("Unable to parse error.")
-                                print(response.description)
-                            }
-                        }
-                    }
+					
+					var offsets = [TopicName: [PartitionId: Offset]]()
+					
+					for topicPartitions in response.topics {
+						var entry = [PartitionId: Offset]()
+						for partitionOffsets in topicPartitions.partitions {
+							entry[partitionOffsets.partition] = partitionOffsets.offset
+						}
+						offsets[topicPartitions.topic] = entry
+					}
+					
+					callback(offsets)
                 }
             }
         }
     }
 
-    func getOffsets(
-        _ topic: String,
-        partition: Int32,
-        clientId: String,
-        callback: @escaping ([Int64]) -> ()
-    ) {
+    func getOffsets(for topic: TopicName, partition: PartitionId, clientId: String, callback: @escaping ([Offset]) -> ()) {
         let request = OffsetRequest(topic: topic, partitions: [partition])
         connect(clientId).write(request) { bytes in
             self._metadataReadQueue.async {
@@ -384,8 +332,16 @@ class Broker: KafkaClass {
             }
         }
     }
+	
+	func getGroupCoordinator(groupId: String, clientId: String, callback: @escaping (GroupCoordinatorResponse) -> Void) {
+		let request = GroupCoordinatorRequest(id: groupId)
+		connect(clientId).write(request) { bytes in
+			var mutableBytes = bytes
+			callback(GroupCoordinatorResponse(bytes: &mutableBytes))
+		}
+	}
     
-    func listGroups(_ clientId: String, callback: ((String, String) -> ())? = nil) {
+    func listGroups(clientId: String, callback: ((String, String) -> ())? = nil) {
         let listGroupsRequest = ListGroupsRequest()
 
         connect(clientId).write(listGroupsRequest) { bytes in
@@ -442,12 +398,7 @@ class Broker: KafkaClass {
         }
     }
     
-    func joinGroup(
-        _ groupId: String,
-        subscription: [String],
-        clientId: String,
-        callback: ((GroupMembership) -> ())? = nil
-    ) {
+    func join(groupId: String, subscription: [String], clientId: String, callback: ((GroupMembership) -> ())? = nil) {
         let metadata = ConsumerGroupMetadata(subscription: subscription)
         
         let request = GroupMembershipRequest<ConsumerGroupMetadata>(
@@ -473,7 +424,8 @@ class Broker: KafkaClass {
                         
                         let groupMembership = GroupMembership(
                             group: group,
-                            memberId: response.memberId
+                            memberId: response.memberId,
+                            members: response.members
                         )
                         
                         self.groupMembership[groupId] = groupMembership
@@ -497,11 +449,11 @@ class Broker: KafkaClass {
         _ groupId: String,
         generationId: Int32,
         memberId: String,
-        topics: [String: [Int32]],
+        topics: [TopicName: [PartitionId]],
         userData: Data,
         clientId: String,
         version: ApiVersion =  ApiVersion.defaultVersion,
-        callback: (() -> ())? = nil
+        callback: ((GroupMemberAssignment) -> ())? = nil
     ) {
         let groupAssignmentMetadata = [GroupMemberAssignment(
             topics: topics,
@@ -514,8 +466,8 @@ class Broker: KafkaClass {
             generationId: generationId,
             memberId: memberId,
             groupAssignment: groupAssignmentMetadata
-        )
-        
+		)
+
         connect(clientId).write(request) { bytes in
             self._groupCoordinationQueue.async {
                 var mutableBytes = bytes
@@ -523,7 +475,7 @@ class Broker: KafkaClass {
                 if let error = response.error {
                     if error.code == 0 {
                         if let syncGroupCallback = callback {
-                            syncGroupCallback()
+                            syncGroupCallback(response.memberAssignment)
                         }
                     } else {
                         print("ERROR: \(error.description)")
@@ -600,6 +552,16 @@ class Broker: KafkaClass {
             }
         }
     }
+	
+	func getTopicMetadata(topics: [TopicName], clientId: String, completion: @escaping (MetadataResponse) -> Void) {
+		let topicMetadataRequest = TopicMetadataRequest(topics: topics)
+		
+		connect(clientId).write(topicMetadataRequest) { bytes in
+			var mutableBytes = bytes
+			
+			completion(MetadataResponse(bytes: &mutableBytes))
+		}
+	}
     
     private func getReadQueue(_ topic: String, partition: Int32) -> DispatchQueue {
         var readQueue: DispatchQueue

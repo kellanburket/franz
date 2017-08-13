@@ -22,13 +22,17 @@
 
 /* Begin PBXBuildFile section */
 		A314CB8D1F08B457008D61A6 /* CRCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A314CB8C1F08B457008D61A6 /* CRCTests.swift */; };
+		A3426BA51F25267500579CF8 /* AssignmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3426BA41F25267500579CF8 /* AssignmentTests.swift */; };
+		A353FF791F2FF3B40047EE2C /* ConsumerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */; };
+		A386B8091F196A730086BFF2 /* Assignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A386B8081F196A730086BFF2 /* Assignment.swift */; };
+		A38E69A01F391BCB0044D3D3 /* OldConsumers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */; };
+		A38E69A11F391C350044D3D3 /* Consumer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38E699D1F391B960044D3D3 /* Consumer.swift */; };
 		OBJ_48 /* FranzTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_37 /* FranzTests.swift */; };
 		OBJ_50 /* Franz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "franz::franz::Product" /* Franz.framework */; };
 		OBJ_57 /* AdminAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* AdminAPI.swift */; };
 		OBJ_58 /* Broker.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* Broker.swift */; };
 		OBJ_59 /* Cluster.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* Cluster.swift */; };
 		OBJ_60 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* Connection.swift */; };
-		OBJ_61 /* Consumer.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* Consumer.swift */; };
 		OBJ_62 /* CRC32.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_15 /* CRC32.swift */; };
 		OBJ_63 /* Enumerations.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_16 /* Enumerations.swift */; };
 		OBJ_64 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_17 /* Extensions.swift */; };
@@ -70,10 +74,14 @@
 
 /* Begin PBXFileReference section */
 		A314CB8C1F08B457008D61A6 /* CRCTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRCTests.swift; sourceTree = "<group>"; };
+		A3426BA41F25267500579CF8 /* AssignmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignmentTests.swift; sourceTree = "<group>"; };
+		A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumerTests.swift; sourceTree = "<group>"; };
+		A386B8081F196A730086BFF2 /* Assignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assignment.swift; sourceTree = "<group>"; };
+		A38E699D1F391B960044D3D3 /* Consumer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Consumer.swift; sourceTree = "<group>"; };
+		A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldConsumers.swift; sourceTree = "<group>"; };
 		OBJ_10 /* Broker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Broker.swift; sourceTree = "<group>"; };
 		OBJ_11 /* Cluster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cluster.swift; sourceTree = "<group>"; };
 		OBJ_12 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
-		OBJ_13 /* Consumer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Consumer.swift; sourceTree = "<group>"; };
 		OBJ_15 /* CRC32.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRC32.swift; sourceTree = "<group>"; };
 		OBJ_16 /* Enumerations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enumerations.swift; sourceTree = "<group>"; };
 		OBJ_17 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -139,8 +147,10 @@
 		OBJ_36 /* FranzTests */ = {
 			isa = PBXGroup;
 			children = (
+				A3426BA41F25267500579CF8 /* AssignmentTests.swift */,
 				OBJ_37 /* FranzTests.swift */,
 				A314CB8C1F08B457008D61A6 /* CRCTests.swift */,
+				A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */,
 			);
 			name = FranzTests;
 			path = Tests/FranzTests;
@@ -176,11 +186,11 @@
 		OBJ_8 /* Franz */ = {
 			isa = PBXGroup;
 			children = (
+				A38E699D1F391B960044D3D3 /* Consumer.swift */,
 				OBJ_9 /* AdminAPI.swift */,
 				OBJ_10 /* Broker.swift */,
 				OBJ_11 /* Cluster.swift */,
 				OBJ_12 /* Connection.swift */,
-				OBJ_13 /* Consumer.swift */,
 				OBJ_14 /* Crypt */,
 				OBJ_16 /* Enumerations.swift */,
 				OBJ_17 /* Extensions.swift */,
@@ -201,6 +211,8 @@
 				OBJ_32 /* Topic.swift */,
 				OBJ_33 /* Variables.swift */,
 				OBJ_34 /* Wildcard.swift */,
+				A386B8081F196A730086BFF2 /* Assignment.swift */,
+				A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */,
 			);
 			name = Franz;
 			path = Sources/Franz;
@@ -282,6 +294,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
+				A3426BA51F25267500579CF8 /* AssignmentTests.swift in Sources */,
+				A353FF791F2FF3B40047EE2C /* ConsumerTests.swift in Sources */,
 				A314CB8D1F08B457008D61A6 /* CRCTests.swift in Sources */,
 				OBJ_48 /* FranzTests.swift in Sources */,
 			);
@@ -291,17 +305,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
+				A38E69A11F391C350044D3D3 /* Consumer.swift in Sources */,
 				OBJ_57 /* AdminAPI.swift in Sources */,
 				OBJ_58 /* Broker.swift in Sources */,
 				OBJ_59 /* Cluster.swift in Sources */,
 				OBJ_60 /* Connection.swift in Sources */,
-				OBJ_61 /* Consumer.swift in Sources */,
 				OBJ_62 /* CRC32.swift in Sources */,
 				OBJ_63 /* Enumerations.swift in Sources */,
 				OBJ_64 /* Extensions.swift in Sources */,
 				OBJ_65 /* FetchAPI.swift in Sources */,
 				OBJ_66 /* Group.swift in Sources */,
+				A386B8091F196A730086BFF2 /* Assignment.swift in Sources */,
 				OBJ_67 /* GroupCoordinatorAPI.swift in Sources */,
+				A38E69A01F391BCB0044D3D3 /* OldConsumers.swift in Sources */,
 				OBJ_68 /* GroupMembershipAPI.swift in Sources */,
 				OBJ_69 /* KafkaProtocol.swift in Sources */,
 				OBJ_70 /* KafkaRequest.swift in Sources */,

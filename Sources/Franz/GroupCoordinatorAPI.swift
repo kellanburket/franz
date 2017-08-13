@@ -75,13 +75,20 @@ class GroupCoordinatorResponse: KafkaResponse {
     var port: Int32 {
         return _coordinatorPort.value
     }
+	
+	//TODO: Convert to struct
+	init(errorCode: Int16, coordinatorId: Int32, coordinatorHost: String, coordinatorPort: Int32) {
+		_errorCode = KafkaInt16(value: errorCode)
+		_coordinatorId = KafkaInt32(value: coordinatorId)
+		_coordinatorHost = KafkaString(value: coordinatorHost)
+		_coordinatorPort = KafkaInt32(value: coordinatorPort)
+	}
     
 	required init( bytes: inout [UInt8]) {
         _errorCode = KafkaInt16(bytes: &bytes)
         _coordinatorId = KafkaInt32(bytes: &bytes)
         _coordinatorHost = KafkaString(bytes: &bytes)
         _coordinatorPort = KafkaInt32(bytes: &bytes)
-        super.init(bytes: &bytes)
     }
     
     lazy var length: Int = {
@@ -99,8 +106,8 @@ class GroupCoordinatorResponse: KafkaResponse {
         data.append(self._coordinatorPort.data)
         return data
     }()
-    
-    override var description: String {
+	
+	var description: String {
         return "ERROR CODE: \(self.error?.code ?? 0)\n" +
             "ERROR DESCRIPTION: \(self.error?.description ?? String())\n" +
             "COORDINATOR ID(\(self._coordinatorId.length)): \(id) => \(self._coordinatorId.data)\n" +

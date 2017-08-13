@@ -37,7 +37,6 @@ class ListGroupsResponse: KafkaResponse {
 	required init( bytes: inout [UInt8]) {
         _errorCode = KafkaInt16(bytes: &bytes)
         _groups = KafkaArray(bytes: &bytes)
-        super.init(bytes: &bytes)
     }
     
     lazy var length: Int = {
@@ -52,7 +51,7 @@ class ListGroupsResponse: KafkaResponse {
         return data
     }()
     
-    override var description: String {
+    var description: String {
         return "LIST GROUPS RESPONSE:\n" +
             "\tERROR CODE: \(self.error?.code ?? 0)\n" +
             "\tERROR DESCRIPTION: \(self.error?.description ?? String())\n" +
@@ -156,7 +155,6 @@ class DescribeGroupsResponse: KafkaResponse {
     
     required init(bytes: inout [UInt8]) {
         _groups = KafkaArray(bytes: &bytes)
-        super.init(bytes: &bytes)
     }
     
     lazy var length: Int = {
@@ -169,7 +167,7 @@ class DescribeGroupsResponse: KafkaResponse {
         return data
     }()
     
-    override var description: String {
+    var description: String {
         return "DESCRIBE GROUP RESPONSE:\n" +
             "\tGROUPS:\n" + self._groups.description
     }

@@ -10,12 +10,14 @@ import Foundation
 
 
 class OffsetCommitRequest: KafkaRequest {
+	
+	typealias Metadata = String
     
     convenience init(
         consumerGroupId: String,
         generationId: Int32,
         consumerId: String,
-        topics: [String:[Int32: (Int64, String?)]],
+        topics: [TopicName: [PartitionId: (Offset, Metadata?)]],
         retentionTime: Int64 = 0
     ) {
         self.init(
@@ -177,7 +179,6 @@ class OffsetCommitResponse: KafkaResponse {
     
     required init(bytes: inout [UInt8]) {
         _topics = KafkaArray(bytes: &bytes)
-        super.init(bytes: &bytes)
     }
     
     var topics: [OffsetCommitTopicResponse] {
@@ -193,7 +194,7 @@ class OffsetCommitResponse: KafkaResponse {
         return data
     }()
     
-    override var description: String {
+    var description: String {
         return _topics.description
     }
 }

@@ -78,13 +78,13 @@ class FetchRequest: KafkaRequest {
     }
     
     convenience init(
-        partitions: [String:[Int32:Int64]],
+        topics: [TopicName: [PartitionId: Offset]],
         replicaId: ReplicaId = .none,
         minBytes: MinBytes = .one,
         maxWaitTime: Int32 = 500
     ) {
         let message = FetchRequestMessage(
-            partitions: partitions,
+            partitions: topics,
             replicaId: replicaId,
             minBytes: minBytes,
             maxWaitTime: maxWaitTime
@@ -113,9 +113,13 @@ class FetchRequestMessage: KafkaClass {
     var minBytes: Int32 {
         return _minBytes.value
     }
+	
+	var topics: [TopicalFetchMessage] {
+		return _topics.values
+	}
     
     init(
-        partitions: [String:[Int32:Int64]],
+        partitions: [TopicName: [PartitionId: Offset]],
         replicaId: ReplicaId = .debug,
         minBytes: MinBytes = .one,
         maxWaitTime: Int32 = 500
@@ -171,13 +175,17 @@ class TopicalFetchMessage: KafkaClass {
     private var _topicName: KafkaString
     private var _partitions: KafkaArray<PartitionedFetchMessage>
 
-    var topicName: String {
+    var topicName: TopicName {
         return _topicName.value ?? String()
     }
+	
+	var partitions: [PartitionedFetchMessage] {
+		return _partitions.values
+	}
     
     init(
         value: String,
-        partitions: [Int32: Int64]
+        partitions: [PartitionId: Offset]
     ) {
         _topicName = KafkaString(value: value)
         var tempPartitions = [PartitionedFetchMessage]()
@@ -219,11 +227,11 @@ class PartitionedFetchMessage: KafkaClass {
     private var _fetchOffset: KafkaInt64
     private var _maxBytes: KafkaInt32 = KafkaInt32(value: 6400)
     
-    var partition: Int32 {
+    var partition: PartitionId {
         return _partition.value
     }
     
-    var offset: Int64 {
+    var offset: Offset {
         return _fetchOffset.value
     }
     
@@ -272,10 +280,9 @@ class FetchResponse: KafkaResponse {
     
 	required init( bytes: inout [UInt8]) {
         _topics = KafkaArray(bytes: &bytes)
-        super.init(bytes: &bytes)
     }
     
-    override var description: String {
+    var description: String {
         return _topics.description
     }
     
@@ -289,8 +296,8 @@ class TopicalFetchResponse: KafkaClass {
     private var _topicName: KafkaString
     private var _partitions: KafkaArray<PartitionedFetchResponse>
     
-    var topicName: String {
-        return _topicName.value ?? String()
+    var topicName: TopicName {
+        return _topicName.value ?? TopicName()
     }
     
     var partitions: [PartitionedFetchResponse] {
@@ -330,7 +337,7 @@ class PartitionedFetchResponse: KafkaClass {
     private var _messageSetSize: KafkaInt32
     private var _messageSet: MessageSet
     
-    var partition: Int32 {
+    var partition: PartitionId {
         return _partition.value
     }
     
@@ -345,7 +352,7 @@ class PartitionedFetchResponse: KafkaClass {
     var messages: [Message] {
         return _messageSet.messages
     }
-    
+	
 	required init( bytes: inout [UInt8]) {
         _partition = KafkaInt32(bytes: &bytes)
         _errorCode = KafkaInt16(bytes: &bytes)

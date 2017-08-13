@@ -87,10 +87,9 @@ class ProduceResponse: KafkaResponse {
     
     required init(bytes: inout [UInt8]) {
         values = KafkaArray(bytes: &bytes)
-        super.init(bytes: &bytes)
     }
     
-    override var description: String {
+    var description: String {
         return values.description
     }
 }

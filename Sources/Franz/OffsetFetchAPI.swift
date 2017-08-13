@@ -10,7 +10,6 @@ import Foundation
 
 
 class OffsetFetchRequest: KafkaRequest {
-    
     convenience init(
         consumerGroupId: String,
         topics: [String: [Int32]]
@@ -122,7 +121,6 @@ class OffsetFetchResponse: KafkaResponse {
     
     required init(bytes: inout [UInt8]) {
         _topics = KafkaArray(bytes: &bytes)
-        super.init(bytes: &bytes)
     }
     
     var topics: [OffsetFetchTopicResponse] {
@@ -139,7 +137,7 @@ class OffsetFetchResponse: KafkaResponse {
         return data
     }()
     
-    override var description: String {
+    var description: String {
         return "OFFSET FETCH RESPONSE:\n" +
             "\tTOPICS:\n" +
             self._topics.description
@@ -182,6 +180,7 @@ class OffsetFetchTopicResponse: KafkaClass {
     }()
 }
 
+typealias Offset = Int64
 
 class OffsetFetchPartitionOffset: KafkaClass {
     private var _partition: KafkaInt32
@@ -205,7 +204,7 @@ class OffsetFetchPartitionOffset: KafkaClass {
         return _metadata.value ?? String()
     }
     
-    var offset: Int64 {
+    var offset: Offset {
         return _offset.value == -1 ? 0 : _offset.value
     }
     

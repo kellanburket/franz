@@ -35,31 +35,21 @@ class MessageSet: KafkaClass {
     }
     
     lazy var length: Int = {
-        return self.valueLength + 4
-    }()
-    
-    lazy var valueLength: Int = {
-        var totalLength = 0
-        
-        for value in self._values {
-            totalLength += value.length
-        }
-        
-        return totalLength
-    }()
-    
-    lazy var valueLengthData: Data = {
-        return (Int32(self.valueLength).data)
+		var totalLength = 0
+		
+		for value in self._values {
+			totalLength += value.length
+		}
+		
+		return totalLength
     }()
     
     lazy var data: Data = {
-        var data = Data(capacity: self.length)
-        
-        data.append(self.valueLengthData)
+        var data = Data()
         
         for value in self._values {
             print("Appending \(value)")
-            data.append(value.data)
+            data += value.data
         }
         
         return data

@@ -8,9 +8,10 @@
 
 import Foundation
 
+public typealias TopicName = String
 
 open class Topic: NSObject {
-    private var _name: String
+    private var _name: TopicName
     private var _partitions: [Int32]
     
     open var name: String {
@@ -86,6 +87,6 @@ internal class KafkaTopic: KafkaClass {
     }()
     
     var data: Data {
-        return Data()
+        return _errorCode.data + _topicName.data + _partitionMetadata.data
     }
 }

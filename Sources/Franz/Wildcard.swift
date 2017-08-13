@@ -82,7 +82,7 @@ class RegExp {
             
             for i in 0..<numRanges {
 				let range = result.range(at: i)
-                let match = input.substring(with: range.toStringIndexRange(input))
+                let match = String(input[range.toStringIndexRange(input)])
                 matches.append(match)
             }
         }
@@ -116,7 +116,7 @@ class RegExp {
             
             for i in 0..<numRanges {
 				let range = result.range(at: i)
-                let match = input.substring(with: range.toStringIndexRange(input))
+                let match = String(input[range.toStringIndexRange(input)])
                 matches[index].append(match)
             }
         }
@@ -952,7 +952,7 @@ extension String {
     }
     
     internal func substringWithNSRange(_ range: NSRange) -> String {
-        return substring(with: range.toStringIndexRange(self))
+        return String(self[range.toStringIndexRange(self)])
     }
     
     internal func substringRanges(_ pattern: String, _ options: String = "") -> [RegExpMatch]? {

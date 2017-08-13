@@ -174,7 +174,7 @@ class KafkaArray<T: KafkaType>: KafkaType, Readable {
         }
 
         let endIndex = string.characters.index(string.startIndex, offsetBy: string.characters.count - 2)
-        return string.substring(to: endIndex)
+		return String(string[..<endIndex])
     }()
 }
 

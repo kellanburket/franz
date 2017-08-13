@@ -8,6 +8,8 @@
 
 import Foundation
 
+typealias PartitionId = Int32
+
 class Partition: KafkaClass {
     private var _partitionErrorCode: KafkaInt16
     private var _partitionId: KafkaInt32
@@ -95,6 +97,6 @@ class Partition: KafkaClass {
     }
     
     var data: Data {
-        return Data()
+        return _partitionErrorCode.data + _partitionId.data + _leader.data + _replicas.data + _isr.data
     }
 }
