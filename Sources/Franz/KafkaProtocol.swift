@@ -16,9 +16,6 @@ protocol KafkaType {
 
 extension Data {
 	mutating func take(first: Int) -> Data {
-		if first > count {
-			return Data()
-		}
 		let start = prefix(upTo: startIndex + first)
 		removeFirst(first)
 		return start

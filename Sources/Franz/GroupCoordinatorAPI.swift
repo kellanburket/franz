@@ -46,10 +46,6 @@ class GroupCoordinatorRequestMessage: KafkaType {
     var id: String {
 		return _groupId 
     }
-    
-    lazy var description: String = {
-        return "GROUP ID(\(self._groupId.dataLength)): \(self.id) => \(self._groupId.data)\n"
-    }()
 }
 
 
