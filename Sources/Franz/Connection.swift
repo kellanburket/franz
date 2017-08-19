@@ -8,7 +8,7 @@
 
 import Foundation
 
-typealias RequestCallback = ([UInt8]) -> ()
+typealias RequestCallback = (Data) -> Void
 
 enum ConnectionError: Error {
     case unableToOpenConnection
@@ -27,6 +27,51 @@ enum ConnectionError: Error {
     case outputStreamClosed
     case unableToWriteBytes
     case bytesNoLongerAvailable
+}
+
+
+extension Stream.Event {
+	var description: String {
+		switch self {
+		case []:
+			return "None"
+		case .openCompleted:
+			return "Open Completed"
+		case .hasBytesAvailable:
+			return "Has Bytes Available"
+		case .hasSpaceAvailable:
+			return "Has Space Available"
+		case .errorOccurred:
+			return "Error Occurred"
+		case .endEncountered:
+			return "End Encountered"
+		default:
+			return ""
+		}
+	}
+}
+
+extension Stream.Status {
+	var description: String {
+		switch self {
+		case .notOpen:
+			return "Not Open"
+		case .opening:
+			return "Opening"
+		case .open:
+			return "Open"
+		case .reading:
+			return "Reading"
+		case .writing:
+			return "Writing"
+		case .atEnd:
+			return  "End"
+		case .closed:
+			return "Closed"
+		case .error:
+			return "Error"
+		}
+	}
 }
 
 internal protocol Connection {
@@ -127,9 +172,8 @@ class KafkaConnection: NSObject, Connection, StreamDelegate {
                             var buffer = [UInt8](repeating: 0, count: Int(size))
                             let bytesInBuffer = inputStream.read(&buffer, maxLength: Int(size))
                             //print("\t\tReading Bytes")
-                            buffer = buffer.slice(0, length: bytesInBuffer)
                             //print("BUFFER(\(size)): \(buffer)")
-                            bytes += buffer
+                            bytes += buffer.prefix(upTo: Int(bytesInBuffer))
                         }
                         
                         let currentTime = Date().timeIntervalSince1970
@@ -142,7 +186,7 @@ class KafkaConnection: NSObject, Connection, StreamDelegate {
                     }
                     
                     if let callback = self._requestCallbacks[correlationId] {
-                        callback(bytes)
+						callback(Data(bytes: bytes))
                     } else {
                         print(
                             "Unable to find reuqest callback for " +
@@ -167,7 +211,7 @@ class KafkaConnection: NSObject, Connection, StreamDelegate {
     }
 
     func write(_ request: KafkaRequest, callback: RequestCallback? = nil) {
-        request.clientId = KafkaString(value: clientId)
+        request.clientId = clientId
         //print("Write Block Added")
         if let requestCallback = callback {
             _requestCallbacks[request.correlationId] = requestCallback
@@ -178,10 +222,14 @@ class KafkaConnection: NSObject, Connection, StreamDelegate {
 				if stream.hasSpaceAvailable {
 					let data = request.data
 					//print("Data: \(data)")
-					let bytesPtr = (data as NSData).bytes
-					let bytes = bytesPtr.assumingMemoryBound(to: UInt8.self)
-					//print("Writing to Output Stream: \(data.length)")
-					stream.write(bytes, maxLength: data.count)
+					
+					data.withUnsafeBytes { (bytes: UnsafePointer<UInt8>) -> Void in
+						stream.write(bytes, maxLength: data.count)
+					}
+//					let bytesPtr = (data as NSData).bytes
+//					let bytes = bytesPtr.assumingMemoryBound(to: UInt8.self)
+//					//print("Writing to Output Stream: \(data.length)")
+//					stream.write(bytes, maxLength: data.count)
 					//print("\tReleasing Output Stream Write(\(data.length))")
 				} else {
 					print("No Space Available for Writing")
@@ -209,14 +257,20 @@ class KafkaConnection: NSObject, Connection, StreamDelegate {
             } else {
                 throw ConnectionError.bytesNoLongerAvailable
             }
-            
-            let sizeBytes = buffer.slice(0, length: Int(responseLengthSize))
-            let responseLengthSizeInclusive = Int32(bytes: sizeBytes)
+			let sizeBytes = buffer.prefix(upTo: Int(responseLengthSize))
+			buffer.removeFirst(Int(responseLengthSize))
+			
+			var sizeData = Data(bytes: sizeBytes)
+			let responseLengthSizeInclusive = Int32(data: &sizeData)
             
             if responseLengthSizeInclusive > 4 {
+				let correlationIdSizeBytes = buffer.prefix(upTo: Int(responseCorrelationIdSize))
+				buffer.removeFirst(Int(responseCorrelationIdSize))
+				
+				var correlationIdSizeData = Data(bytes: correlationIdSizeBytes)
                 return (
                     responseLengthSizeInclusive - responseLengthSize,
-                    Int32(bytes: buffer.slice(0, length: Int(responseCorrelationIdSize)))
+                    Int32(data: &correlationIdSizeData)
                 )
             } else if responseLengthSizeInclusive == 0 {
                 throw ConnectionError.zeroLengthResponse

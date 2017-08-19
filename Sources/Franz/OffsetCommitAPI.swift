@@ -8,16 +8,15 @@
 
 import Foundation
 
+typealias OffsetMetadata = String
 
 class OffsetCommitRequest: KafkaRequest {
 	
-	typealias Metadata = String
-    
     convenience init(
         consumerGroupId: String,
         generationId: Int32,
         consumerId: String,
-        topics: [TopicName: [PartitionId: (Offset, Metadata?)]],
+        topics: [TopicName: [PartitionId: (Offset, OffsetMetadata?)]],
         retentionTime: Int64 = 0
     ) {
         self.init(
@@ -36,230 +35,168 @@ class OffsetCommitRequest: KafkaRequest {
     }
 }
 
-class OffsetCommitRequestMessage: KafkaClass {
+class OffsetCommitRequestMessage: KafkaType {
 
-    private var _consumerGroupId: KafkaString
-    private var _consumerGroupGenerationId: KafkaInt32
-    private var _consumerId: KafkaString
-    private var _retentionTime: KafkaInt64
-    private var _topics: KafkaArray<OffsetCommitTopic>
+    let consumerGroupId: String
+    let consumerGroupGenerationId: Int32
+    let consumerId: String
+    let retentionTime: Int64
+    let topics: KafkaArray<OffsetCommitTopic>
  
-    init(
-        consumerGroupId: String,
-        generationId: Int32,
-        consumerId: String,
-        topics: [String:[Int32: (Int64, String?)]],
-        retentionTime: Int64 = 0
-    ) {
-        var values = [OffsetCommitTopic]()
-        for (key, value) in topics {
-            let offsetCommitTopic = OffsetCommitTopic(topic: key, partitions: value)
-            values.append(offsetCommitTopic)
-        }
-        _consumerGroupId = KafkaString(value: consumerGroupId)
-        _consumerGroupGenerationId = KafkaInt32(value: generationId)
-        _consumerId = KafkaString(value: consumerId)
-        _retentionTime = KafkaInt64(value: retentionTime)
-        _topics = KafkaArray(values: values)
+    init(consumerGroupId: String, generationId: Int32, consumerId: String, topics: [TopicName: [PartitionId: (Offset, OffsetMetadata?)]], retentionTime: Int64 = 0) {
+		self.consumerGroupId = consumerGroupId
+		self.consumerGroupGenerationId = generationId
+		self.consumerId = consumerId
+		self.retentionTime = retentionTime
+		self.topics = KafkaArray<OffsetCommitTopic>(topics.map { arg in
+			let (key, value) = arg
+			return OffsetCommitTopic(topic: key, partitions: value)
+		})
     }
     
-    required init(bytes: inout [UInt8]) {
-        _consumerGroupId = KafkaString(bytes: &bytes)
-        _consumerGroupGenerationId = KafkaInt32(bytes: &bytes)
-        _consumerId = KafkaString(bytes: &bytes)
-        _retentionTime = KafkaInt64(bytes: &bytes)
-        _topics = KafkaArray(bytes: &bytes)
+    required init(data: inout Data) {
+        consumerGroupId = String(data: &data)
+        consumerGroupGenerationId = Int32(data: &data)
+        consumerId = String(data: &data)
+        retentionTime = Int64(data: &data)
+        topics = KafkaArray(data: &data)
     }
 
-    lazy var length: Int = {
-        return self._consumerGroupId.length +
-            self._consumerGroupGenerationId.length +
-            self._consumerId.length +
-            self._retentionTime.length +
-            self._topics.length
-    }()
+    var dataLength: Int {
+		let values: [KafkaType] = [consumerGroupId, consumerGroupGenerationId, consumerId, retentionTime, topics]
+		return values.map { $0.dataLength }.reduce(0, +)
+	}
     
-    lazy var data: Data = {
-        var data = Data(capacity: self.length)
-        data.append(self._consumerGroupId.data)
-        data.append(self._consumerGroupGenerationId.data)
-        data.append(self._consumerId.data)
-        data.append(self._retentionTime.data )
-        data.append(self._topics.data)
+    var data: Data {
+        var data = Data(capacity: dataLength)
+        data += consumerGroupId.data
+        data += consumerGroupGenerationId.data
+        data += consumerId.data
+        data += retentionTime.data
+        data += topics.data
         return data
-    }()
-    
-    lazy var description: String = {
-        return "OFFSET COMMIT REQUEST:\n" +
-            "\tCONSUMER GROUP ID: \(self._consumerGroupId.value ?? "nil")\n" +
-            "\tCONSUMER GROUP GENERATION ID: \(self._consumerGroupGenerationId.value)\n" +
-			"\tCONSUMER ID ID: \(self._consumerId.value ?? "nil")\n" +
-            "\tRETENTION TIME ID: \(self._retentionTime.value)\n" +
-            "\tTOPICS:\n" +
-            self._topics.description
-    }()
+    }
 }
 
 
-class OffsetCommitTopic: KafkaClass {
-    private var _topicName: KafkaString
-    private var _partitions: KafkaArray<OffsetCommitPartitionOffset>
+class OffsetCommitTopic: KafkaType {
+	let topicName: TopicName
+    let partitions: KafkaArray<OffsetCommitPartitionOffset>
 
-    init(topic: String, partitions: [Int32:(Int64, String?)]) {
-        _topicName = KafkaString(value: topic)
-        var values = [OffsetCommitPartitionOffset]()
-        for (key, value) in partitions {
-            values.append(OffsetCommitPartitionOffset(partition: key, offset: value.0, metadata: value.1))
-        }
-        _partitions = KafkaArray(values: values)
+    init(topic: TopicName, partitions: [PartitionId: (Offset, OffsetMetadata?)]) {
+        self.topicName = topic
+		self.partitions = KafkaArray(partitions.map { arg in
+			let (key, value) = arg
+			return OffsetCommitPartitionOffset(partition: key, offset: value.0, metadata: value.1)
+		})
     }
     
-    required init(bytes: inout [UInt8]) {
-        _topicName = KafkaString(bytes: &bytes)
-        _partitions = KafkaArray(bytes: &bytes)
+	required init(data: inout Data) {
+        topicName = String(data: &data)
+        partitions = KafkaArray(data: &data)
     }
 
-    lazy var length: Int = {
-        return self._topicName.length + self._partitions.length
-    }()
+    var dataLength: Int {
+        return topicName.dataLength + partitions.dataLength
+	}
     
-    lazy var data: Data = {
-        var data = Data(capacity: self.length)
-        data.append(self._topicName.data)
-        data.append(self._partitions.data)
+    var data: Data {
+        var data = Data(capacity: self.dataLength)
+        data += topicName.data
+        data += partitions.data
         return data
-    }()
-    
-    lazy var description: String = {
-        return ""
-    }()
+	}
 }
 
+class OffsetCommitPartitionOffset: KafkaType {
+    let partition: PartitionId
+    let offset: Offset
+    let metadata: String?
 
-class OffsetCommitPartitionOffset: KafkaClass {
-    private var _partition: KafkaInt32
-    private var _offset: KafkaInt64
-    private var _metadata: KafkaString
-
-    init(partition: Int32, offset: Int64, metadata: String?) {
-        _partition = KafkaInt32(value: partition)
-        _offset = KafkaInt64(value: offset)
-        _metadata = KafkaString(value: metadata)
+    init(partition: PartitionId, offset: Offset, metadata: String? = nil) {
+        self.partition = partition
+		self.offset = offset
+        self.metadata = metadata
     }
 
-    required init(bytes: inout [UInt8]) {
-        _partition = KafkaInt32(bytes: &bytes)
-        _offset = KafkaInt64(bytes: &bytes)
-        _metadata = KafkaString(bytes: &bytes)
+    required init(data: inout Data) {
+        partition = PartitionId(data: &data)
+        offset = Offset(data: &data)
+        metadata = String(data: &data)
     }
 
-    lazy var length: Int = {
-        return self._partition.length +
-            self._offset.length +
-            self._metadata.length
-    }()
-    
-    lazy var data: Data = {
-        var data = Data(capacity: self.length)
-        data.append(self._partition.data)
-        data.append(self._offset.data)
-        data.append(self._metadata.data)
+    var dataLength: Int {
+        return partition.dataLength + offset.dataLength + metadata.dataLength
+	}
+	
+    var data: Data {
+        var data = Data(capacity: self.dataLength)
+        data += partition.data
+        data += offset.data
+		data += metadata.data
         return data
-    }()
-    
-    lazy var description: String = {
-        return ""
-    }()
+	}
 }
 
 
 class OffsetCommitResponse: KafkaResponse {
     
-    private var _topics: KafkaArray<OffsetCommitTopicResponse>
+    let topics: KafkaArray<OffsetCommitTopicResponse>
     
-    required init(bytes: inout [UInt8]) {
-        _topics = KafkaArray(bytes: &bytes)
+    required init(data: inout Data) {
+        topics = KafkaArray(data: &data)
     }
     
-    var topics: [OffsetCommitTopicResponse] {
-        return _topics.values
-    }
-    
-    lazy var length: Int = {
-        return self._topics.length
-    }()
-    
-    lazy var data: Data = {
-        var data = Data(capacity: self.length)
-        return data
-    }()
-    
-    var description: String {
-        return _topics.description
-    }
+    var dataLength: Int {
+        return topics.dataLength
+	}
+	
+    var data: Data {
+        return topics.data
+	}
 }
 
-class OffsetCommitTopicResponse: KafkaClass {
+class OffsetCommitTopicResponse: KafkaType {
     
-    private var _topicName: KafkaString
-    private var _partitions: KafkaArray<OffsetCommitPartitionResponse>
+    let topicName: String
+    let partitions: KafkaArray<OffsetCommitPartitionResponse>
     
-    required init(bytes: inout [UInt8]) {
-        _topicName = KafkaString(bytes: &bytes)
-        _partitions = KafkaArray(bytes: &bytes)
+    required init(data: inout Data) {
+        topicName = String(data: &data)
+        partitions = KafkaArray(data: &data)
     }
     
-    var partitions: [OffsetCommitPartitionResponse] {
-        return _partitions.values
-    }
-    
-    lazy var length: Int = {
-        return self._topicName.length + self._partitions.length
-    }()
-    
-    lazy var data: Data = {
-        var data = Data(capacity: self.length)
-        return data
-    }()
-    
-    lazy var description: String = {
-        return "\tTOPIC: \(self._topicName.value ?? "nil")" +
-            "\tPARTITIONS:\n" +
-            self._partitions.description
-    }()
+    var dataLength: Int {
+        return topicName.dataLength + partitions.dataLength
+	}
+		
+	var data: Data {
+        return topicName.data + partitions.data
+	}
 }
 
-class OffsetCommitPartitionResponse: KafkaClass {
+class OffsetCommitPartitionResponse: KafkaType {
     
-    private var _partition: KafkaInt32
-    private var _errorCode: KafkaInt16
-    
-    var partition: Int32 {
-        return _partition.value
-    }
+    let partition: Int32
+    private var errorCode: Int16
     
     var error: KafkaErrorCode? {
-        return KafkaErrorCode(rawValue: _errorCode.value)
+        return KafkaErrorCode(rawValue: errorCode)
     }
     
-    required init(bytes: inout [UInt8]) {
-        _partition = KafkaInt32(bytes: &bytes)
-        _errorCode = KafkaInt16(bytes: &bytes)
+    required init(data: inout Data) {
+        partition = Int32(data: &data)
+        errorCode = Int16(data: &data)
     }
     
-    lazy var length: Int = {
-        return self._partition.length + self._errorCode.length
-    }()
+    var dataLength: Int {
+        return partition.dataLength + errorCode.dataLength
+	}
     
-    lazy var data: Data = {
-        var data = Data(capacity: self.length)
-        return data
-    }()
-    
-    lazy var description: String = {
-        return "\t\tPARTITION: \(self.partition)\n" +
-            "\t\tERROR: \(self.error?.description ?? String())"
-    }()
+    var data: Data {
+		return partition.data + errorCode.data
+	}
+	
 }
 
 

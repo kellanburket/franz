@@ -327,6 +327,8 @@ public enum GroupState: String {
         Returned when there are no active members and group state has been cleaned up.
     */
     case Down = "Down"
+	
+	case Empty = "Empty"
 }
 
 /**

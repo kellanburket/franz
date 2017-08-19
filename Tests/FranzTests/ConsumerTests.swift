@@ -32,8 +32,16 @@ class ConsumerTests: XCTestCase {
 			callback?(membership)
 		}
 		
+		override func describeGroups(_ groupId: String, clientId: String, callback: ((String, GroupState) -> ())?) {
+			callback?(groupId, .AwaitingSync)
+		}
+		
 		override func fetchOffsets(groupId: String, topics: [TopicName : [PartitionId]], clientId: String, callback: @escaping ([TopicName : [PartitionId : Offset]]) -> ()) {
 			callback(topics.mapValues { _ in [0: 0]})
+		}
+		
+		override func syncGroup(_ groupId: String, generationId: Int32, memberId: String, topics: [TopicName : [PartitionId]], userData: Data, clientId: String, version: ApiVersion, callback: ((GroupMemberAssignment) -> ())?) {
+			callback?(GroupMemberAssignment(topics: topics, userData: Data(), version: .defaultVersion))
 		}
 		
 		class FakeConnection: Connection {
@@ -42,32 +50,29 @@ class ConsumerTests: XCTestCase {
 				
 			}
 			
-			func generateFetchResponse(messages: [MessageSetItem], offset: Offset) -> [UInt8] {
+			func generateFetchResponse(messages: [MessageSetItem], offset: Offset) -> Data {
 				let messageSet = MessageSet(values: messages)
 				
 				//partition id
-				var partitionData = KafkaInt32(value: 0).data
+				var partitionData = PartitionId(0).data
 				//error code
-				partitionData += KafkaInt16(value: 0).data
+				partitionData += Int16(0).data
 				//highwater mark offset
-				partitionData += KafkaInt64(value: offset).data
+				partitionData += offset.data
 				//message set size
-				partitionData += KafkaInt32(value: messages.reduce(0) { $0 + Int32($1.length) }).data
+				partitionData += messages.reduce(0) { $0 + Int32($1.dataLength) }.data
 				//message set
 				partitionData += messageSet.data
 				
-				var partitionBytes = [UInt8](partitionData)
+				let partitionResponse = PartitionedFetchResponse(data: &partitionData)
 				
-				let partitionResponse = PartitionedFetchResponse(bytes: &partitionBytes)
+				var topicData = "test".data
+				topicData += KafkaArray<PartitionedFetchResponse>([partitionResponse]).data
 				
-				var topicData = KafkaString(value: "test").data
-				topicData += KafkaArray<PartitionedFetchResponse>(values: [partitionResponse]).data
-				var topicBytes = [UInt8](topicData)
+				let topicalFetchResponse = TopicalFetchResponse(data: &topicData)
 				
-				let topicalFetchResponse = TopicalFetchResponse(bytes: &topicBytes)
-				
-				let responseData = KafkaArray<TopicalFetchResponse>(values: [topicalFetchResponse]).data
-				return [UInt8](responseData)
+				let responseData = KafkaArray<TopicalFetchResponse>([topicalFetchResponse]).data
+				return responseData
 			}
 			
 			func write(_ request: KafkaRequest, callback: RequestCallback?) {
@@ -77,12 +82,12 @@ class ConsumerTests: XCTestCase {
 					
 					let partition = Partition(partitionErrorCode: 0, partitionId: 0, leader: 0, replicas: [], isr: [])
 					
-					let topics = message.values.values.map { KafkaTopic(errorCode:0, name: $0.value!, partitionMetadata: [partition]) }
+					let topics = message.values.values.map { KafkaTopic(errorCode:0, name: $0, partitionMetadata: [partition]) }
 					
-					var data = KafkaArray<Broker>(values: brokers).data
-					data += KafkaArray<KafkaTopic>(values: topics).data
+					var data = KafkaArray<Broker>(brokers).data
+					data += KafkaArray<KafkaTopic>(topics).data
 					
-					callback?([UInt8](data))
+					callback?(data)
 				}
 				
 				if let request = request as? FetchRequest, let message = request.message as? FetchRequestMessage {

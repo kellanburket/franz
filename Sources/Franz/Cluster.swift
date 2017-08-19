@@ -150,6 +150,8 @@ open class Cluster {
         }
     }
 	
+	
+	//TODO: Remove? Dunno why this is here
 	var targetTopics = Set<String>()
 	
 	func addTargetTopics(topics: [String]) {
@@ -331,11 +333,12 @@ open class Cluster {
 		joinGroup(id: groupId, topics: topics, callback: { broker, membership in
 			consumer.broker = broker
 			consumer.membership = membership
-			consumer.joinedGroupSemaphore.signal()
 			membership.group.getState { groupId, state in
 				if state == GroupState.AwaitingSync {
 					self.assignRoundRobin(members: membership.members.map { $0.memberId }, topics: topics) { assignments in
-						membership.sync(assignments[membership.memberId]!, data: Data()) {}
+						membership.sync(assignments[membership.memberId]!, data: Data()) {
+							consumer.joinedGroupSemaphore.signal()
+						}
 					}
 				}
 			}
@@ -420,7 +423,7 @@ open class Cluster {
 	
 	func getParitions(for topics: [TopicName], completion: @escaping ([TopicName: [Partition]]) -> Void) {
 		_brokers.first?.value.getTopicMetadata(topics: topics, clientId: clientId) { response in
-			let partitions = response.topics.mapValues { $0.partitions.map({ $0.value }) }
+			let partitions = response.topics.mapValues { $0.partitions.values.map({ $0 }) }
 			completion(partitions)
 		}
 	}

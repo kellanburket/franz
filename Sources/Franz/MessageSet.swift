@@ -9,70 +9,40 @@
 import Foundation
 
 
-class MessageSet: KafkaClass {
-    private var _values: [MessageSetItem]
-    
-    var messages: [Message] {
-        var messages = [Message]()
-
-        for value in _values {
-            messages.append(value.message)
-        }
-        
-        return messages
-    }
-    
+class MessageSet: KafkaType {
+    let values: KafkaArray<MessageSetItem>
+	
     init(values: [MessageSetItem]) {
-        self._values = values
+        self.values = KafkaArray(values)
     }
 
-    required init(bytes: inout [UInt8]) {
-        _values = [MessageSetItem]()
-        
-        while bytes.count > 0 {
-            _values.append(MessageSetItem(bytes: &bytes))
+    required init(data: inout Data) {
+        var tempValues = KafkaArray<MessageSetItem>()
+		
+        while data.count > 0 {
+            tempValues.append(MessageSetItem(data: &data))
         }
+		
+		values = tempValues
     }
     
-    lazy var length: Int = {
-		var totalLength = 0
-		
-		for value in self._values {
-			totalLength += value.length
-		}
-		
-		return totalLength
-    }()
+    var dataLength: Int {
+		return values.map { $0.dataLength }.reduce(0, +)
+	}
     
-    lazy var data: Data = {
-        var data = Data()
-        
-        for value in self._values {
-            print("Appending \(value)")
-            data += value.data
-        }
-        
-        return data
-    }()
-    
-    var description: String {
-        var str = ""
-        
-        for value in _values {
-            str += value.description
-        }
-        return str
+    var data: Data {
+        return values.map { $0.data }.reduce(Data(), +)
     }
 }
 
 
-class MessageSetItem: KafkaClass {
-    var _offset: KafkaInt64
+class MessageSetItem: KafkaType {
+    var _offset: Int64
     var _value: KafkaMessage
-    var _size: KafkaInt32?
+    var _size: Int32?
     
     var offset: Int64 {
-        return _offset.value
+        return _offset
     }
     
     var message: Message {
@@ -80,72 +50,52 @@ class MessageSetItem: KafkaClass {
     }
     
     init(value: String, key: String? = nil, offset: Int = 0) {
-        self._offset = KafkaInt64(value: Int64(offset))
+        self._offset = Int64(offset)
         self._value = KafkaMessage(value: value, key: key)
     }
 
     init(data: Data, key: Data? = nil, offset: Int = 0) {
-        self._offset = KafkaInt64(value: Int64(offset))
+        self._offset = Int64(offset)
         self._value = KafkaMessage(data: data, key: key)
     }
 
-    required init(bytes: inout [UInt8]) {
-        _offset = KafkaInt64(bytes: &bytes)
-        _size = KafkaInt32(bytes: &bytes)
-        _value = KafkaMessage(bytes: &bytes)
+    required init(data: inout Data) {
+        _offset = Int64(data: &data)
+        _size = Int32(data: &data)
+        _value = KafkaMessage(data: &data)
     }
     
     lazy var messageSizeData: Data = {
-        return (Int32(self._value.length).data)
+        return (Int32(self._value.dataLength).data)
     }()
     
     let messageSizeDataLength = 4
     
-    lazy var length: Int = {
-        return self._offset.length +
+    lazy var dataLength: Int = {
+        return self._offset.dataLength +
             self.messageSizeDataLength +
-            self._value.length +
-            (self._size != nil ? self._size!.length : 0)
+            self._value.dataLength +
+            (self._size != nil ? self._size!.dataLength : 0)
     }()
     
     lazy var data: Data = {
-        var data = Data(capacity: self.length)
+        var data = Data(capacity: self.dataLength)
         
         data.append(self._offset.data)
         data.append(self.messageSizeData)
         data.append(self._value.data)
         return data
     }()
-    
-    var description: String {
-        return "\n\t\t\t\t\t---------\n" +
-            "\t\t\t\t\tLENGTH: (\(length))\n" +
-            "\t\t\t\t\tOFFSET: \(_offset.data)\n" +
-            "\t\t\t\t\tMESSAGE SIZE: \(messageSizeData)\n" +
-            "\t\t\t\t\tMESSAGE: \n\(_value.description)\n"
-    }
 }
 
-class KafkaMessage: KafkaClass {
-    private var _key: KafkaBytes
-    private var _value: KafkaBytes
-    private var _magicByte: KafkaInt8
-    private var _attributes: KafkaInt8
-    private var _crc: KafkaUInt32! = nil
-    
-    /**
-        Message data
-    */
-    var value: Data {
-        return _value.valueData
-    }
-
-    /**
-        Message key
-     */
-    var key: Data? {
-        return _key.valueData
-    }
+class KafkaMessage: KafkaType {
+	///Message key
+    let key: Data?
+	///Message data
+    let value: Data
+    private var _magicByte: Int8
+    private var _attributes: Int8
+    private var _crc: UInt32! = nil
 
     /**
         Initialize a new message using raw bytes
@@ -154,10 +104,10 @@ class KafkaMessage: KafkaClass {
         - Parameter key:    an optional key String. Can be used for partition assignment.
      */
     init(data: Data, key: Data? = nil) {
-        self._attributes = KafkaInt8(value: CompressionCodec.none.rawValue)
-        self._magicByte = KafkaInt8(value: 0)
-        self._key = KafkaBytes(value: key)
-        self._value = KafkaBytes(value: data)
+        self._attributes = Int8(CompressionCodec.none.rawValue)
+        self._magicByte = Int8(0)
+        self.key = key
+        self.value = data
     }
     
     /**
@@ -167,10 +117,10 @@ class KafkaMessage: KafkaClass {
         - Parameter key:    an optional key String. Can be used for partition assignment.
      */
     init(value: String, key: String? = nil) {
-        self._attributes = KafkaInt8(value: CompressionCodec.none.rawValue)
-        self._magicByte = KafkaInt8(value: 0)
-        self._key = KafkaBytes(value: key)
-        self._value = KafkaBytes(value: value)
+        self._attributes = Int8(CompressionCodec.none.rawValue)
+        self._magicByte = Int8(0)
+        self.key = key?.data(using: .utf8)
+		self.value = value.data(using: .utf8)!
     }
 
     /**
@@ -179,47 +129,36 @@ class KafkaMessage: KafkaClass {
         - Parameter value:  String value
         - Parameter key:    an optional key String. Can be used for partition assignment.
      */
-    required init(bytes: inout [UInt8]) {
-        _crc = KafkaUInt32(bytes: &bytes)
-        _magicByte = KafkaInt8(bytes: &bytes)
-        _attributes = KafkaInt8(bytes: &bytes)
-        _key = KafkaBytes(bytes: &bytes)
-        _value = KafkaBytes(bytes: &bytes)
+    required init(data: inout Data) {
+        _crc = UInt32(data: &data)
+        _magicByte = Int8(data: &data)
+        _attributes = Int8(data: &data)
+        key = Data(data: &data)
+        value = Data(data: &data)
     }
     
-    lazy var length: Int = {
+    lazy var dataLength: Int = {
         return self.valueLength + 4
     }()
     
     lazy var valueLength: Int = {
-        return self._magicByte.length +
-            self._attributes.length +
-            self._key.length +
-            self._value.length
+        return _magicByte.dataLength + _attributes.dataLength + key.dataLength + value.dataLength
     }()
     
     lazy var data: Data = {
         var valueData = Data(capacity: self.valueLength)
         valueData.append(self._magicByte.data)
         valueData.append(self._attributes.data)
-        valueData.append(self._key.data)
-        valueData.append(self._value.data)
+        valueData.append(key.data)
+        valueData.append(value.data)
         
-		self._crc = KafkaUInt32(value: CRC32(data: valueData).crc)
+		self._crc = CRC32(data: valueData).crc
         
-        var data = Data(capacity: self.length)
+        var data = Data(capacity: self.dataLength)
         data.append(self._crc.data)
         data.append(valueData)
         return data
     }()
-    
-    var description: String {
-        return "\t\t\t\t\t\tMAGIC_BYTE(\(self._crc.length)): \(self._crc.value) => \(self._crc.data)\n" +
-            "\t\t\t\t\t\tMAGIC_BYTE(\(self._magicByte.length)): \(self._magicByte.value) => \(self._magicByte.data)\n" +
-            "\t\t\t\t\t\tATTRIBUTES(\(self._attributes.length)): \(self._attributes.value) => \(self._attributes.data)\n" +
-            "\t\t\t\t\t\tKEY(\(self._key.length)): \(self._key.value?.description ?? "nil") => \(self._key.data)\n" +
-		"\t\t\t\t\t\tVALUE(\(self._value.length)): \(self._value.value?.description ?? "nil") => \(self._value.data)\n"
-    }
 }
 
 

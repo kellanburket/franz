@@ -26,13 +26,23 @@ public class Consumer {
 	}
 	
 	func subscribe(topic: String) {
-		membership?.group.topics.insert(topic)
-		cluster.addTargetTopics(topics: [topic])
+		topicsToSubscribeTo.append(topic)
+		DispatchQueue(label: "FranzConsumerSubscribeQueue").async {
+			self.joinedGroupSemaphore.wait()
+			self.subscripeToTopics()
+		}
+	}
+	
+	private var topicsToSubscribeTo = [TopicName]()
+	private func subscripeToTopics() {
+		topicsToSubscribeTo.forEach { membership!.group.topics.insert($0) }
+		cluster.addTargetTopics(topics: topicsToSubscribeTo)
+		topicsToSubscribeTo.removeAll()
 	}
 	
 	let listenQueue = DispatchQueue(label: "FranzConsumerListenQueue")
 	
-	var offsetsToCommit = [TopicName: [PartitionId: (Offset, OffsetCommitRequest.Metadata?)]]()
+	var offsetsToCommit = [TopicName: [PartitionId: (Offset, OffsetMetadata?)]]()
 	@objc private func commitGroupoffsets() {
 		guard let groupId = self.membership?.group.id, let broker = self.broker else { return }
 		broker.commitGroupOffset(groupId: groupId, topics: offsetsToCommit, clientId: cluster.clientId)
@@ -44,6 +54,8 @@ public class Consumer {
 			guard let membership = self.membership, let broker = self.broker else {
 				return
 			}
+			
+			self.subscripeToTopics()
 			
 			self.cluster.getParitions(for: Array(membership.group.topics)) { partitions in
 				let ids = partitions.reduce([TopicName: [PartitionId]](), { (result, arg1) in

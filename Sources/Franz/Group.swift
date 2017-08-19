@@ -139,8 +139,9 @@ open class GroupMembership {
             clientId: group._clientId,
             version: group._version) { membership in
 			for assignment in membership.partitionAssignment.values {
-				self.group.assignedPartitions[assignment.topic.value!] = assignment.partitions.values.map { $0.value }
+				self.group.assignedPartitions[assignment.topic] = assignment.partitions.values.map { $0 }
 			}
+			self.group.topics = Set(membership.partitionAssignment.values.map { $0.topic })
 			callback?()
 		}
     }

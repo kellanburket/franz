@@ -10,93 +10,43 @@ import Foundation
 
 typealias PartitionId = Int32
 
-class Partition: KafkaClass {
-    private var _partitionErrorCode: KafkaInt16
-    private var _partitionId: KafkaInt32
-    private var _leader: KafkaInt32
-    private var _replicas: KafkaArray<KafkaInt32>
-    private var _isr: KafkaArray<KafkaInt32>
-
+class Partition: KafkaType {
+	
+    private var partitionErrorCode: Int16
     var error: KafkaErrorCode? {
-        if let error = KafkaErrorCode(rawValue: _partitionErrorCode.value) {
-            return error
-        } else {
-            return nil
-        }
+        return KafkaErrorCode(rawValue: partitionErrorCode)
     }
     
-    var id: Int32 {
-        return _partitionId.value
+    var id: PartitionId
+    
+    var leader: PartitionId
+    
+    private(set) var replicas: KafkaArray<Int32>
+    
+    private(set) var isr: KafkaArray<Int32>
+    
+    init(partitionErrorCode: Int, partitionId: Int, leader: Int, replicas: [Int], isr: [Int]) {
+        self.partitionErrorCode = Int16(partitionErrorCode)
+        self.id = Int32(partitionId)
+        self.leader = Int32(leader)
+		
+		self.replicas = KafkaArray<Int32>(replicas.map { Int32($0) })
+		self.isr = KafkaArray<Int32>(isr.map { Int32($0) })
     }
     
-    var leader: Int32 {
-        return _leader.value
+	required init(data: inout Data) {
+        partitionErrorCode = Int16(data: &data)
+        id = PartitionId(data: &data)
+        leader = PartitionId(data: &data)
+        replicas = KafkaArray(data: &data)
+        isr = KafkaArray(data: &data)
     }
     
-    var replicas: [Int32] {
-        var values = [Int32]()
-        for replica in _replicas.values {
-            values.append(replica.value)
-        }
-        return values
-    }
-    
-    var isr: [Int32] {
-        var values = [Int32]()
-        for isr in _isr.values {
-            values.append(isr.value)
-        }
-        return values
-    }
-    
-    lazy var description: String = {
-        let defaultErrorValue = "nil"
-        return "PARTITION METADATA\n\t" +
-            "ERROR: \(self.error?.description ?? defaultErrorValue)\n\t" +
-            "ERROR CODE: \(self.error?.code ?? 0)\n\t" +
-            "PARTITION ID(\(self._partitionId.length)): \(self.id) => \(self._partitionId.data)\n\t" +
-            "LEADER(\(self._leader.length)): \(self.leader) => \(self._leader.data)\n\t" +
-            "REPLICAS(\(self._replicas.length)): \(self.replicas) => \(self._replicas.data)\n\t" +
-        "ISR(\(self._isr.length)): \(self.isr) => \(self._isr.data)"
-    }()
-    
-    init(
-        partitionErrorCode: Int,
-        partitionId: Int,
-        leader: Int,
-        replicas: [Int],
-        isr: [Int]
-    ) {
-        _partitionErrorCode = KafkaInt16(value: Int16(partitionErrorCode))
-        _partitionId = KafkaInt32(value: Int32(partitionId))
-        _leader = KafkaInt32(value: Int32(leader))
-        
-        var tempReplicas = [KafkaInt32]()
-        for replica in replicas {
-            tempReplicas.append(KafkaInt32(value: Int32(replica)))
-        }
-        _replicas = KafkaArray<KafkaInt32>(values: tempReplicas)
-        
-        var tempIsr = [KafkaInt32]()
-        for value in isr {
-            tempIsr.append(KafkaInt32(value: Int32(value)))
-        }
-        _isr = KafkaArray<KafkaInt32>(values: tempIsr)
-    }
-    
-    required init(bytes: inout [UInt8]) {
-        _partitionErrorCode = KafkaInt16(bytes: &bytes)
-        _partitionId = KafkaInt32(bytes: &bytes)
-        _leader = KafkaInt32(bytes: &bytes)
-        _replicas = KafkaArray(bytes: &bytes)
-        _isr = KafkaArray(bytes: &bytes)
-    }
-    
-    var length: Int {
-        return _partitionErrorCode.length + _partitionId.length + _leader.length + _replicas.length + _isr.length
+    var dataLength: Int {
+        return partitionErrorCode.dataLength + id.dataLength + leader.dataLength + replicas.dataLength + isr.dataLength
     }
     
     var data: Data {
-        return _partitionErrorCode.data + _partitionId.data + _leader.data + _replicas.data + _isr.data
+        return partitionErrorCode.data + id.data + leader.data + replicas.data + isr.data
     }
 }

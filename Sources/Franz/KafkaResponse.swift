@@ -8,10 +8,8 @@
 
 import Foundation
 
-protocol KafkaResponse: Readable {    
-    
-    init(bytes: inout [UInt8])
+protocol KafkaResponse {
 	
-	var description: String { get }
-
+	init(data: inout Data)
+	
 }

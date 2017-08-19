@@ -17,11 +17,11 @@ class ListGroupsRequest: KafkaRequest {
 
 class ListGroupsResponse: KafkaResponse {
     
-    private var _errorCode: KafkaInt16
+    private var _errorCode: Int16
     private var _groups: KafkaArray<ListedGroup>
     
     var error: KafkaErrorCode? {
-        return KafkaErrorCode(rawValue: _errorCode.value)
+        return KafkaErrorCode(rawValue: _errorCode)
     }
     
     var groups: [String: String] {
@@ -34,67 +34,54 @@ class ListGroupsResponse: KafkaResponse {
         return groups
     }
     
-	required init( bytes: inout [UInt8]) {
-        _errorCode = KafkaInt16(bytes: &bytes)
-        _groups = KafkaArray(bytes: &bytes)
+	required init(data: inout Data) {
+        _errorCode = Int16(data: &data)
+        _groups = KafkaArray(data: &data)
     }
     
-    lazy var length: Int = {
-        return self._errorCode.length +
-            self._groups.length
+    lazy var dataLength: Int = {
+        return self._errorCode.dataLength +
+            self._groups.dataLength
     }()
     
     lazy var data: Data = {
-        var data = Data(capacity: self.length)
+        var data = Data(capacity: self.dataLength)
 		data.append(self._errorCode.data)
 		data.append(self._groups.data)
         return data
     }()
-    
-    var description: String {
-        return "LIST GROUPS RESPONSE:\n" +
-            "\tERROR CODE: \(self.error?.code ?? 0)\n" +
-            "\tERROR DESCRIPTION: \(self.error?.description ?? String())\n" +
-            "\tGROUPS(\(self._groups.length)):\n" +
-            _groups.description
-    }
 }
 
 
-class ListedGroup: KafkaClass {
-    private var _groupId: KafkaString
-    private var _protocolType: KafkaString
+class ListedGroup: KafkaType {
+    private var _groupId: String
+    private var _protocolType: String
     
     var id: String {
-        return _groupId.value ?? String()
+        return _groupId
     }
     
     var groupProtocolType: String {
-        return _protocolType.value ?? String()
+        return _protocolType
     }
     
-	required init( bytes: inout [UInt8]) {
-        _groupId = KafkaString(bytes: &bytes)
-        _protocolType = KafkaString(bytes: &bytes)
+	required init(data: inout Data) {
+        _groupId = String(data: &data)
+        _protocolType = String(data: &data)
     }
     
     
-    lazy var length: Int = {
-        return  self._groupId.length +
-            self._protocolType.length
+    lazy var dataLength: Int = {
+        return  self._groupId.dataLength +
+            self._protocolType.dataLength
         
     }()
     
     lazy var data: Data = {
-        var data = Data(capacity: self.length)
+        var data = Data(capacity: self.dataLength)
 		data.append(self._groupId.data)
 		data.append(self._protocolType.data)
         return data
-    }()
-    
-    lazy var description: String = {
-        return "\t\tGROUP ID(\(self._groupId.length)): \(self.id) => \(self._groupId.data)\n" +
-        "\t\tPROTOCOL TYPE(\(self._protocolType.length)): \(self.groupProtocolType) => \(self._protocolType.data)\n"
     }()
 }
 
@@ -115,33 +102,29 @@ class DescribeGroupsRequest: KafkaRequest {
 }
 
 
-class DescribeGroupsRequestMessage: KafkaClass {
-    private var _groupIds: KafkaArray<KafkaString>
+class DescribeGroupsRequestMessage: KafkaType {
+    private var _groupIds: KafkaArray<String>
     
     init(groupIds: [String]) {
-        var values = [KafkaString]()
+        var values = [String]()
         for value in groupIds {
-            values.append(KafkaString(value: value))
+            values.append(value)
         }
-        _groupIds = KafkaArray(values: values)
+        _groupIds = KafkaArray(values)
     }
     
-	required init( bytes: inout [UInt8]) {
-        _groupIds = KafkaArray(bytes: &bytes)
+	required init(data: inout Data) {
+        _groupIds = KafkaArray(data: &data)
     }
     
-    lazy var length: Int = {
-        return  self._groupIds.length
+    lazy var dataLength: Int = {
+        return  self._groupIds.dataLength
     }()
     
     lazy var data: Data = {
-        var data = Data(capacity: self.length)
+        var data = Data(capacity: self.dataLength)
 		data.append(self._groupIds.data)
         return data
-    }()
-    
-    lazy var description: String = {
-        return "GROUP ID(\(self._groupIds.length)): \(self._groupIds.values) => \(self._groupIds.data)"
     }()
 }
 
@@ -153,160 +136,125 @@ class DescribeGroupsResponse: KafkaResponse {
         return _groups.values
     }
     
-    required init(bytes: inout [UInt8]) {
-        _groups = KafkaArray(bytes: &bytes)
+    required init(data: inout Data) {
+        _groups = KafkaArray(data: &data)
     }
     
-    lazy var length: Int = {
-        return self._groups.length
+    lazy var dataLength: Int = {
+        return self._groups.dataLength
     }()
     
     lazy var data: Data = {
-        var data = Data(capacity: self.length)
+        var data = Data(capacity: self.dataLength)
         data.append(self._groups.data)
         return data
     }()
-    
-    var description: String {
-        return "DESCRIBE GROUP RESPONSE:\n" +
-            "\tGROUPS:\n" + self._groups.description
-    }
 }
 
 
-class GroupStateResponse: KafkaClass {
-    private var _errorCode: KafkaInt16
-    private var _groupId: KafkaString
-    private var _state: KafkaString
-    private var _protocolType: KafkaString
-    private var _protocol: KafkaString
+class GroupStateResponse: KafkaType {
+    private var _errorCode: Int16
+    private var _groupId: String
+    private var _state: String
+    private var _protocolType: String
+    private var _protocol: String
     private var _members: KafkaArray<GroupMemberResponse>
     
     var id: String? {
-        return _groupId.value
+        return _groupId
     }
     
     var kafkaProtocol: String? {
-        return _protocol.value
+        return _protocol
     }
     
-    var protocolType: GroupProtocol? {
-        if let type = _protocolType.value {
-            if type == "consumer" {
-                return GroupProtocol.consumer
-            } else {
-                return GroupProtocol.custom(name: type)
-            }
-        } else {
-            return nil
-        }
+    var protocolType: GroupProtocol {
+		if _protocolType == "consumer" {
+			return GroupProtocol.consumer
+		} else {
+			return GroupProtocol.custom(name: _protocolType)
+		}
     }
 
     var error: KafkaErrorCode? {
-        return KafkaErrorCode(rawValue: _errorCode.value)
+        return KafkaErrorCode(rawValue: _errorCode)
     }
     
-    var state: GroupState? {
-        if let state = _state.value {
-            return GroupState(rawValue: state)
-        } else {
-            return nil
-        }
+    var state: GroupState {
+		return GroupState(rawValue: _state)!
     }
     
     var members: [GroupMemberResponse] {
         return _members.values
     }
 
-    required init(bytes: inout [UInt8]) {
-        _errorCode = KafkaInt16(bytes: &bytes)
-        _groupId = KafkaString(bytes: &bytes)
-        _state = KafkaString(bytes: &bytes)
-        _protocolType = KafkaString(bytes: &bytes)
-        _protocol = KafkaString(bytes: &bytes)
-        _members = KafkaArray(bytes: &bytes)
+    required init(data: inout Data) {
+        _errorCode = Int16(data: &data)
+        _groupId = String(data: &data)
+        _state = String(data: &data)
+        _protocolType = String(data: &data)
+        _protocol = String(data: &data)
+        _members = KafkaArray(data: &data)
     }
     
     
-    lazy var length: Int = {
-        return self._errorCode.length +
-            self._groupId.length +
-            self._state.length +
-            self._protocolType.length +
-            self._protocol.length +
-            self._members.length
+    lazy var dataLength: Int = {
+        return self._errorCode.dataLength +
+            self._groupId.dataLength +
+            self._state.dataLength +
+            self._protocolType.dataLength +
+            self._protocol.dataLength +
+            self._members.dataLength
     }()
     
     lazy var data: Data = {
-        var data = Data(capacity: self.length)
+        var data = Data(capacity: self.dataLength)
 		data.append(self._groupId.data)
 		data.append(self._protocolType.data)
         return data
     }()
-    
-    lazy var description: String = {
-		return """
-			ERROR CODE: \(self.error?.code ?? 0)
-			ERROR DESCRIPTION: \(self.error?.description ?? String())
-			GROUP ID(\(self._groupId.length)): \(self.id ?? "") => \(self._groupId.data)
-			STATE(\(self._state.length)): \(String(describing: self.state)) => \(self._state.data)
-			PROTOCOL TYPE(\(self._protocolType.length)): \(self._protocolType.value ?? "nil") => \(self._protocolType.data)
-			PROTOCOL(\(self._protocol.length)): \(self.kafkaProtocol ?? "nil") => \(self._protocol.data)
-			MEMBERS(\(self._members.length)):
-			\(self._members.description)
-		"""
-    }()
+	
 }
 
 
-class GroupMemberResponse: KafkaClass {
-    private var _memberId: KafkaString
-    private var _clientId: KafkaString
-    private var _clientHost: KafkaString
-    private var _memberMetadata: KafkaBytes
-    private var _memberAssignment: KafkaBytes
+class GroupMemberResponse: KafkaType {
+    private var _memberId: String
+    private var _clientId: String
+    private var _clientHost: String
+    private var _memberMetadata: Data
+    private var _memberAssignment: Data
     
     var memberId: String {
-        return _memberId.value ?? String()
+        return _memberId
     }
 
     var clientId: String {
-        return _clientId.value ?? String()
+        return _clientId
     }
     
     var host: String {
-        return _clientHost.value ?? String()
+        return _clientHost
     }
     
-    required init(bytes: inout [UInt8]) {
-        _memberId = KafkaString(bytes: &bytes)
-        _clientId = KafkaString(bytes: &bytes)
-        _clientHost = KafkaString(bytes: &bytes)
-        _memberMetadata = KafkaBytes(bytes: &bytes)
-        _memberAssignment = KafkaBytes(bytes: &bytes)
+    required init(data: inout Data) {
+        _memberId = String(data: &data)
+        _clientId = String(data: &data)
+        _clientHost = String(data: &data)
+        _memberMetadata = Data(data: &data)
+        _memberAssignment = Data(data: &data)
     }
     
     
-    lazy var length: Int = {
-        return self._memberId.length +
-            self._clientId.length +
-            self._clientHost.length +
-            self._memberMetadata.length +
-            self._memberAssignment.length
+    lazy var dataLength: Int = {
+        return self._memberId.dataLength +
+            self._clientId.dataLength +
+            self._clientHost.dataLength +
+            self._memberMetadata.dataLength +
+            self._memberAssignment.dataLength
     }()
     
     lazy var data: Data = {
-        var data = Data(capacity: self.length)
+        var data = Data(capacity: self.dataLength)
         return data
-    }()
-    
-    lazy var description: String = {
-		return """
-			MEMBER ID: \(self.memberId)
-			CLIENT ID: \(self.clientId)
-			CLIENT HOST: \(self.host)
-			MEMBER METADATA: \(String(describing: self._memberMetadata.value))
-			MEMBER METADATA: \(String(describing: self._memberAssignment.value))
-		"""
     }()
 }

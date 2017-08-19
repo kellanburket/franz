@@ -49,20 +49,20 @@ class OffsetRequest: KafkaRequest {
 }
 
 
-class OffsetRequestMessage: KafkaClass {
+class OffsetRequestMessage: KafkaType {
     
-    private var _replicaId: KafkaInt32
+    private var _replicaId: Int32
     private var _topics: KafkaArray<TopicalOffsetMessage>
     
     var replicaId: Int32 {
-        return _replicaId.value
+        return _replicaId
     }
     
     init(
         topics: [String:[Int32:(TimeOffset,Int32)]],
         replicaId: ReplicaId = .none
     ) {
-        _replicaId = KafkaInt32(value: replicaId.value)
+        _replicaId = replicaId.value
 
         var tempTopics = [TopicalOffsetMessage]()
         
@@ -70,48 +70,41 @@ class OffsetRequestMessage: KafkaClass {
             tempTopics.append(TopicalOffsetMessage(value: t, partitions: p))
         }
         
-        _topics = KafkaArray(values: tempTopics)
+        _topics = KafkaArray(tempTopics)
     }
     
-    required init(bytes: inout [UInt8]) {
-        _replicaId = KafkaInt32(bytes: &bytes)
-        _topics = KafkaArray(bytes: &bytes)
+    required init(data: inout Data) {
+        _replicaId = Int32(data: &data)
+        _topics = KafkaArray(data: &data)
     }
     
-    lazy var length: Int = {
-        return self._replicaId.length +
-            self._topics.length
+    lazy var dataLength: Int = {
+        return self._replicaId.dataLength +
+            self._topics.dataLength
     }()
     
     lazy var data: Data = {
-        var data = Data(capacity: self.length)
+        var data = Data(capacity: self.dataLength)
         data.append(self._replicaId.data)
         data.append(self._topics.data)
         return data
     }()
-    
-    lazy var description: String = {
-        return "FETCH REQUEST(\(self.length)):\n" +
-            "\tREPLICA ID(\(self._replicaId.length)): \(self.replicaId) => \(self._replicaId.data)\n" +
-            "\tTOPICS(\(self._topics.length)):" +
-            self._topics.description
-    }()
 }
 
 
-class TopicalOffsetMessage: KafkaClass {
-    private var _topicName: KafkaString
+class TopicalOffsetMessage: KafkaType {
+    private var _topicName: String
     private var _partitions: KafkaArray<PartitionedOffsetMessage>
     
     var topicName: String {
-        return _topicName.value ?? String()
+        return _topicName
     }
     
     init(
         value: String,
         partitions: [Int32: (TimeOffset, Int32)]
     ) {
-        _topicName = KafkaString(value: value)
+        _topicName = value
         var tempPartitions = [PartitionedOffsetMessage]()
         for (partition, attributes) in partitions {
             tempPartitions.append(
@@ -122,96 +115,78 @@ class TopicalOffsetMessage: KafkaClass {
                 )
             )
         }
-        _partitions = KafkaArray(values: tempPartitions)
+        _partitions = KafkaArray(tempPartitions)
     }
     
-    required init(bytes: inout [UInt8]) {
-        _topicName = KafkaString(bytes: &bytes)
-        _partitions = KafkaArray(bytes: &bytes)
+    required init(data: inout Data) {
+        _topicName = String(data: &data)
+        _partitions = KafkaArray(data: &data)
     }
     
-    lazy var length: Int = {
-        return self._topicName.length + self._partitions.length
+    lazy var dataLength: Int = {
+        return self._topicName.dataLength + self._partitions.dataLength
     }()
     
     lazy var data: Data = {
-        var data = Data(capacity: self.length)
+        var data = Data(capacity: self.dataLength)
         data.append(self._topicName.data)
         data.append(self._partitions.data)
         return data
     }()
-    
-    lazy var description: String = {
-        return "\t\tTOPIC NAME(\(self._topicName.length)): " +
-                "\(self.topicName) => \(self._topicName.data)\n" +
-            "\t\tPARTITIONS(\(self._partitions.length)):" +
-                self._partitions.description
-    }()
 }
 
 
-class PartitionedOffsetMessage: KafkaClass {
-    private var _partition: KafkaInt32
-    private var _time: KafkaInt64
-    private var _maxNumberOfOffsets: KafkaInt32
+class PartitionedOffsetMessage: KafkaType {
+    private var _partition: Int32
+    private var _time: Int64
+    private var _maxNumberOfOffsets: Int32
     
     var partition: Int32 {
-        return _partition.value
+        return _partition
     }
     
     var time: Int64 {
-        return _time.value
+        return _time
     }
     
     var maxNumberOfOffsets: Int32 {
-        return _maxNumberOfOffsets.value
+        return _maxNumberOfOffsets
     }
     
     init(value: Int32, time: TimeOffset, maxNumberOfOffsets: Int32) {
-        _partition = KafkaInt32(value: Int32(value))
-        _time = KafkaInt64(value: time.value)
-        _maxNumberOfOffsets = KafkaInt32(value: maxNumberOfOffsets)
+        _partition = value
+        _time = time.value
+        _maxNumberOfOffsets = maxNumberOfOffsets
     }
     
-    required init(bytes: inout [UInt8]) {
-        _partition = KafkaInt32(bytes: &bytes)
-        _time = KafkaInt64(bytes: &bytes)
-        _maxNumberOfOffsets = KafkaInt32(bytes: &bytes)
+    required init(data: inout Data) {
+        _partition = Int32(data: &data)
+        _time = Int64(data: &data)
+        _maxNumberOfOffsets = Int32(data: &data)
     }
     
-    lazy var length: Int = {
-        return self._partition.length +
-            self._time.length +
-            self._maxNumberOfOffsets.length
+    lazy var dataLength: Int = {
+        return self._partition.dataLength +
+            self._time.dataLength +
+            self._maxNumberOfOffsets.dataLength
     }()
     
     lazy var data: Data = {
-        var data = Data(capacity: self.length)
+        var data = Data(capacity: self.dataLength)
         data.append(self._partition.data)
         data.append(self._time.data)
         data.append(self._maxNumberOfOffsets.data)
         return data
     }()
-    
-    lazy var description: String = {
-        return "\n\t\t\t----------\n" +
-            "\t\t\tPARTITION(\(self._partition.length)): \(self.partition) => \(self._partition.data)\n" +
-            "\t\t\tFETCH OFFSET(\(self._time.length)): \(self.time) => \(self._time.data)\n" +
-        "\t\t\tMAX BYTES(\(self._maxNumberOfOffsets.length)): \(self._maxNumberOfOffsets.value) => \(self._maxNumberOfOffsets.data)"
-        
-    }()
 }
 
 
 class OffsetResponse: KafkaResponse {
+	
     var values: KafkaArray<TopicalPartitionedOffsets>
     
-    required init(bytes: inout [UInt8]) {
-        values = KafkaArray(bytes: &bytes)
-    }
-    
-    var description: String {
-        return values.description
+    required init(data: inout Data) {
+        values = KafkaArray(data: &data)
     }
 
     var topicalPartitionedOffsets: [TopicalPartitionedOffsets] {
@@ -220,12 +195,12 @@ class OffsetResponse: KafkaResponse {
 }
 
 
-class TopicalPartitionedOffsets: KafkaClass {
-    private var _topicName: KafkaString
+class TopicalPartitionedOffsets: KafkaType {
+    private var _topicName: String
     private var _partitions: KafkaArray<PartitionedOffsets>
     
     var topicName: String {
-        return _topicName.value ?? String()
+        return _topicName
     }
     
     var partitionedOffsets: [Int32: PartitionedOffsets] {
@@ -236,76 +211,62 @@ class TopicalPartitionedOffsets: KafkaClass {
         return values
     }
     
-    required init(bytes: inout [UInt8]) {
-        _topicName = KafkaString(bytes: &bytes)
-        _partitions = KafkaArray(bytes: &bytes)
+    required init(data: inout Data) {
+        _topicName = String(data: &data)
+        _partitions = KafkaArray(data: &data)
     }
     
-    lazy var length: Int = {
-        return self._topicName.length + self._partitions.length
+    lazy var dataLength: Int = {
+        return self._topicName.dataLength + self._partitions.dataLength
     }()
     
     lazy var data: Data = {
-        var data = Data(capacity: self.length)
+        var data = Data(capacity: self.dataLength)
         data.append(self._topicName.data)
         data.append(self._partitions.data)
         return data
     }()
-    
-    lazy var description: String = {
-        return "\t\tTOPIC NAME(\(self._topicName.length )): \(self.topicName) => \(self._topicName.data)\n" +
-            "\t\tPARTITIONS(\(self._partitions.length)):" +
-            self._partitions.description
-    }()
 }
 
 
-class PartitionedOffsets: KafkaClass {
-    private var _partition: KafkaInt32
-    private var _errorCode: KafkaInt16
-    private var _offsets: KafkaArray<KafkaInt64>
+class PartitionedOffsets: KafkaType {
+    private var _partition: Int32
+    private var _errorCode: Int16
+    private var _offsets: KafkaArray<Offset>
     
     var partition: Int32 {
-        return _partition.value
+        return _partition
     }
     
     var error: KafkaErrorCode? {
-        return KafkaErrorCode(rawValue: _errorCode.value)
+        return KafkaErrorCode(rawValue: _errorCode)
     }
     
     var offsets: [Int64] {
         var values = [Int64]()
         for value in _offsets.values {
-            values.append(value.value)
+            values.append(value)
         }
         return values.reversed()
     }
 
-    required init(bytes: inout [UInt8]) {
-        _partition = KafkaInt32(bytes: &bytes)
-        _errorCode = KafkaInt16(bytes: &bytes)
-        _offsets = KafkaArray(bytes: &bytes)
+    required init(data: inout Data) {
+        _partition = Int32(data: &data)
+        _errorCode = Int16(data: &data)
+        _offsets = KafkaArray(data: &data)
     }
     
-    lazy var length: Int = {
-        return self._partition.length +
-            self._errorCode.length +
-            self._offsets.length
+    lazy var dataLength: Int = {
+        return self._partition.dataLength +
+            self._errorCode.dataLength +
+            self._offsets.dataLength
     }()
     
     lazy var data: Data = {
-        var data = Data(capacity: self.length)
+        var data = Data(capacity: self.dataLength)
         data.append(self._partition.data)
         data.append(self._errorCode.data)
         data.append(self._offsets.data)
         return data
-    }()
-    
-    lazy var description: String = {
-        return "\n\t\t\t---------\n" +
-            "\t\t\tPARTITION(\(self._partition.length)): \(self.partition) => \(self._partition.data)\n" +
-            "\t\t\tERROR CODE(\(self._errorCode.length)): \(self.error?.description ?? String())(\(self.error?.code ?? 0)) => \(self._errorCode.data)\n" +
-            "\t\tOFFSETS(\(self._offsets.length)):" +
-            self._offsets.description
     }()
 }

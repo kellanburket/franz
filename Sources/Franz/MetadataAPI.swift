@@ -28,35 +28,30 @@ class TopicMetadataRequest: KafkaRequest {
 
 }
 
-class TopicMetadataRequestMessage: KafkaClass {
+class TopicMetadataRequestMessage: KafkaType {
 
-    var values: KafkaArray<KafkaString>
+    var values: KafkaArray<String>
     
     init(values: [String]) {
-        var strings = [KafkaString]()
+        var strings = [String]()
 
         for value in values {
-            strings.append(KafkaString(value: value))
+            strings.append(value)
         }
         
-        self.values = KafkaArray(values: strings)
+        self.values = KafkaArray(strings)
     }
 
-    required init(bytes: inout [UInt8]) {
-        values = KafkaArray(bytes: &bytes)
+    required init(data: inout Data) {
+        values = KafkaArray(data: &data)
     }
 
-    lazy var length: Int = {
-        return self.values.length
+    lazy var dataLength: Int = {
+        return self.values.dataLength
     }()
     
     lazy var data: Data = {
         return (self.values.data)
-    }()
-
-    lazy var description: String = {
-        return "\tTOPICS(\(self.values.length)):\n\t\t" +
-            self.values.description
     }()
 }
 
@@ -83,22 +78,16 @@ class MetadataResponse: KafkaResponse {
         return values
     }
     
-    var description: String {
-        var description = "BROKERS:\n"
-        for (_, broker) in brokers {
-            description += "-----------\n\(broker.description)\n"
-        }
-
-        description += "-----------\nMETADATA:\n"
-        for (_, topic) in topics {
-            description += "-----------\n\(topic.description)\n"
-        }
-        
-        return description
+    required init(data: inout Data) {
+        _metadataBrokers = KafkaArray(data: &data)
+        _topicMetadata = KafkaArray(data: &data)
     }
-    
-    required init(bytes: inout [UInt8]) {
-        _metadataBrokers = KafkaArray<Broker>(bytes: &bytes)
-        _topicMetadata = KafkaArray<KafkaTopic>(bytes: &bytes)
-    }
+	
+	var data: Data {
+		return _metadataBrokers.data + _topicMetadata.data
+	}
+	
+	var dataLength: Int {
+		return _metadataBrokers.dataLength + _topicMetadata.dataLength
+	}
 }
