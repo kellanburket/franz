@@ -26,6 +26,9 @@
 		A3426BA51F25267500579CF8 /* AssignmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3426BA41F25267500579CF8 /* AssignmentTests.swift */; };
 		A353E8FF1F42325F00CCB63D /* IntegerProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A353E8FE1F42325F00CCB63D /* IntegerProtocolTests.swift */; };
 		A353FF791F2FF3B40047EE2C /* ConsumerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */; };
+		A3850F4E1F49C70000C62CF1 /* docker-compose.yml in Resources */ = {isa = PBXBuildFile; fileRef = A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */; };
+		A3850F501F4B067800C62CF1 /* MessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3850F4F1F4B067800C62CF1 /* MessageTests.swift */; };
+		A3850F531F4B3C2F00C62CF1 /* DockerTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */; };
 		A38623331F43A3BE005590B8 /* VariableLengthProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38623321F43A3BE005590B8 /* VariableLengthProtocolTests.swift */; };
 		A386B8091F196A730086BFF2 /* Assignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A386B8081F196A730086BFF2 /* Assignment.swift */; };
 		A38E69A01F391BCB0044D3D3 /* OldConsumers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */; };
@@ -75,9 +78,12 @@
 /* Begin PBXFileReference section */
 		A314CB8C1F08B457008D61A6 /* CRCTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRCTests.swift; sourceTree = "<group>"; };
 		A32A62E01F43B733006F9111 /* ArrayProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayProtocolTests.swift; sourceTree = "<group>"; };
+		A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = "docker-compose.yml"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		A3426BA41F25267500579CF8 /* AssignmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignmentTests.swift; sourceTree = "<group>"; };
 		A353E8FE1F42325F00CCB63D /* IntegerProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegerProtocolTests.swift; sourceTree = "<group>"; };
 		A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumerTests.swift; sourceTree = "<group>"; };
+		A3850F4F1F4B067800C62CF1 /* MessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTests.swift; sourceTree = "<group>"; };
+		A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DockerTestBase.swift; path = Tests/FranzTests/Docker/DockerTestBase.swift; sourceTree = SOURCE_ROOT; };
 		A38623321F43A3BE005590B8 /* VariableLengthProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariableLengthProtocolTests.swift; sourceTree = "<group>"; };
 		A386B8081F196A730086BFF2 /* Assignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assignment.swift; sourceTree = "<group>"; };
 		A38E699D1F391B960044D3D3 /* Consumer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Consumer.swift; sourceTree = "<group>"; };
@@ -128,12 +134,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A3850F511F4B3C0C00C62CF1 /* Docker */ = {
+			isa = PBXGroup;
+			children = (
+				A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */,
+				A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */,
+			);
+			path = Docker;
+			sourceTree = SOURCE_ROOT;
+		};
 		A38623311F43A31F005590B8 /* Protocol */ = {
 			isa = PBXGroup;
 			children = (
 				A353E8FE1F42325F00CCB63D /* IntegerProtocolTests.swift */,
 				A38623321F43A3BE005590B8 /* VariableLengthProtocolTests.swift */,
 				A32A62E01F43B733006F9111 /* ArrayProtocolTests.swift */,
+				A3850F4F1F4B067800C62CF1 /* MessageTests.swift */,
 			);
 			name = Protocol;
 			path = Tests/FranzTests/Protocol;
@@ -158,10 +174,11 @@
 		OBJ_36 /* FranzTests */ = {
 			isa = PBXGroup;
 			children = (
+				A3850F511F4B3C0C00C62CF1 /* Docker */,
 				A3426BA41F25267500579CF8 /* AssignmentTests.swift */,
 				A314CB8C1F08B457008D61A6 /* CRCTests.swift */,
-				A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */,
 				A38623311F43A31F005590B8 /* Protocol */,
+				A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */,
 			);
 			name = FranzTests;
 			path = Tests/FranzTests;
@@ -252,6 +269,7 @@
 			buildPhases = (
 				OBJ_47 /* Sources */,
 				OBJ_49 /* Frameworks */,
+				A3850F4D1F49C6FA00C62CF1 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -298,6 +316,17 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		A3850F4D1F49C6FA00C62CF1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A3850F4E1F49C70000C62CF1 /* docker-compose.yml in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		OBJ_47 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -305,8 +334,10 @@
 			files = (
 				A353E8FF1F42325F00CCB63D /* IntegerProtocolTests.swift in Sources */,
 				A3426BA51F25267500579CF8 /* AssignmentTests.swift in Sources */,
+				A3850F531F4B3C2F00C62CF1 /* DockerTestBase.swift in Sources */,
 				A353FF791F2FF3B40047EE2C /* ConsumerTests.swift in Sources */,
 				A314CB8D1F08B457008D61A6 /* CRCTests.swift in Sources */,
+				A3850F501F4B067800C62CF1 /* MessageTests.swift in Sources */,
 				A38623331F43A3BE005590B8 /* VariableLengthProtocolTests.swift in Sources */,
 				A32A62E11F43B733006F9111 /* ArrayProtocolTests.swift in Sources */,
 			);

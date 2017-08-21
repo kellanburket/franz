@@ -328,7 +328,21 @@ public enum GroupState: String {
     */
     case Down = "Down"
 	
+	/**
+		Group has no more members and its metadata is being removed
+	*/
+	case Dead = "Dead"
+	
+	/**
+		Group has no more members, but lingers until all offsets have expired. This state
+		also represents groups which use Kafka only for offset commits and have no members.
+	*/
 	case Empty = "Empty"
+	
+	/**
+		Group is preparing to rebalance
+	*/
+	case PreparingRebalance = "PreparingRebalance"
 }
 
 /**

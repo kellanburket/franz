@@ -187,15 +187,20 @@ class KafkaPartitionedMessageSet: KafkaType {
         value = MessageSet(data: &data)
         partition = Int32(data: &data)
     }
-    
+	
+	var messageSetSize: Int32 {
+		return Int32(value.dataLength)
+	}
+
     var dataLength: Int {
-        return partition.dataLength + value.dataLength
-    }
+        return partition.dataLength + messageSetSize.dataLength + value.dataLength
+	}
     
     var data: Data {
         var data = Data(capacity: dataLength)
         
         data.append(partition.data)
+		data.append(messageSetSize.data)
         data.append(value.data)
         
         return data

@@ -15,5 +15,5 @@ class CRCTests: XCTestCase {
 		let crc = CRC32(data: data).crc
 		XCTAssertEqual(0x88bed727, crc)
 	}
-    
+	
 }

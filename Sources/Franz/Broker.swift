@@ -224,7 +224,7 @@ class Broker: KafkaType {
     
     func send(_ topic: TopicName, partition: PartitionId, batch: MessageSet, clientId: String) {
         let request = ProduceRequest(values: [topic: [partition: batch]])
-        connect(clientId).write(request)
+		connect(clientId).write(request)
     }
 	
 	func commitGroupOffset(groupId: String, topics: [TopicName: [PartitionId: (Offset, OffsetMetadata?)]], clientId: String, callback: (() -> Void)? = nil) {
@@ -496,13 +496,14 @@ class Broker: KafkaType {
                 let response = HeartbeatResponse(data: &mutableData)
                 //print(response.description)
                 if let error = response.error {
-                    if error.code == 0 {
-                        if let heartbeatCallback = callback {
-                            heartbeatCallback()
-                        }
-                    } else {
-                        print("ERROR: \(error.description)")
-                    }
+					switch error {
+					case .noError:
+						callback?()
+					//TODO: rejoin the group
+					//case .rebalanceInProgressCode:
+					default:
+						print("ERROR: \(error.description)")
+					}
                 } else {
                     print("Unable to process error.")
                 }

@@ -341,6 +341,9 @@ open class Cluster {
 						}
 					}
 				}
+				if state == .Empty {
+					print("Group shouldn't be empty")
+				}
 			}
 		}, error: { error in
 			
@@ -368,8 +371,18 @@ open class Cluster {
 		for (_, broker) in _brokers {
 			let dispatchBlock = DispatchWorkItem(qos: .unspecified, flags: []) {
 				
-				broker.getTopicMetadata(topics: [topic], clientId: self.clientId) { response in
+				var handleGetTopicMetadata: ((MetadataResponse) -> Void)!
+				handleGetTopicMetadata = { response in
+					
 					if let topicObj = response.topics[topic] {
+						
+						if topicObj.error == .leaderNotAvailable {
+							let retryTopics = response.topics.filter { key, val in val.error == .leaderNotAvailable }.flatMap { $1.name }
+							sleep(1)
+							broker.getTopicMetadata(topics: retryTopics, clientId: self.clientId, completion: handleGetTopicMetadata)
+							return
+						}
+						
 						if let partitionObj = topicObj.partitions[partition] {
 							if partitionObj.leader == -1 {
 								error(ClusterError.leaderNotFound(topic: topic, partition: partition))
@@ -393,10 +406,12 @@ open class Cluster {
 					} else {
 						error(ClusterError.noTopicFoundInCluster(topic: topic))
 					}
-					
-					if dispatchBlocks.count > 0 {
-						self.dispatchQueue.async(execute: dispatchBlocks.removeFirst())
-					}
+				}
+				
+				broker.getTopicMetadata(topics: [topic], clientId: self.clientId, completion: handleGetTopicMetadata)
+				
+				if dispatchBlocks.count > 0 {
+					self.dispatchQueue.async(execute: dispatchBlocks.removeFirst())
 				}
 				
 			}
@@ -412,6 +427,13 @@ open class Cluster {
 		_brokers.first?.value.getGroupCoordinator(groupId: groupId, clientId: clientId) { response in
 			let host = response.host
 			let port = response.port
+			
+			//Retry if broker isn't available
+			if response.error == KafkaErrorCode.groupCoordinatorNotAvailableCode {
+				sleep(1)
+				self.getGroupCoordinator(groupId: groupId, callback: callback)
+				return
+			}
 			
 			if let broker = self._brokers["\(host):\(port)"] {
 				callback(broker)

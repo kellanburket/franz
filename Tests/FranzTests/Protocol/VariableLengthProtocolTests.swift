@@ -42,6 +42,20 @@ class VariableLengthProtocolTests: XCTestCase {
 		let s: String? = nil
 		var data = s.data
 		XCTAssertEqual("", String(data: &data))
+		
+		let s2: String? = "test"
+		var data2 = s2.data
+		XCTAssertEqual("test", String(data: &data2))
+	}
+	
+	func testOptionalData() {
+		let d: Data? = nil
+		var data = d.data
+		XCTAssertEqual(Data(), Data(data: &data))
+		
+		let d2: Data? = "test".data(using: .utf8)
+		var data2 = d2.data
+		XCTAssertEqual(d2, Data(data: &data2))
 	}
     
 }

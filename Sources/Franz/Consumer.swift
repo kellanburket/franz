@@ -19,6 +19,14 @@ public class Consumer {
 		
 		if #available(OSX 10.12, *) {
 			Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in self.commitGroupoffsets() }
+			Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in
+				guard let groupId = self.membership?.group.id,
+					let generationId = self.membership?.group.generationId,
+					let memberId = self.membership?.memberId else {
+						return
+				}
+				self.broker?.heartbeatRequest(groupId, generationId: generationId, memberId: memberId, clientId: cluster.clientId)
+			}
 		} else {
 			// Fallback on earlier versions
 			Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(commitGroupoffsets), userInfo: nil, repeats: true)
@@ -40,7 +48,7 @@ public class Consumer {
 		topicsToSubscribeTo.removeAll()
 	}
 	
-	let listenQueue = DispatchQueue(label: "FranzConsumerListenQueue")
+	private let listenQueue = DispatchQueue(label: "FranzConsumerListenQueue")
 	
 	var offsetsToCommit = [TopicName: [PartitionId: (Offset, OffsetMetadata?)]]()
 	@objc private func commitGroupoffsets() {
@@ -48,7 +56,7 @@ public class Consumer {
 		broker.commitGroupOffset(groupId: groupId, topics: offsetsToCommit, clientId: cluster.clientId)
 	}
 	
-	func listen(handler: @escaping (Message) -> Void) {
+	public func listen(handler: @escaping (Message) -> Void) {
 		listenQueue.async {
 			self.joinedGroupSemaphore.wait()
 			guard let membership = self.membership, let broker = self.broker else {
@@ -74,7 +82,7 @@ public class Consumer {
 							self.offsetsToCommit[topic] = [partitionId: (offset, nil)]
 						}
 				}, errorCallback: { error in
-//					print(error.description)
+					print("Error polling: \(error.localizedDescription)")
 				})
 			}
 		}

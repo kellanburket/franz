@@ -98,11 +98,21 @@ extension String: KafkaVariableLengthType {
 
 extension Optional where Wrapped == String {
 	var dataLength: Int {
-		return "".dataLength
+		switch self {
+		case .none:
+			return "".dataLength
+		case .some(let wrapped):
+			return wrapped.dataLength
+		}
 	}
 	
 	var data: Data {
-		return "".data
+		switch self {
+		case .none:
+			return "".data
+		case .some(let wrapped):
+			return wrapped.data
+		}
 	}
 }
 
@@ -120,11 +130,21 @@ extension Data: KafkaVariableLengthType {
 
 extension Optional where Wrapped == Data {
 	var dataLength: Int {
-		return Data().dataLength
+		switch self {
+		case .none:
+			return Data().dataLength
+		case .some(let wrapped):
+			return wrapped.dataLength
+		}
 	}
 	
 	var data: Data {
-		return Data().data
+		switch self {
+		case .none:
+			return Data().data
+		case .some(let wrapped):
+			return wrapped.data
+		}
 	}
 }
 

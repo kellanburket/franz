@@ -323,6 +323,12 @@ class GroupMemberAssignment: KafkaMetadata {
     }
 
     required init(data: inout Data) {
+		if data.count <= 0 {
+			_version = 0
+			partitionAssignment = KafkaArray([])
+			_userData = Data()
+			return
+		}
         _version = Int16(data: &data)
         partitionAssignment = KafkaArray(data: &data)
         _userData = Data(data: &data)
@@ -466,7 +472,7 @@ class SyncGroupResponse<T: KafkaMetadata>: KafkaResponse {
     }
     
     lazy var dataLength: Int = {
-        return self._errorCode.dataLength + self.memberAssignment.dataLength
+		return self._errorCode.dataLength + memberAssignment.dataLength + 4
     }()
     
     lazy var data: Data = {

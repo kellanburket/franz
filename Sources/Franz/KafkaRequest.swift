@@ -66,8 +66,6 @@ class KafkaRequest {
             data.append(value.data)
         }
 
-        //print("REQUEST LENGTH: \(data.length)")
-        //print(self.description)
         return data
     }()
 }
