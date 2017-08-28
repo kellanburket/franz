@@ -1,0 +1,6 @@
+language: objective-c
+xcode_project: Franz.xcodeproj
+xcode_scheme: franz-Package
+sudo: required
+services:
+  - docker
