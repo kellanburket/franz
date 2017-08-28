@@ -79,7 +79,6 @@
 		A314CB8C1F08B457008D61A6 /* CRCTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRCTests.swift; sourceTree = "<group>"; };
 		A32A62E01F43B733006F9111 /* ArrayProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayProtocolTests.swift; sourceTree = "<group>"; };
 		A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = "docker-compose.yml"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
-		A3300BB11F54BD9600F0507E /* travis.yml */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = travis.yml; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		A3426BA41F25267500579CF8 /* AssignmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignmentTests.swift; sourceTree = "<group>"; };
 		A353E8FE1F42325F00CCB63D /* IntegerProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegerProtocolTests.swift; sourceTree = "<group>"; };
 		A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumerTests.swift; sourceTree = "<group>"; };
@@ -197,7 +196,6 @@
 		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
-				A3300BB11F54BD9600F0507E /* travis.yml */,
 				OBJ_6 /* Package.swift */,
 				OBJ_7 /* Sources */,
 				OBJ_35 /* Tests */,

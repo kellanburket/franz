@@ -1,8 +1,7 @@
 language: objective-c
-osx_image: xcode9
 xcode_project: Franz.xcodeproj
-xcode_scheme: franz_Package
-
-branches:
-  only:
-  - swiftPackageManager
+xcode_scheme: franz-Package
+osx_image: xcode9
+sudo: required
+services:
+  - docker
