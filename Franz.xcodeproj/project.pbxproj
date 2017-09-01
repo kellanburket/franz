@@ -6,33 +6,20 @@
 	objectVersion = 46;
 	objects = {
 
-/* Begin PBXAggregateTarget section */
-		"franz::franzPackageTests::ProductTarget" /* FranzPackageTests */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = OBJ_84 /* Build configuration list for PBXAggregateTarget "FranzPackageTests" */;
-			buildPhases = (
-			);
-			dependencies = (
-				OBJ_87 /* PBXTargetDependency */,
-			);
-			name = FranzPackageTests;
-			productName = franzPackageTests;
-		};
-/* End PBXAggregateTarget section */
-
 /* Begin PBXBuildFile section */
 		A314CB8D1F08B457008D61A6 /* CRCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A314CB8C1F08B457008D61A6 /* CRCTests.swift */; };
 		A32A62E11F43B733006F9111 /* ArrayProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A32A62E01F43B733006F9111 /* ArrayProtocolTests.swift */; };
 		A3426BA51F25267500579CF8 /* AssignmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3426BA41F25267500579CF8 /* AssignmentTests.swift */; };
 		A353E8FF1F42325F00CCB63D /* IntegerProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A353E8FE1F42325F00CCB63D /* IntegerProtocolTests.swift */; };
-		A353FF791F2FF3B40047EE2C /* ConsumerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */; };
-		A3850F4E1F49C70000C62CF1 /* docker-compose.yml in Resources */ = {isa = PBXBuildFile; fileRef = A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */; };
 		A3850F501F4B067800C62CF1 /* MessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3850F4F1F4B067800C62CF1 /* MessageTests.swift */; };
-		A3850F531F4B3C2F00C62CF1 /* DockerTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */; };
 		A38623331F43A3BE005590B8 /* VariableLengthProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38623321F43A3BE005590B8 /* VariableLengthProtocolTests.swift */; };
 		A386B8091F196A730086BFF2 /* Assignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A386B8081F196A730086BFF2 /* Assignment.swift */; };
 		A38E69A01F391BCB0044D3D3 /* OldConsumers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */; };
 		A38E69A11F391C350044D3D3 /* Consumer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38E699D1F391B960044D3D3 /* Consumer.swift */; };
+		A3CE7D951F5A004F00FBB198 /* Franz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "franz::franz::Product" /* Franz.framework */; };
+		A3CE7D9B1F5A006100FBB198 /* ConsumerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */; };
+		A3CE7D9C1F5A006100FBB198 /* DockerTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */; };
+		A3CE7D9D1F5A00AA00FBB198 /* docker-compose.yml in Sources */ = {isa = PBXBuildFile; fileRef = A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */; };
 		OBJ_50 /* Franz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "franz::franz::Product" /* Franz.framework */; };
 		OBJ_57 /* AdminAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* AdminAPI.swift */; };
 		OBJ_58 /* Broker.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* Broker.swift */; };
@@ -66,12 +53,12 @@
 			remoteGlobalIDString = "franz::franz";
 			remoteInfo = franz;
 		};
-		A398296D1F08245300C96CC2 /* PBXContainerItemProxy */ = {
+		A3CE7D961F5A004F00FBB198 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = OBJ_1 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = "franz::franzTests";
-			remoteInfo = franzTests;
+			remoteGlobalIDString = "franz::franz";
+			remoteInfo = Franz;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -83,11 +70,13 @@
 		A353E8FE1F42325F00CCB63D /* IntegerProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegerProtocolTests.swift; sourceTree = "<group>"; };
 		A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumerTests.swift; sourceTree = "<group>"; };
 		A3850F4F1F4B067800C62CF1 /* MessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTests.swift; sourceTree = "<group>"; };
-		A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DockerTestBase.swift; path = Tests/FranzTests/Docker/DockerTestBase.swift; sourceTree = SOURCE_ROOT; };
+		A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DockerTestBase.swift; path = DockerTests/DockerTestBase.swift; sourceTree = SOURCE_ROOT; };
 		A38623321F43A3BE005590B8 /* VariableLengthProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariableLengthProtocolTests.swift; sourceTree = "<group>"; };
 		A386B8081F196A730086BFF2 /* Assignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assignment.swift; sourceTree = "<group>"; };
 		A38E699D1F391B960044D3D3 /* Consumer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Consumer.swift; sourceTree = "<group>"; };
 		A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldConsumers.swift; sourceTree = "<group>"; };
+		A3CE7D901F5A004E00FBB198 /* DockerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DockerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A3CE7D941F5A004F00FBB198 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		OBJ_10 /* Broker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Broker.swift; sourceTree = "<group>"; };
 		OBJ_11 /* Cluster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cluster.swift; sourceTree = "<group>"; };
 		OBJ_12 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
@@ -116,6 +105,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		A3CE7D8D1F5A004E00FBB198 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A3CE7D951F5A004F00FBB198 /* Franz.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		OBJ_49 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
@@ -134,15 +131,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A3850F511F4B3C0C00C62CF1 /* Docker */ = {
-			isa = PBXGroup;
-			children = (
-				A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */,
-				A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */,
-			);
-			path = Docker;
-			sourceTree = SOURCE_ROOT;
-		};
 		A38623311F43A31F005590B8 /* Protocol */ = {
 			isa = PBXGroup;
 			children = (
@@ -155,6 +143,17 @@
 			path = Tests/FranzTests/Protocol;
 			sourceTree = SOURCE_ROOT;
 		};
+		A3CE7D911F5A004F00FBB198 /* DockerTests */ = {
+			isa = PBXGroup;
+			children = (
+				A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */,
+				A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */,
+				A3CE7D941F5A004F00FBB198 /* Info.plist */,
+				A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */,
+			);
+			path = DockerTests;
+			sourceTree = "<group>";
+		};
 		OBJ_14 /* Crypt */ = {
 			isa = PBXGroup;
 			children = (
@@ -166,6 +165,7 @@
 		OBJ_35 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				A3CE7D911F5A004F00FBB198 /* DockerTests */,
 				OBJ_36 /* FranzTests */,
 			);
 			name = Tests;
@@ -174,11 +174,9 @@
 		OBJ_36 /* FranzTests */ = {
 			isa = PBXGroup;
 			children = (
-				A3850F511F4B3C0C00C62CF1 /* Docker */,
 				A3426BA41F25267500579CF8 /* AssignmentTests.swift */,
 				A314CB8C1F08B457008D61A6 /* CRCTests.swift */,
 				A38623311F43A31F005590B8 /* Protocol */,
-				A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */,
 			);
 			name = FranzTests;
 			path = Tests/FranzTests;
@@ -189,6 +187,7 @@
 			children = (
 				"franz::franzTests::Product" /* FranzTests.xctest */,
 				"franz::franz::Product" /* Franz.framework */,
+				A3CE7D901F5A004E00FBB198 /* DockerTests.xctest */,
 			);
 			name = Products;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -247,6 +246,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		A3CE7D8F1F5A004E00FBB198 /* DockerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A3CE7D9A1F5A004F00FBB198 /* Build configuration list for PBXNativeTarget "DockerTests" */;
+			buildPhases = (
+				A3CE7D8C1F5A004E00FBB198 /* Sources */,
+				A3CE7D8D1F5A004E00FBB198 /* Frameworks */,
+				A3CE7D8E1F5A004E00FBB198 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A3CE7D971F5A004F00FBB198 /* PBXTargetDependency */,
+			);
+			name = DockerTests;
+			productName = DockerTests;
+			productReference = A3CE7D901F5A004E00FBB198 /* DockerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		"franz::franz" /* Franz */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = OBJ_53 /* Build configuration list for PBXNativeTarget "Franz" */;
@@ -287,8 +304,13 @@
 		OBJ_1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0900;
 				LastUpgradeCheck = 0900;
 				TargetAttributes = {
+					A3CE7D8F1F5A004E00FBB198 = {
+						CreatedOnToolsVersion = 9.0;
+						DevelopmentTeam = 7R888D749H;
+					};
 					"franz::franz" = {
 						LastSwiftMigration = 0900;
 					};
@@ -311,7 +333,7 @@
 			targets = (
 				"franz::franzTests" /* FranzTests */,
 				"franz::franz" /* Franz */,
-				"franz::franzPackageTests::ProductTarget" /* FranzPackageTests */,
+				A3CE7D8F1F5A004E00FBB198 /* DockerTests */,
 			);
 		};
 /* End PBXProject section */
@@ -321,21 +343,35 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A3850F4E1F49C70000C62CF1 /* docker-compose.yml in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A3CE7D8E1F5A004E00FBB198 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		A3CE7D8C1F5A004E00FBB198 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A3CE7D9D1F5A00AA00FBB198 /* docker-compose.yml in Sources */,
+				A3CE7D9C1F5A006100FBB198 /* DockerTestBase.swift in Sources */,
+				A3CE7D9B1F5A006100FBB198 /* ConsumerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		OBJ_47 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
 				A353E8FF1F42325F00CCB63D /* IntegerProtocolTests.swift in Sources */,
 				A3426BA51F25267500579CF8 /* AssignmentTests.swift in Sources */,
-				A3850F531F4B3C2F00C62CF1 /* DockerTestBase.swift in Sources */,
-				A353FF791F2FF3B40047EE2C /* ConsumerTests.swift in Sources */,
 				A314CB8D1F08B457008D61A6 /* CRCTests.swift in Sources */,
 				A3850F501F4B067800C62CF1 /* MessageTests.swift in Sources */,
 				A38623331F43A3BE005590B8 /* VariableLengthProtocolTests.swift in Sources */,
@@ -378,19 +414,85 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		A3CE7D971F5A004F00FBB198 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = "franz::franz" /* Franz */;
+			targetProxy = A3CE7D961F5A004F00FBB198 /* PBXContainerItemProxy */;
+		};
 		OBJ_51 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = "franz::franz" /* Franz */;
 			targetProxy = A398296C1F08245200C96CC2 /* PBXContainerItemProxy */;
 		};
-		OBJ_87 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = "franz::franzTests" /* FranzTests */;
-			targetProxy = A398296D1F08245300C96CC2 /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		A3CE7D981F5A004F00FBB198 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 7R888D749H;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = DockerTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = Franz.DockerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 4.0;
+			};
+			name = Debug;
+		};
+		A3CE7D991F5A004F00FBB198 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = 7R888D749H;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				INFOPLIST_FILE = DockerTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = Franz.DockerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+			};
+			name = Release;
+		};
 		OBJ_3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -566,23 +668,18 @@
 			};
 			name = Release;
 		};
-		OBJ_85 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = FranzPackageTests;
-			};
-			name = Debug;
-		};
-		OBJ_86 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = FranzPackageTests;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A3CE7D9A1F5A004F00FBB198 /* Build configuration list for PBXNativeTarget "DockerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A3CE7D981F5A004F00FBB198 /* Debug */,
+				A3CE7D991F5A004F00FBB198 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		OBJ_2 /* Build configuration list for PBXProject "Franz" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -606,15 +703,6 @@
 			buildConfigurations = (
 				OBJ_54 /* Debug */,
 				OBJ_55 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		OBJ_84 /* Build configuration list for PBXAggregateTarget "FranzPackageTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				OBJ_85 /* Debug */,
-				OBJ_86 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

@@ -5,4 +5,4 @@ osx_image: xcode9
 sudo: required
 services:
   - docker
-script: xcodebuild test -project Franz.xcodeproj -scheme franz-Package
+script: xcodebuild test -project Franz.xcodeproj -scheme Franz
