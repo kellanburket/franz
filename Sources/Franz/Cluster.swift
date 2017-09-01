@@ -46,20 +46,20 @@ open class Cluster {
             attributes: []
         )
     }()
-	
-	///Used for swapping in fake brokers during testing
-	internal var brokers: [Broker] {
-		get {
-			return Array(_brokers.values)
-		}
-		set {
-			_brokers = [String: Broker]()
-			for broker in newValue {
-				_brokers["\(broker.ipv4):\(broker.port)"] = broker
-			}
-		}
-	}
-	
+    
+    ///Used for swapping in fake brokers during testing
+    internal var brokers: [Broker] {
+        get {
+            return Array(_brokers.values)
+        }
+        set {
+            _brokers = [String: Broker]()
+            for broker in newValue {
+                _brokers["\(broker.ipv4):\(broker.port)"] = broker
+            }
+        }
+    }
+    
     /*
         Initialize brokers
     
@@ -133,7 +133,7 @@ open class Cluster {
         - Throws ClusterError.NoBatchForTopicPartition
      */
     open func sendBatch(_ topic: String, partition: Int32) throws {
-		if let topicBatch = _batches[topic], let partitionBatch = topicBatch[partition] {
+        if let topicBatch = _batches[topic], let partitionBatch = topicBatch[partition] {
             findTopicLeader(topic, partition: partition, { leader in
                 leader.send(
                     topic,
@@ -156,17 +156,17 @@ open class Cluster {
         - Parameter callback:
      */
     open func listTopics(_ callback: @escaping ([Topic]) -> ()) {
-		_brokers.first?.value.getTopicMetadata(clientId: clientId) { response in
-			var topics = [Topic]()
-			for (name, topic) in response.topics {
-				var partitions = [PartitionId]()
-				for (partition, _) in topic.partitions {
-					partitions.append(partition)
-				}
-				topics.append(Topic(name: name, partitions: partitions))
-			}
-			callback(topics)
-		}
+        _brokers.first?.value.getTopicMetadata(clientId: clientId) { response in
+            var topics = [Topic]()
+            for (name, topic) in response.topics {
+                var partitions = [PartitionId]()
+                for (partition, _) in topic.partitions {
+                    partitions.append(partition)
+                }
+                topics.append(Topic(name: name, partitions: partitions))
+            }
+            callback(topics)
+        }
     }
 
     /**
@@ -182,7 +182,7 @@ open class Cluster {
         callback: @escaping ([Int64]) -> ()
     ) {
         findTopicLeader(topic, partition: partition, { leader in
-			leader.getOffsets(for: topic,
+            leader.getOffsets(for: topic,
                 partition: partition,
                 clientId: self.clientId,
                 callback: callback
@@ -231,7 +231,7 @@ open class Cluster {
     open func listGroups(_ callback: @escaping (String, String) -> ()) {
         for (_, broker) in _brokers {
             dispatchQueue.async {
-				broker.listGroups(clientId: self.clientId) { a, b in
+                broker.listGroups(clientId: self.clientId) { a, b in
                     callback(a, b)
                 }
             }
@@ -247,7 +247,7 @@ open class Cluster {
 
         - Returns: an uninitialized Simple Consumer
      */
-	@available(*, deprecated, message: "Use getConsumer instead")
+    @available(*, deprecated, message: "Use getConsumer instead")
     public func getSimpleConsumer(
         _ topic: String,
         partition: Int32,
@@ -281,7 +281,7 @@ open class Cluster {
 
         - Returns: an unitialized HighLevelConsumer
      */
-	@available(*, deprecated, message: "Use getConsumer instead")
+    @available(*, deprecated, message: "Use getConsumer instead")
     public func getHighLevelConsumer(
         _ topic: String,
         partition: Int32,
@@ -295,69 +295,69 @@ open class Cluster {
             delegate: delegate
         )
         
-		joinGroup(id: groupId, topics: [topic], callback: { broker, membership in
-			consumer.broker = broker
-			consumer.membership = membership
-			
-			membership.group.getState { groupId, state in
-				switch state {
-				case .AwaitingSync:
-					self.assignRoundRobin(members: membership.members.map { $0.memberId }, topics: [topic]) { assignments in
-						membership.sync(assignments[membership.memberId]!, data: Data()) {
-							consumer.delegate.consumerIsReady(consumer)
-						}
-					}
-				case .Stable:
-					consumer.delegate.consumerIsReady(consumer)
-				default:
-					print("State of Group is: \(state)")
-				}
-			}
-		}, error: { error in
+        joinGroup(id: groupId, topics: [topic], callback: { broker, membership in
+            consumer.broker = broker
+            consumer.membership = membership
+            
+            membership.group.getState { groupId, state in
+                switch state {
+                case .AwaitingSync:
+                    self.assignRoundRobin(members: membership.members.map { $0.memberId }, topics: [topic]) { assignments in
+                        membership.sync(assignments[membership.memberId]!, data: Data()) {
+                            consumer.delegate.consumerIsReady(consumer)
+                        }
+                    }
+                case .Stable:
+                    consumer.delegate.consumerIsReady(consumer)
+                default:
+                    print("State of Group is: \(state)")
+                }
+            }
+        }, error: { error in
             consumer.delegate.topicPartitionLeaderNotFound?(topic, partition: partition)
         })
         
         return consumer
     }
-	
-	/**
-	Initialize a Consumer that can be used to listen for messages.
-	
-	- parameters:
-		- topics: The list of topics that the consumer should be subscribed to.
-		- groupId: The id of the consumer group that the consumer group should belong to.
-	
-	- returns: The Consumer object that can then listen for messages.
-	
-	- seealso: `Consumer`
-	*/
-	public func getConsumer(topics: [TopicName], groupId: String) -> Consumer {
-		let consumer = Consumer(cluster: self, groupId: groupId)
-		joinGroup(id: groupId, topics: topics, callback: { broker, membership in
-			consumer.broker = broker
-			consumer.membership = membership
-			membership.group.getState { groupId, state in
-				if state == GroupState.AwaitingSync {
-					self.assignRoundRobin(members: membership.members.map { $0.memberId }, topics: topics) { assignments in
-						membership.sync(assignments[membership.memberId]!, data: Data()) {
-							consumer.joinedGroupSemaphore.signal()
-						}
-					}
-				}
-				if state == .Empty {
-					print("Group shouldn't be empty")
-				}
-			}
-		}, error: { error in
-			
-		})
-		return consumer
-	}
+    
+    /**
+    Initialize a Consumer that can be used to listen for messages.
+    
+    - parameters:
+        - topics: The list of topics that the consumer should be subscribed to.
+        - groupId: The id of the consumer group that the consumer group should belong to.
+    
+    - returns: The Consumer object that can then listen for messages.
+    
+    - seealso: `Consumer`
+    */
+    public func getConsumer(topics: [TopicName], groupId: String) -> Consumer {
+        let consumer = Consumer(cluster: self, groupId: groupId)
+        joinGroup(id: groupId, topics: topics, callback: { broker, membership in
+            consumer.broker = broker
+            consumer.membership = membership
+            membership.group.getState { groupId, state in
+                if state == GroupState.AwaitingSync {
+                    self.assignRoundRobin(members: membership.members.map { $0.memberId }, topics: topics) { assignments in
+                        membership.sync(assignments[membership.memberId]!, data: Data()) {
+                            consumer.joinedGroupSemaphore.signal()
+                        }
+                    }
+                }
+                if state == .Empty {
+                    print("Group shouldn't be empty")
+                }
+            }
+        }, error: { error in
+            
+        })
+        return consumer
+    }
     
     internal func joinGroup(id: String, topics: [TopicName], callback: @escaping (Broker, GroupMembership) -> (), error: (KafkaErrorCode) -> ()
     ) {
-		getGroupCoordinator(groupId: id) { broker in
-			broker.join(groupId: id, subscription: topics, clientId: self.clientId) { groupMembership in
+        getGroupCoordinator(groupId: id) { broker in
+            broker.join(groupId: id, subscription: topics, clientId: self.clientId) { groupMembership in
                 callback(broker, groupMembership)
             }
         }
@@ -368,88 +368,88 @@ open class Cluster {
         partition: Int32,
         _ callback: @escaping (Broker) -> (),
         _ error: @escaping (Error) -> ()
-		) {
-		var dispatchBlocks = [()->()]()
-		
-		for (_, broker) in _brokers {
-			let dispatchBlock = DispatchWorkItem(qos: .unspecified, flags: []) {
-				
-				var handleGetTopicMetadata: ((MetadataResponse) -> Void)!
-				handleGetTopicMetadata = { response in
-					
-					if let topicObj = response.topics[topic] {
-						
-						if topicObj.error == .leaderNotAvailable {
-							let retryTopics = response.topics.filter { key, val in val.error == .leaderNotAvailable }.flatMap { $1.name }
-							sleep(1)
-							broker.getTopicMetadata(topics: retryTopics, clientId: self.clientId, completion: handleGetTopicMetadata)
-							return
-						}
-						
-						if let partitionObj = topicObj.partitions[partition] {
-							if partitionObj.leader == -1 {
-								error(ClusterError.leaderNotFound(topic: topic, partition: partition))
-								return
-							} else if let leader = response.brokers[partitionObj.leader] {
-								if let broker = self._brokers["\(leader.host):\(leader.port)"] {
-									broker.nodeId = leader.nodeId
-									callback(broker)
-									return
-								} else {
-									self._brokers["\(leader.host):\(leader.port)"] = leader
-									callback(leader)
-									return
-								}
-							} else {
-								error(ClusterError.noLeaderFoundInResponseData)
-							}
-						} else {
-							error(ClusterError.noPartitionFoundInCluster(partition: partition))
-						}
-					} else {
-						error(ClusterError.noTopicFoundInCluster(topic: topic))
-					}
-				}
-				
-				broker.getTopicMetadata(topics: [topic], clientId: self.clientId, completion: handleGetTopicMetadata)
-				
-				if dispatchBlocks.count > 0 {
-					self.dispatchQueue.async(execute: dispatchBlocks.removeFirst())
-				}
-				
-			}
-			dispatchBlocks.append(dispatchBlock.perform)
-		}
-		
-		if dispatchBlocks.count > 0 {
-			dispatchQueue.async(execute: dispatchBlocks.removeFirst())
-		}
-	}
-	
-	func getGroupCoordinator(groupId: String, callback: @escaping (Broker) -> Void) {
-		_brokers.first?.value.getGroupCoordinator(groupId: groupId, clientId: clientId) { response in
-			let host = response.host
-			let port = response.port
-			
-			//Retry if broker isn't available
-			if response.error == KafkaErrorCode.groupCoordinatorNotAvailableCode {
-				sleep(1)
-				self.getGroupCoordinator(groupId: groupId, callback: callback)
-				return
-			}
-			
-			if let broker = self._brokers["\(host):\(port)"] {
-				callback(broker)
-			} else {
-				print("Broker: \(host):\(port) Not Found.")
-			}
-		}
-	}
-	
-	func getParitions(for topics: [TopicName], completion: @escaping ([TopicName: [Partition]]) -> Void) {
-		_brokers.first?.value.getTopicMetadata(topics: topics, clientId: clientId) { response in
-			let partitions = response.topics.mapValues { $0.partitions.values.map({ $0 }) }
-			completion(partitions)
-		}
-	}
+        ) {
+        var dispatchBlocks = [()->()]()
+        
+        for (_, broker) in _brokers {
+            let dispatchBlock = DispatchWorkItem(qos: .unspecified, flags: []) {
+                
+                var handleGetTopicMetadata: ((MetadataResponse) -> Void)!
+                handleGetTopicMetadata = { response in
+                    
+                    if let topicObj = response.topics[topic] {
+                        
+                        if topicObj.error == .leaderNotAvailable {
+                            let retryTopics = response.topics.filter { key, val in val.error == .leaderNotAvailable }.flatMap { $1.name }
+                            sleep(1)
+                            broker.getTopicMetadata(topics: retryTopics, clientId: self.clientId, completion: handleGetTopicMetadata)
+                            return
+                        }
+                        
+                        if let partitionObj = topicObj.partitions[partition] {
+                            if partitionObj.leader == -1 {
+                                error(ClusterError.leaderNotFound(topic: topic, partition: partition))
+                                return
+                            } else if let leader = response.brokers[partitionObj.leader] {
+                                if let broker = self._brokers["\(leader.host):\(leader.port)"] {
+                                    broker.nodeId = leader.nodeId
+                                    callback(broker)
+                                    return
+                                } else {
+                                    self._brokers["\(leader.host):\(leader.port)"] = leader
+                                    callback(leader)
+                                    return
+                                }
+                            } else {
+                                error(ClusterError.noLeaderFoundInResponseData)
+                            }
+                        } else {
+                            error(ClusterError.noPartitionFoundInCluster(partition: partition))
+                        }
+                    } else {
+                        error(ClusterError.noTopicFoundInCluster(topic: topic))
+                    }
+                }
+                
+                broker.getTopicMetadata(topics: [topic], clientId: self.clientId, completion: handleGetTopicMetadata)
+                
+                if dispatchBlocks.count > 0 {
+                    self.dispatchQueue.async(execute: dispatchBlocks.removeFirst())
+                }
+                
+            }
+            dispatchBlocks.append(dispatchBlock.perform)
+        }
+        
+        if dispatchBlocks.count > 0 {
+            dispatchQueue.async(execute: dispatchBlocks.removeFirst())
+        }
+    }
+    
+    func getGroupCoordinator(groupId: String, callback: @escaping (Broker) -> Void) {
+        _brokers.first?.value.getGroupCoordinator(groupId: groupId, clientId: clientId) { response in
+            let host = response.host
+            let port = response.port
+            
+            //Retry if broker isn't available
+            if response.error == KafkaErrorCode.groupCoordinatorNotAvailableCode {
+                sleep(1)
+                self.getGroupCoordinator(groupId: groupId, callback: callback)
+                return
+            }
+            
+            if let broker = self._brokers["\(host):\(port)"] {
+                callback(broker)
+            } else {
+                print("Broker: \(host):\(port) Not Found.")
+            }
+        }
+    }
+    
+    func getParitions(for topics: [TopicName], completion: @escaping ([TopicName: [Partition]]) -> Void) {
+        _brokers.first?.value.getTopicMetadata(topics: topics, clientId: clientId) { response in
+            let partitions = response.topics.mapValues { $0.partitions.values.map({ $0 }) }
+            completion(partitions)
+        }
+    }
 }

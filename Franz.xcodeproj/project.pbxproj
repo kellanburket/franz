@@ -1,705 +1,705 @@
 // !$*UTF8*$!
 {
-	archiveVersion = 1;
-	classes = {
-	};
-	objectVersion = 46;
-	objects = {
+    archiveVersion = 1;
+    classes = {
+    };
+    objectVersion = 46;
+    objects = {
 
 /* Begin PBXBuildFile section */
-		A314CB8D1F08B457008D61A6 /* CRCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A314CB8C1F08B457008D61A6 /* CRCTests.swift */; };
-		A32A62E11F43B733006F9111 /* ArrayProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A32A62E01F43B733006F9111 /* ArrayProtocolTests.swift */; };
-		A3426BA51F25267500579CF8 /* AssignmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3426BA41F25267500579CF8 /* AssignmentTests.swift */; };
-		A353E8FF1F42325F00CCB63D /* IntegerProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A353E8FE1F42325F00CCB63D /* IntegerProtocolTests.swift */; };
-		A3850F501F4B067800C62CF1 /* MessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3850F4F1F4B067800C62CF1 /* MessageTests.swift */; };
-		A38623331F43A3BE005590B8 /* VariableLengthProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38623321F43A3BE005590B8 /* VariableLengthProtocolTests.swift */; };
-		A386B8091F196A730086BFF2 /* Assignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A386B8081F196A730086BFF2 /* Assignment.swift */; };
-		A38E69A01F391BCB0044D3D3 /* OldConsumers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */; };
-		A38E69A11F391C350044D3D3 /* Consumer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38E699D1F391B960044D3D3 /* Consumer.swift */; };
-		A3CE7D951F5A004F00FBB198 /* Franz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "franz::franz::Product" /* Franz.framework */; };
-		A3CE7D9B1F5A006100FBB198 /* ConsumerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */; };
-		A3CE7D9C1F5A006100FBB198 /* DockerTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */; };
-		A3CE7D9E1F5A066100FBB198 /* docker-compose.yml in Resources */ = {isa = PBXBuildFile; fileRef = A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */; };
-		OBJ_50 /* Franz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "franz::franz::Product" /* Franz.framework */; };
-		OBJ_57 /* AdminAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* AdminAPI.swift */; };
-		OBJ_58 /* Broker.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* Broker.swift */; };
-		OBJ_59 /* Cluster.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* Cluster.swift */; };
-		OBJ_60 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* Connection.swift */; };
-		OBJ_62 /* CRC32.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_15 /* CRC32.swift */; };
-		OBJ_63 /* Enumerations.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_16 /* Enumerations.swift */; };
-		OBJ_65 /* FetchAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_18 /* FetchAPI.swift */; };
-		OBJ_66 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_19 /* Group.swift */; };
-		OBJ_67 /* GroupCoordinatorAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_20 /* GroupCoordinatorAPI.swift */; };
-		OBJ_68 /* GroupMembershipAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_21 /* GroupMembershipAPI.swift */; };
-		OBJ_69 /* KafkaProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_22 /* KafkaProtocol.swift */; };
-		OBJ_70 /* KafkaRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_23 /* KafkaRequest.swift */; };
-		OBJ_71 /* KafkaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_24 /* KafkaResponse.swift */; };
-		OBJ_72 /* MessageSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_25 /* MessageSet.swift */; };
-		OBJ_73 /* MetadataAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_26 /* MetadataAPI.swift */; };
-		OBJ_74 /* OffsetAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_27 /* OffsetAPI.swift */; };
-		OBJ_75 /* OffsetCommitAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_28 /* OffsetCommitAPI.swift */; };
-		OBJ_76 /* OffsetFetchAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_29 /* OffsetFetchAPI.swift */; };
-		OBJ_77 /* Partition.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_30 /* Partition.swift */; };
-		OBJ_78 /* ProduceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_31 /* ProduceAPI.swift */; };
-		OBJ_79 /* Topic.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_32 /* Topic.swift */; };
-		OBJ_80 /* Variables.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_33 /* Variables.swift */; };
+        A314CB8D1F08B457008D61A6 /* CRCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A314CB8C1F08B457008D61A6 /* CRCTests.swift */; };
+        A32A62E11F43B733006F9111 /* ArrayProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A32A62E01F43B733006F9111 /* ArrayProtocolTests.swift */; };
+        A3426BA51F25267500579CF8 /* AssignmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3426BA41F25267500579CF8 /* AssignmentTests.swift */; };
+        A353E8FF1F42325F00CCB63D /* IntegerProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A353E8FE1F42325F00CCB63D /* IntegerProtocolTests.swift */; };
+        A3850F501F4B067800C62CF1 /* MessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3850F4F1F4B067800C62CF1 /* MessageTests.swift */; };
+        A38623331F43A3BE005590B8 /* VariableLengthProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38623321F43A3BE005590B8 /* VariableLengthProtocolTests.swift */; };
+        A386B8091F196A730086BFF2 /* Assignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A386B8081F196A730086BFF2 /* Assignment.swift */; };
+        A38E69A01F391BCB0044D3D3 /* OldConsumers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */; };
+        A38E69A11F391C350044D3D3 /* Consumer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38E699D1F391B960044D3D3 /* Consumer.swift */; };
+        A3CE7D951F5A004F00FBB198 /* Franz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "franz::franz::Product" /* Franz.framework */; };
+        A3CE7D9B1F5A006100FBB198 /* ConsumerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */; };
+        A3CE7D9C1F5A006100FBB198 /* DockerTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */; };
+        A3CE7D9E1F5A066100FBB198 /* docker-compose.yml in Resources */ = {isa = PBXBuildFile; fileRef = A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */; };
+        OBJ_50 /* Franz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "franz::franz::Product" /* Franz.framework */; };
+        OBJ_57 /* AdminAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* AdminAPI.swift */; };
+        OBJ_58 /* Broker.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* Broker.swift */; };
+        OBJ_59 /* Cluster.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* Cluster.swift */; };
+        OBJ_60 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* Connection.swift */; };
+        OBJ_62 /* CRC32.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_15 /* CRC32.swift */; };
+        OBJ_63 /* Enumerations.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_16 /* Enumerations.swift */; };
+        OBJ_65 /* FetchAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_18 /* FetchAPI.swift */; };
+        OBJ_66 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_19 /* Group.swift */; };
+        OBJ_67 /* GroupCoordinatorAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_20 /* GroupCoordinatorAPI.swift */; };
+        OBJ_68 /* GroupMembershipAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_21 /* GroupMembershipAPI.swift */; };
+        OBJ_69 /* KafkaProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_22 /* KafkaProtocol.swift */; };
+        OBJ_70 /* KafkaRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_23 /* KafkaRequest.swift */; };
+        OBJ_71 /* KafkaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_24 /* KafkaResponse.swift */; };
+        OBJ_72 /* MessageSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_25 /* MessageSet.swift */; };
+        OBJ_73 /* MetadataAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_26 /* MetadataAPI.swift */; };
+        OBJ_74 /* OffsetAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_27 /* OffsetAPI.swift */; };
+        OBJ_75 /* OffsetCommitAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_28 /* OffsetCommitAPI.swift */; };
+        OBJ_76 /* OffsetFetchAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_29 /* OffsetFetchAPI.swift */; };
+        OBJ_77 /* Partition.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_30 /* Partition.swift */; };
+        OBJ_78 /* ProduceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_31 /* ProduceAPI.swift */; };
+        OBJ_79 /* Topic.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_32 /* Topic.swift */; };
+        OBJ_80 /* Variables.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_33 /* Variables.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		A398296C1F08245200C96CC2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = OBJ_1 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = "franz::franz";
-			remoteInfo = franz;
-		};
-		A3CE7D961F5A004F00FBB198 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = OBJ_1 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = "franz::franz";
-			remoteInfo = Franz;
-		};
+        A398296C1F08245200C96CC2 /* PBXContainerItemProxy */ = {
+            isa = PBXContainerItemProxy;
+            containerPortal = OBJ_1 /* Project object */;
+            proxyType = 1;
+            remoteGlobalIDString = "franz::franz";
+            remoteInfo = franz;
+        };
+        A3CE7D961F5A004F00FBB198 /* PBXContainerItemProxy */ = {
+            isa = PBXContainerItemProxy;
+            containerPortal = OBJ_1 /* Project object */;
+            proxyType = 1;
+            remoteGlobalIDString = "franz::franz";
+            remoteInfo = Franz;
+        };
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		A314CB8C1F08B457008D61A6 /* CRCTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRCTests.swift; sourceTree = "<group>"; };
-		A32A62E01F43B733006F9111 /* ArrayProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayProtocolTests.swift; sourceTree = "<group>"; };
-		A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = "docker-compose.yml"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
-		A3426BA41F25267500579CF8 /* AssignmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignmentTests.swift; sourceTree = "<group>"; };
-		A353E8FE1F42325F00CCB63D /* IntegerProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegerProtocolTests.swift; sourceTree = "<group>"; };
-		A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumerTests.swift; sourceTree = "<group>"; };
-		A3850F4F1F4B067800C62CF1 /* MessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTests.swift; sourceTree = "<group>"; };
-		A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DockerTestBase.swift; path = DockerTests/DockerTestBase.swift; sourceTree = SOURCE_ROOT; };
-		A38623321F43A3BE005590B8 /* VariableLengthProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariableLengthProtocolTests.swift; sourceTree = "<group>"; };
-		A386B8081F196A730086BFF2 /* Assignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assignment.swift; sourceTree = "<group>"; };
-		A38E699D1F391B960044D3D3 /* Consumer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Consumer.swift; sourceTree = "<group>"; };
-		A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldConsumers.swift; sourceTree = "<group>"; };
-		A3CE7D901F5A004E00FBB198 /* DockerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DockerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A3CE7D941F5A004F00FBB198 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		OBJ_10 /* Broker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Broker.swift; sourceTree = "<group>"; };
-		OBJ_11 /* Cluster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cluster.swift; sourceTree = "<group>"; };
-		OBJ_12 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
-		OBJ_15 /* CRC32.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRC32.swift; sourceTree = "<group>"; };
-		OBJ_16 /* Enumerations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enumerations.swift; sourceTree = "<group>"; };
-		OBJ_18 /* FetchAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchAPI.swift; sourceTree = "<group>"; };
-		OBJ_19 /* Group.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
-		OBJ_20 /* GroupCoordinatorAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCoordinatorAPI.swift; sourceTree = "<group>"; };
-		OBJ_21 /* GroupMembershipAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMembershipAPI.swift; sourceTree = "<group>"; };
-		OBJ_22 /* KafkaProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KafkaProtocol.swift; sourceTree = "<group>"; };
-		OBJ_23 /* KafkaRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KafkaRequest.swift; sourceTree = "<group>"; };
-		OBJ_24 /* KafkaResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KafkaResponse.swift; sourceTree = "<group>"; };
-		OBJ_25 /* MessageSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSet.swift; sourceTree = "<group>"; };
-		OBJ_26 /* MetadataAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataAPI.swift; sourceTree = "<group>"; };
-		OBJ_27 /* OffsetAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffsetAPI.swift; sourceTree = "<group>"; };
-		OBJ_28 /* OffsetCommitAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffsetCommitAPI.swift; sourceTree = "<group>"; };
-		OBJ_29 /* OffsetFetchAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffsetFetchAPI.swift; sourceTree = "<group>"; };
-		OBJ_30 /* Partition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Partition.swift; sourceTree = "<group>"; };
-		OBJ_31 /* ProduceAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProduceAPI.swift; sourceTree = "<group>"; };
-		OBJ_32 /* Topic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Topic.swift; sourceTree = "<group>"; };
-		OBJ_33 /* Variables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Variables.swift; sourceTree = "<group>"; };
-		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
-		OBJ_9 /* AdminAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminAPI.swift; sourceTree = "<group>"; };
-		"franz::franz::Product" /* Franz.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Franz.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		"franz::franzTests::Product" /* FranzTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = FranzTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+        A314CB8C1F08B457008D61A6 /* CRCTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRCTests.swift; sourceTree = "<group>"; };
+        A32A62E01F43B733006F9111 /* ArrayProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayProtocolTests.swift; sourceTree = "<group>"; };
+        A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = "docker-compose.yml"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
+        A3426BA41F25267500579CF8 /* AssignmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignmentTests.swift; sourceTree = "<group>"; };
+        A353E8FE1F42325F00CCB63D /* IntegerProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegerProtocolTests.swift; sourceTree = "<group>"; };
+        A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumerTests.swift; sourceTree = "<group>"; };
+        A3850F4F1F4B067800C62CF1 /* MessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTests.swift; sourceTree = "<group>"; };
+        A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DockerTestBase.swift; path = DockerTests/DockerTestBase.swift; sourceTree = SOURCE_ROOT; };
+        A38623321F43A3BE005590B8 /* VariableLengthProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariableLengthProtocolTests.swift; sourceTree = "<group>"; };
+        A386B8081F196A730086BFF2 /* Assignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assignment.swift; sourceTree = "<group>"; };
+        A38E699D1F391B960044D3D3 /* Consumer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Consumer.swift; sourceTree = "<group>"; };
+        A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldConsumers.swift; sourceTree = "<group>"; };
+        A3CE7D901F5A004E00FBB198 /* DockerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DockerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+        A3CE7D941F5A004F00FBB198 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+        OBJ_10 /* Broker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Broker.swift; sourceTree = "<group>"; };
+        OBJ_11 /* Cluster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cluster.swift; sourceTree = "<group>"; };
+        OBJ_12 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
+        OBJ_15 /* CRC32.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRC32.swift; sourceTree = "<group>"; };
+        OBJ_16 /* Enumerations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enumerations.swift; sourceTree = "<group>"; };
+        OBJ_18 /* FetchAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchAPI.swift; sourceTree = "<group>"; };
+        OBJ_19 /* Group.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
+        OBJ_20 /* GroupCoordinatorAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCoordinatorAPI.swift; sourceTree = "<group>"; };
+        OBJ_21 /* GroupMembershipAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMembershipAPI.swift; sourceTree = "<group>"; };
+        OBJ_22 /* KafkaProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KafkaProtocol.swift; sourceTree = "<group>"; };
+        OBJ_23 /* KafkaRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KafkaRequest.swift; sourceTree = "<group>"; };
+        OBJ_24 /* KafkaResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KafkaResponse.swift; sourceTree = "<group>"; };
+        OBJ_25 /* MessageSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSet.swift; sourceTree = "<group>"; };
+        OBJ_26 /* MetadataAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataAPI.swift; sourceTree = "<group>"; };
+        OBJ_27 /* OffsetAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffsetAPI.swift; sourceTree = "<group>"; };
+        OBJ_28 /* OffsetCommitAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffsetCommitAPI.swift; sourceTree = "<group>"; };
+        OBJ_29 /* OffsetFetchAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffsetFetchAPI.swift; sourceTree = "<group>"; };
+        OBJ_30 /* Partition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Partition.swift; sourceTree = "<group>"; };
+        OBJ_31 /* ProduceAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProduceAPI.swift; sourceTree = "<group>"; };
+        OBJ_32 /* Topic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Topic.swift; sourceTree = "<group>"; };
+        OBJ_33 /* Variables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Variables.swift; sourceTree = "<group>"; };
+        OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+        OBJ_9 /* AdminAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminAPI.swift; sourceTree = "<group>"; };
+        "franz::franz::Product" /* Franz.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Franz.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+        "franz::franzTests::Product" /* FranzTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = FranzTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		A3CE7D8D1F5A004E00FBB198 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A3CE7D951F5A004F00FBB198 /* Franz.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		OBJ_49 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 0;
-			files = (
-				OBJ_50 /* Franz.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		OBJ_82 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
+        A3CE7D8D1F5A004E00FBB198 /* Frameworks */ = {
+            isa = PBXFrameworksBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
+                A3CE7D951F5A004F00FBB198 /* Franz.framework in Frameworks */,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        OBJ_49 /* Frameworks */ = {
+            isa = PBXFrameworksBuildPhase;
+            buildActionMask = 0;
+            files = (
+                OBJ_50 /* Franz.framework in Frameworks */,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        OBJ_82 /* Frameworks */ = {
+            isa = PBXFrameworksBuildPhase;
+            buildActionMask = 0;
+            files = (
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A38623311F43A31F005590B8 /* Protocol */ = {
-			isa = PBXGroup;
-			children = (
-				A353E8FE1F42325F00CCB63D /* IntegerProtocolTests.swift */,
-				A38623321F43A3BE005590B8 /* VariableLengthProtocolTests.swift */,
-				A32A62E01F43B733006F9111 /* ArrayProtocolTests.swift */,
-				A3850F4F1F4B067800C62CF1 /* MessageTests.swift */,
-			);
-			name = Protocol;
-			path = Tests/FranzTests/Protocol;
-			sourceTree = SOURCE_ROOT;
-		};
-		A3CE7D911F5A004F00FBB198 /* DockerTests */ = {
-			isa = PBXGroup;
-			children = (
-				A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */,
-				A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */,
-				A3CE7D941F5A004F00FBB198 /* Info.plist */,
-				A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */,
-			);
-			path = DockerTests;
-			sourceTree = "<group>";
-		};
-		OBJ_14 /* Crypt */ = {
-			isa = PBXGroup;
-			children = (
-				OBJ_15 /* CRC32.swift */,
-			);
-			path = Crypt;
-			sourceTree = "<group>";
-		};
-		OBJ_35 /* Tests */ = {
-			isa = PBXGroup;
-			children = (
-				A3CE7D911F5A004F00FBB198 /* DockerTests */,
-				OBJ_36 /* FranzTests */,
-			);
-			name = Tests;
-			sourceTree = SOURCE_ROOT;
-		};
-		OBJ_36 /* FranzTests */ = {
-			isa = PBXGroup;
-			children = (
-				A3426BA41F25267500579CF8 /* AssignmentTests.swift */,
-				A314CB8C1F08B457008D61A6 /* CRCTests.swift */,
-				A38623311F43A31F005590B8 /* Protocol */,
-			);
-			name = FranzTests;
-			path = Tests/FranzTests;
-			sourceTree = SOURCE_ROOT;
-		};
-		OBJ_40 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				"franz::franzTests::Product" /* FranzTests.xctest */,
-				"franz::franz::Product" /* Franz.framework */,
-				A3CE7D901F5A004E00FBB198 /* DockerTests.xctest */,
-			);
-			name = Products;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		OBJ_5 = {
-			isa = PBXGroup;
-			children = (
-				OBJ_6 /* Package.swift */,
-				OBJ_7 /* Sources */,
-				OBJ_35 /* Tests */,
-				OBJ_40 /* Products */,
-			);
-			sourceTree = "<group>";
-		};
-		OBJ_7 /* Sources */ = {
-			isa = PBXGroup;
-			children = (
-				OBJ_8 /* Franz */,
-			);
-			name = Sources;
-			sourceTree = SOURCE_ROOT;
-		};
-		OBJ_8 /* Franz */ = {
-			isa = PBXGroup;
-			children = (
-				OBJ_9 /* AdminAPI.swift */,
-				OBJ_10 /* Broker.swift */,
-				OBJ_11 /* Cluster.swift */,
-				OBJ_12 /* Connection.swift */,
-				A38E699D1F391B960044D3D3 /* Consumer.swift */,
-				OBJ_14 /* Crypt */,
-				OBJ_16 /* Enumerations.swift */,
-				OBJ_18 /* FetchAPI.swift */,
-				OBJ_19 /* Group.swift */,
-				OBJ_20 /* GroupCoordinatorAPI.swift */,
-				OBJ_21 /* GroupMembershipAPI.swift */,
-				OBJ_22 /* KafkaProtocol.swift */,
-				OBJ_23 /* KafkaRequest.swift */,
-				OBJ_24 /* KafkaResponse.swift */,
-				OBJ_25 /* MessageSet.swift */,
-				OBJ_26 /* MetadataAPI.swift */,
-				OBJ_27 /* OffsetAPI.swift */,
-				OBJ_28 /* OffsetCommitAPI.swift */,
-				OBJ_29 /* OffsetFetchAPI.swift */,
-				OBJ_30 /* Partition.swift */,
-				OBJ_31 /* ProduceAPI.swift */,
-				OBJ_32 /* Topic.swift */,
-				OBJ_33 /* Variables.swift */,
-				A386B8081F196A730086BFF2 /* Assignment.swift */,
-				A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */,
-			);
-			name = Franz;
-			path = Sources/Franz;
-			sourceTree = SOURCE_ROOT;
-		};
+        A38623311F43A31F005590B8 /* Protocol */ = {
+            isa = PBXGroup;
+            children = (
+                A353E8FE1F42325F00CCB63D /* IntegerProtocolTests.swift */,
+                A38623321F43A3BE005590B8 /* VariableLengthProtocolTests.swift */,
+                A32A62E01F43B733006F9111 /* ArrayProtocolTests.swift */,
+                A3850F4F1F4B067800C62CF1 /* MessageTests.swift */,
+            );
+            name = Protocol;
+            path = Tests/FranzTests/Protocol;
+            sourceTree = SOURCE_ROOT;
+        };
+        A3CE7D911F5A004F00FBB198 /* DockerTests */ = {
+            isa = PBXGroup;
+            children = (
+                A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */,
+                A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */,
+                A3CE7D941F5A004F00FBB198 /* Info.plist */,
+                A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */,
+            );
+            path = DockerTests;
+            sourceTree = "<group>";
+        };
+        OBJ_14 /* Crypt */ = {
+            isa = PBXGroup;
+            children = (
+                OBJ_15 /* CRC32.swift */,
+            );
+            path = Crypt;
+            sourceTree = "<group>";
+        };
+        OBJ_35 /* Tests */ = {
+            isa = PBXGroup;
+            children = (
+                A3CE7D911F5A004F00FBB198 /* DockerTests */,
+                OBJ_36 /* FranzTests */,
+            );
+            name = Tests;
+            sourceTree = SOURCE_ROOT;
+        };
+        OBJ_36 /* FranzTests */ = {
+            isa = PBXGroup;
+            children = (
+                A3426BA41F25267500579CF8 /* AssignmentTests.swift */,
+                A314CB8C1F08B457008D61A6 /* CRCTests.swift */,
+                A38623311F43A31F005590B8 /* Protocol */,
+            );
+            name = FranzTests;
+            path = Tests/FranzTests;
+            sourceTree = SOURCE_ROOT;
+        };
+        OBJ_40 /* Products */ = {
+            isa = PBXGroup;
+            children = (
+                "franz::franzTests::Product" /* FranzTests.xctest */,
+                "franz::franz::Product" /* Franz.framework */,
+                A3CE7D901F5A004E00FBB198 /* DockerTests.xctest */,
+            );
+            name = Products;
+            sourceTree = BUILT_PRODUCTS_DIR;
+        };
+        OBJ_5 = {
+            isa = PBXGroup;
+            children = (
+                OBJ_6 /* Package.swift */,
+                OBJ_7 /* Sources */,
+                OBJ_35 /* Tests */,
+                OBJ_40 /* Products */,
+            );
+            sourceTree = "<group>";
+        };
+        OBJ_7 /* Sources */ = {
+            isa = PBXGroup;
+            children = (
+                OBJ_8 /* Franz */,
+            );
+            name = Sources;
+            sourceTree = SOURCE_ROOT;
+        };
+        OBJ_8 /* Franz */ = {
+            isa = PBXGroup;
+            children = (
+                OBJ_9 /* AdminAPI.swift */,
+                OBJ_10 /* Broker.swift */,
+                OBJ_11 /* Cluster.swift */,
+                OBJ_12 /* Connection.swift */,
+                A38E699D1F391B960044D3D3 /* Consumer.swift */,
+                OBJ_14 /* Crypt */,
+                OBJ_16 /* Enumerations.swift */,
+                OBJ_18 /* FetchAPI.swift */,
+                OBJ_19 /* Group.swift */,
+                OBJ_20 /* GroupCoordinatorAPI.swift */,
+                OBJ_21 /* GroupMembershipAPI.swift */,
+                OBJ_22 /* KafkaProtocol.swift */,
+                OBJ_23 /* KafkaRequest.swift */,
+                OBJ_24 /* KafkaResponse.swift */,
+                OBJ_25 /* MessageSet.swift */,
+                OBJ_26 /* MetadataAPI.swift */,
+                OBJ_27 /* OffsetAPI.swift */,
+                OBJ_28 /* OffsetCommitAPI.swift */,
+                OBJ_29 /* OffsetFetchAPI.swift */,
+                OBJ_30 /* Partition.swift */,
+                OBJ_31 /* ProduceAPI.swift */,
+                OBJ_32 /* Topic.swift */,
+                OBJ_33 /* Variables.swift */,
+                A386B8081F196A730086BFF2 /* Assignment.swift */,
+                A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */,
+            );
+            name = Franz;
+            path = Sources/Franz;
+            sourceTree = SOURCE_ROOT;
+        };
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A3CE7D8F1F5A004E00FBB198 /* DockerTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = A3CE7D9A1F5A004F00FBB198 /* Build configuration list for PBXNativeTarget "DockerTests" */;
-			buildPhases = (
-				A3CE7D8C1F5A004E00FBB198 /* Sources */,
-				A3CE7D8D1F5A004E00FBB198 /* Frameworks */,
-				A3CE7D8E1F5A004E00FBB198 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				A3CE7D971F5A004F00FBB198 /* PBXTargetDependency */,
-			);
-			name = DockerTests;
-			productName = DockerTests;
-			productReference = A3CE7D901F5A004E00FBB198 /* DockerTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		"franz::franz" /* Franz */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = OBJ_53 /* Build configuration list for PBXNativeTarget "Franz" */;
-			buildPhases = (
-				OBJ_56 /* Sources */,
-				OBJ_82 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = Franz;
-			productName = franz;
-			productReference = "franz::franz::Product" /* Franz.framework */;
-			productType = "com.apple.product-type.framework";
-		};
-		"franz::franzTests" /* FranzTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = OBJ_44 /* Build configuration list for PBXNativeTarget "FranzTests" */;
-			buildPhases = (
-				OBJ_47 /* Sources */,
-				OBJ_49 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				OBJ_51 /* PBXTargetDependency */,
-			);
-			name = FranzTests;
-			productName = franzTests;
-			productReference = "franz::franzTests::Product" /* FranzTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
+        A3CE7D8F1F5A004E00FBB198 /* DockerTests */ = {
+            isa = PBXNativeTarget;
+            buildConfigurationList = A3CE7D9A1F5A004F00FBB198 /* Build configuration list for PBXNativeTarget "DockerTests" */;
+            buildPhases = (
+                A3CE7D8C1F5A004E00FBB198 /* Sources */,
+                A3CE7D8D1F5A004E00FBB198 /* Frameworks */,
+                A3CE7D8E1F5A004E00FBB198 /* Resources */,
+            );
+            buildRules = (
+            );
+            dependencies = (
+                A3CE7D971F5A004F00FBB198 /* PBXTargetDependency */,
+            );
+            name = DockerTests;
+            productName = DockerTests;
+            productReference = A3CE7D901F5A004E00FBB198 /* DockerTests.xctest */;
+            productType = "com.apple.product-type.bundle.unit-test";
+        };
+        "franz::franz" /* Franz */ = {
+            isa = PBXNativeTarget;
+            buildConfigurationList = OBJ_53 /* Build configuration list for PBXNativeTarget "Franz" */;
+            buildPhases = (
+                OBJ_56 /* Sources */,
+                OBJ_82 /* Frameworks */,
+            );
+            buildRules = (
+            );
+            dependencies = (
+            );
+            name = Franz;
+            productName = franz;
+            productReference = "franz::franz::Product" /* Franz.framework */;
+            productType = "com.apple.product-type.framework";
+        };
+        "franz::franzTests" /* FranzTests */ = {
+            isa = PBXNativeTarget;
+            buildConfigurationList = OBJ_44 /* Build configuration list for PBXNativeTarget "FranzTests" */;
+            buildPhases = (
+                OBJ_47 /* Sources */,
+                OBJ_49 /* Frameworks */,
+            );
+            buildRules = (
+            );
+            dependencies = (
+                OBJ_51 /* PBXTargetDependency */,
+            );
+            name = FranzTests;
+            productName = franzTests;
+            productReference = "franz::franzTests::Product" /* FranzTests.xctest */;
+            productType = "com.apple.product-type.bundle.unit-test";
+        };
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		OBJ_1 /* Project object */ = {
-			isa = PBXProject;
-			attributes = {
-				LastSwiftUpdateCheck = 0900;
-				LastUpgradeCheck = 0900;
-				TargetAttributes = {
-					A3CE7D8F1F5A004E00FBB198 = {
-						CreatedOnToolsVersion = 9.0;
-						DevelopmentTeam = 7R888D749H;
-					};
-					"franz::franz" = {
-						LastSwiftMigration = 0900;
-					};
-					"franz::franzTests" = {
-						LastSwiftMigration = 0900;
-					};
-				};
-			};
-			buildConfigurationList = OBJ_2 /* Build configuration list for PBXProject "Franz" */;
-			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
-			hasScannedForEncodings = 0;
-			knownRegions = (
-				en,
-			);
-			mainGroup = OBJ_5;
-			productRefGroup = OBJ_40 /* Products */;
-			projectDirPath = "";
-			projectRoot = "";
-			targets = (
-				"franz::franzTests" /* FranzTests */,
-				"franz::franz" /* Franz */,
-				A3CE7D8F1F5A004E00FBB198 /* DockerTests */,
-			);
-		};
+        OBJ_1 /* Project object */ = {
+            isa = PBXProject;
+            attributes = {
+                LastSwiftUpdateCheck = 0900;
+                LastUpgradeCheck = 0900;
+                TargetAttributes = {
+                    A3CE7D8F1F5A004E00FBB198 = {
+                        CreatedOnToolsVersion = 9.0;
+                        DevelopmentTeam = 7R888D749H;
+                    };
+                    "franz::franz" = {
+                        LastSwiftMigration = 0900;
+                    };
+                    "franz::franzTests" = {
+                        LastSwiftMigration = 0900;
+                    };
+                };
+            };
+            buildConfigurationList = OBJ_2 /* Build configuration list for PBXProject "Franz" */;
+            compatibilityVersion = "Xcode 3.2";
+            developmentRegion = English;
+            hasScannedForEncodings = 0;
+            knownRegions = (
+                en,
+            );
+            mainGroup = OBJ_5;
+            productRefGroup = OBJ_40 /* Products */;
+            projectDirPath = "";
+            projectRoot = "";
+            targets = (
+                "franz::franzTests" /* FranzTests */,
+                "franz::franz" /* Franz */,
+                A3CE7D8F1F5A004E00FBB198 /* DockerTests */,
+            );
+        };
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		A3CE7D8E1F5A004E00FBB198 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A3CE7D9E1F5A066100FBB198 /* docker-compose.yml in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
+        A3CE7D8E1F5A004E00FBB198 /* Resources */ = {
+            isa = PBXResourcesBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
+                A3CE7D9E1F5A066100FBB198 /* docker-compose.yml in Resources */,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		A3CE7D8C1F5A004E00FBB198 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A3CE7D9C1F5A006100FBB198 /* DockerTestBase.swift in Sources */,
-				A3CE7D9B1F5A006100FBB198 /* ConsumerTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		OBJ_47 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 0;
-			files = (
-				A353E8FF1F42325F00CCB63D /* IntegerProtocolTests.swift in Sources */,
-				A3426BA51F25267500579CF8 /* AssignmentTests.swift in Sources */,
-				A314CB8D1F08B457008D61A6 /* CRCTests.swift in Sources */,
-				A3850F501F4B067800C62CF1 /* MessageTests.swift in Sources */,
-				A38623331F43A3BE005590B8 /* VariableLengthProtocolTests.swift in Sources */,
-				A32A62E11F43B733006F9111 /* ArrayProtocolTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		OBJ_56 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 0;
-			files = (
-				A38E69A11F391C350044D3D3 /* Consumer.swift in Sources */,
-				OBJ_57 /* AdminAPI.swift in Sources */,
-				OBJ_58 /* Broker.swift in Sources */,
-				OBJ_59 /* Cluster.swift in Sources */,
-				OBJ_60 /* Connection.swift in Sources */,
-				OBJ_62 /* CRC32.swift in Sources */,
-				OBJ_63 /* Enumerations.swift in Sources */,
-				OBJ_65 /* FetchAPI.swift in Sources */,
-				OBJ_66 /* Group.swift in Sources */,
-				A386B8091F196A730086BFF2 /* Assignment.swift in Sources */,
-				OBJ_67 /* GroupCoordinatorAPI.swift in Sources */,
-				A38E69A01F391BCB0044D3D3 /* OldConsumers.swift in Sources */,
-				OBJ_68 /* GroupMembershipAPI.swift in Sources */,
-				OBJ_69 /* KafkaProtocol.swift in Sources */,
-				OBJ_70 /* KafkaRequest.swift in Sources */,
-				OBJ_71 /* KafkaResponse.swift in Sources */,
-				OBJ_72 /* MessageSet.swift in Sources */,
-				OBJ_73 /* MetadataAPI.swift in Sources */,
-				OBJ_74 /* OffsetAPI.swift in Sources */,
-				OBJ_75 /* OffsetCommitAPI.swift in Sources */,
-				OBJ_76 /* OffsetFetchAPI.swift in Sources */,
-				OBJ_77 /* Partition.swift in Sources */,
-				OBJ_78 /* ProduceAPI.swift in Sources */,
-				OBJ_79 /* Topic.swift in Sources */,
-				OBJ_80 /* Variables.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
+        A3CE7D8C1F5A004E00FBB198 /* Sources */ = {
+            isa = PBXSourcesBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
+                A3CE7D9C1F5A006100FBB198 /* DockerTestBase.swift in Sources */,
+                A3CE7D9B1F5A006100FBB198 /* ConsumerTests.swift in Sources */,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        OBJ_47 /* Sources */ = {
+            isa = PBXSourcesBuildPhase;
+            buildActionMask = 0;
+            files = (
+                A353E8FF1F42325F00CCB63D /* IntegerProtocolTests.swift in Sources */,
+                A3426BA51F25267500579CF8 /* AssignmentTests.swift in Sources */,
+                A314CB8D1F08B457008D61A6 /* CRCTests.swift in Sources */,
+                A3850F501F4B067800C62CF1 /* MessageTests.swift in Sources */,
+                A38623331F43A3BE005590B8 /* VariableLengthProtocolTests.swift in Sources */,
+                A32A62E11F43B733006F9111 /* ArrayProtocolTests.swift in Sources */,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        OBJ_56 /* Sources */ = {
+            isa = PBXSourcesBuildPhase;
+            buildActionMask = 0;
+            files = (
+                A38E69A11F391C350044D3D3 /* Consumer.swift in Sources */,
+                OBJ_57 /* AdminAPI.swift in Sources */,
+                OBJ_58 /* Broker.swift in Sources */,
+                OBJ_59 /* Cluster.swift in Sources */,
+                OBJ_60 /* Connection.swift in Sources */,
+                OBJ_62 /* CRC32.swift in Sources */,
+                OBJ_63 /* Enumerations.swift in Sources */,
+                OBJ_65 /* FetchAPI.swift in Sources */,
+                OBJ_66 /* Group.swift in Sources */,
+                A386B8091F196A730086BFF2 /* Assignment.swift in Sources */,
+                OBJ_67 /* GroupCoordinatorAPI.swift in Sources */,
+                A38E69A01F391BCB0044D3D3 /* OldConsumers.swift in Sources */,
+                OBJ_68 /* GroupMembershipAPI.swift in Sources */,
+                OBJ_69 /* KafkaProtocol.swift in Sources */,
+                OBJ_70 /* KafkaRequest.swift in Sources */,
+                OBJ_71 /* KafkaResponse.swift in Sources */,
+                OBJ_72 /* MessageSet.swift in Sources */,
+                OBJ_73 /* MetadataAPI.swift in Sources */,
+                OBJ_74 /* OffsetAPI.swift in Sources */,
+                OBJ_75 /* OffsetCommitAPI.swift in Sources */,
+                OBJ_76 /* OffsetFetchAPI.swift in Sources */,
+                OBJ_77 /* Partition.swift in Sources */,
+                OBJ_78 /* ProduceAPI.swift in Sources */,
+                OBJ_79 /* Topic.swift in Sources */,
+                OBJ_80 /* Variables.swift in Sources */,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		A3CE7D971F5A004F00FBB198 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = "franz::franz" /* Franz */;
-			targetProxy = A3CE7D961F5A004F00FBB198 /* PBXContainerItemProxy */;
-		};
-		OBJ_51 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = "franz::franz" /* Franz */;
-			targetProxy = A398296C1F08245200C96CC2 /* PBXContainerItemProxy */;
-		};
+        A3CE7D971F5A004F00FBB198 /* PBXTargetDependency */ = {
+            isa = PBXTargetDependency;
+            target = "franz::franz" /* Franz */;
+            targetProxy = A3CE7D961F5A004F00FBB198 /* PBXContainerItemProxy */;
+        };
+        OBJ_51 /* PBXTargetDependency */ = {
+            isa = PBXTargetDependency;
+            target = "franz::franz" /* Franz */;
+            targetProxy = A398296C1F08245200C96CC2 /* PBXContainerItemProxy */;
+        };
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		A3CE7D981F5A004F00FBB198 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "Mac Developer";
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 7R888D749H;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				INFOPLIST_FILE = DockerTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = Franz.DockerTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_VERSION = 4.0;
-			};
-			name = Debug;
-		};
-		A3CE7D991F5A004F00FBB198 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "Mac Developer";
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = 7R888D749H;
-				ENABLE_NS_ASSERTIONS = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				INFOPLIST_FILE = DockerTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = Franz.DockerTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
-			};
-			name = Release;
-		};
-		OBJ_3 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_NS_ASSERTIONS = YES;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				ONLY_ACTIVE_ARCH = YES;
-				OTHER_SWIFT_FLAGS = "-DXcode";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator appletvos appletvsimulator watchos watchsimulator";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = SWIFT_PACKAGE;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				USE_HEADERMAP = NO;
-			};
-			name = Debug;
-		};
-		OBJ_4 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				OTHER_SWIFT_FLAGS = "-DXcode";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator appletvos appletvsimulator watchos watchsimulator";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = SWIFT_PACKAGE;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				USE_HEADERMAP = NO;
-			};
-			name = Release;
-		};
-		OBJ_45 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
-				);
-				HEADER_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = franz.xcodeproj/franzTests_Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks @loader_path/Frameworks";
-				OTHER_LDFLAGS = "$(inherited)";
-				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_NAME = FranzTests;
-				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
-				SWIFT_VERSION = 4.0;
-				TARGET_NAME = franzTests;
-			};
-			name = Debug;
-		};
-		OBJ_46 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
-				);
-				HEADER_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = franz.xcodeproj/franzTests_Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks @loader_path/Frameworks";
-				OTHER_LDFLAGS = "$(inherited)";
-				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_NAME = FranzTests;
-				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
-				SWIFT_VERSION = 4.0;
-				TARGET_NAME = franzTests;
-			};
-			name = Release;
-		};
-		OBJ_54 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
-				);
-				HEADER_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = franz.xcodeproj/franz_Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
-				OTHER_LDFLAGS = "$(inherited)";
-				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = franz;
-				PRODUCT_MODULE_NAME = Franz;
-				PRODUCT_NAME = Franz;
-				SKIP_INSTALL = YES;
-				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
-				SWIFT_VERSION = 4.0;
-				TARGET_NAME = franz;
-			};
-			name = Debug;
-		};
-		OBJ_55 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
-				);
-				HEADER_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = franz.xcodeproj/franz_Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
-				OTHER_LDFLAGS = "$(inherited)";
-				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = franz;
-				PRODUCT_MODULE_NAME = Franz;
-				PRODUCT_NAME = Franz;
-				SKIP_INSTALL = YES;
-				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
-				SWIFT_VERSION = 4.0;
-				TARGET_NAME = franz;
-			};
-			name = Release;
-		};
+        A3CE7D981F5A004F00FBB198 /* Debug */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                ALWAYS_SEARCH_USER_PATHS = NO;
+                CLANG_ANALYZER_NONNULL = YES;
+                CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+                CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+                CLANG_CXX_LIBRARY = "libc++";
+                CLANG_ENABLE_MODULES = YES;
+                CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+                CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+                CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+                CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+                CODE_SIGN_IDENTITY = "Mac Developer";
+                COMBINE_HIDPI_IMAGES = YES;
+                DEVELOPMENT_TEAM = 7R888D749H;
+                GCC_C_LANGUAGE_STANDARD = gnu11;
+                GCC_DYNAMIC_NO_PIC = NO;
+                GCC_PREPROCESSOR_DEFINITIONS = (
+                    "DEBUG=1",
+                    "$(inherited)",
+                );
+                GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+                GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+                INFOPLIST_FILE = DockerTests/Info.plist;
+                LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+                MACOSX_DEPLOYMENT_TARGET = 10.13;
+                MTL_ENABLE_DEBUG_INFO = YES;
+                PRODUCT_BUNDLE_IDENTIFIER = Franz.DockerTests;
+                PRODUCT_NAME = "$(TARGET_NAME)";
+                SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+                SWIFT_VERSION = 4.0;
+            };
+            name = Debug;
+        };
+        A3CE7D991F5A004F00FBB198 /* Release */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                ALWAYS_SEARCH_USER_PATHS = NO;
+                CLANG_ANALYZER_NONNULL = YES;
+                CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+                CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+                CLANG_CXX_LIBRARY = "libc++";
+                CLANG_ENABLE_MODULES = YES;
+                CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+                CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+                CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+                CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+                CODE_SIGN_IDENTITY = "Mac Developer";
+                COMBINE_HIDPI_IMAGES = YES;
+                COPY_PHASE_STRIP = NO;
+                DEVELOPMENT_TEAM = 7R888D749H;
+                ENABLE_NS_ASSERTIONS = NO;
+                GCC_C_LANGUAGE_STANDARD = gnu11;
+                GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+                GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+                INFOPLIST_FILE = DockerTests/Info.plist;
+                LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+                MACOSX_DEPLOYMENT_TARGET = 10.13;
+                MTL_ENABLE_DEBUG_INFO = NO;
+                PRODUCT_BUNDLE_IDENTIFIER = Franz.DockerTests;
+                PRODUCT_NAME = "$(TARGET_NAME)";
+                SWIFT_VERSION = 4.0;
+            };
+            name = Release;
+        };
+        OBJ_3 /* Debug */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                CLANG_ENABLE_OBJC_ARC = YES;
+                CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+                CLANG_WARN_BOOL_CONVERSION = YES;
+                CLANG_WARN_COMMA = YES;
+                CLANG_WARN_CONSTANT_CONVERSION = YES;
+                CLANG_WARN_EMPTY_BODY = YES;
+                CLANG_WARN_ENUM_CONVERSION = YES;
+                CLANG_WARN_INFINITE_RECURSION = YES;
+                CLANG_WARN_INT_CONVERSION = YES;
+                CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+                CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+                CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+                CLANG_WARN_STRICT_PROTOTYPES = YES;
+                CLANG_WARN_SUSPICIOUS_MOVE = YES;
+                CLANG_WARN_UNREACHABLE_CODE = YES;
+                CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+                COMBINE_HIDPI_IMAGES = YES;
+                COPY_PHASE_STRIP = NO;
+                DEBUG_INFORMATION_FORMAT = dwarf;
+                DYLIB_INSTALL_NAME_BASE = "@rpath";
+                ENABLE_NS_ASSERTIONS = YES;
+                ENABLE_STRICT_OBJC_MSGSEND = YES;
+                ENABLE_TESTABILITY = YES;
+                GCC_NO_COMMON_BLOCKS = YES;
+                GCC_OPTIMIZATION_LEVEL = 0;
+                GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+                GCC_WARN_ABOUT_RETURN_TYPE = YES;
+                GCC_WARN_UNDECLARED_SELECTOR = YES;
+                GCC_WARN_UNINITIALIZED_AUTOS = YES;
+                GCC_WARN_UNUSED_FUNCTION = YES;
+                GCC_WARN_UNUSED_VARIABLE = YES;
+                MACOSX_DEPLOYMENT_TARGET = 10.10;
+                ONLY_ACTIVE_ARCH = YES;
+                OTHER_SWIFT_FLAGS = "-DXcode";
+                PRODUCT_NAME = "$(TARGET_NAME)";
+                SDKROOT = macosx;
+                SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator appletvos appletvsimulator watchos watchsimulator";
+                SWIFT_ACTIVE_COMPILATION_CONDITIONS = SWIFT_PACKAGE;
+                SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+                USE_HEADERMAP = NO;
+            };
+            name = Debug;
+        };
+        OBJ_4 /* Release */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                CLANG_ENABLE_OBJC_ARC = YES;
+                CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+                CLANG_WARN_BOOL_CONVERSION = YES;
+                CLANG_WARN_COMMA = YES;
+                CLANG_WARN_CONSTANT_CONVERSION = YES;
+                CLANG_WARN_EMPTY_BODY = YES;
+                CLANG_WARN_ENUM_CONVERSION = YES;
+                CLANG_WARN_INFINITE_RECURSION = YES;
+                CLANG_WARN_INT_CONVERSION = YES;
+                CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+                CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+                CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+                CLANG_WARN_STRICT_PROTOTYPES = YES;
+                CLANG_WARN_SUSPICIOUS_MOVE = YES;
+                CLANG_WARN_UNREACHABLE_CODE = YES;
+                CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+                COMBINE_HIDPI_IMAGES = YES;
+                COPY_PHASE_STRIP = YES;
+                DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+                DYLIB_INSTALL_NAME_BASE = "@rpath";
+                ENABLE_STRICT_OBJC_MSGSEND = YES;
+                GCC_NO_COMMON_BLOCKS = YES;
+                GCC_OPTIMIZATION_LEVEL = s;
+                GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+                GCC_WARN_ABOUT_RETURN_TYPE = YES;
+                GCC_WARN_UNDECLARED_SELECTOR = YES;
+                GCC_WARN_UNINITIALIZED_AUTOS = YES;
+                GCC_WARN_UNUSED_FUNCTION = YES;
+                GCC_WARN_UNUSED_VARIABLE = YES;
+                MACOSX_DEPLOYMENT_TARGET = 10.10;
+                OTHER_SWIFT_FLAGS = "-DXcode";
+                PRODUCT_NAME = "$(TARGET_NAME)";
+                SDKROOT = macosx;
+                SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator appletvos appletvsimulator watchos watchsimulator";
+                SWIFT_ACTIVE_COMPILATION_CONDITIONS = SWIFT_PACKAGE;
+                SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+                USE_HEADERMAP = NO;
+            };
+            name = Release;
+        };
+        OBJ_45 /* Debug */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+                FRAMEWORK_SEARCH_PATHS = (
+                    "$(inherited)",
+                    "$(PLATFORM_DIR)/Developer/Library/Frameworks",
+                );
+                HEADER_SEARCH_PATHS = "$(inherited)";
+                INFOPLIST_FILE = franz.xcodeproj/franzTests_Info.plist;
+                LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks @loader_path/Frameworks";
+                OTHER_LDFLAGS = "$(inherited)";
+                OTHER_SWIFT_FLAGS = "$(inherited)";
+                PRODUCT_NAME = FranzTests;
+                SWIFT_SWIFT3_OBJC_INFERENCE = Off;
+                SWIFT_VERSION = 4.0;
+                TARGET_NAME = franzTests;
+            };
+            name = Debug;
+        };
+        OBJ_46 /* Release */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+                FRAMEWORK_SEARCH_PATHS = (
+                    "$(inherited)",
+                    "$(PLATFORM_DIR)/Developer/Library/Frameworks",
+                );
+                HEADER_SEARCH_PATHS = "$(inherited)";
+                INFOPLIST_FILE = franz.xcodeproj/franzTests_Info.plist;
+                LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks @loader_path/Frameworks";
+                OTHER_LDFLAGS = "$(inherited)";
+                OTHER_SWIFT_FLAGS = "$(inherited)";
+                PRODUCT_NAME = FranzTests;
+                SWIFT_SWIFT3_OBJC_INFERENCE = Off;
+                SWIFT_VERSION = 4.0;
+                TARGET_NAME = franzTests;
+            };
+            name = Release;
+        };
+        OBJ_54 /* Debug */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                ENABLE_TESTABILITY = YES;
+                FRAMEWORK_SEARCH_PATHS = (
+                    "$(inherited)",
+                    "$(PLATFORM_DIR)/Developer/Library/Frameworks",
+                );
+                HEADER_SEARCH_PATHS = "$(inherited)";
+                INFOPLIST_FILE = franz.xcodeproj/franz_Info.plist;
+                LD_RUNPATH_SEARCH_PATHS = "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
+                OTHER_LDFLAGS = "$(inherited)";
+                OTHER_SWIFT_FLAGS = "$(inherited)";
+                PRODUCT_BUNDLE_IDENTIFIER = franz;
+                PRODUCT_MODULE_NAME = Franz;
+                PRODUCT_NAME = Franz;
+                SKIP_INSTALL = YES;
+                SWIFT_SWIFT3_OBJC_INFERENCE = Off;
+                SWIFT_VERSION = 4.0;
+                TARGET_NAME = franz;
+            };
+            name = Debug;
+        };
+        OBJ_55 /* Release */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                ENABLE_TESTABILITY = YES;
+                FRAMEWORK_SEARCH_PATHS = (
+                    "$(inherited)",
+                    "$(PLATFORM_DIR)/Developer/Library/Frameworks",
+                );
+                HEADER_SEARCH_PATHS = "$(inherited)";
+                INFOPLIST_FILE = franz.xcodeproj/franz_Info.plist;
+                LD_RUNPATH_SEARCH_PATHS = "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
+                OTHER_LDFLAGS = "$(inherited)";
+                OTHER_SWIFT_FLAGS = "$(inherited)";
+                PRODUCT_BUNDLE_IDENTIFIER = franz;
+                PRODUCT_MODULE_NAME = Franz;
+                PRODUCT_NAME = Franz;
+                SKIP_INSTALL = YES;
+                SWIFT_SWIFT3_OBJC_INFERENCE = Off;
+                SWIFT_VERSION = 4.0;
+                TARGET_NAME = franz;
+            };
+            name = Release;
+        };
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A3CE7D9A1F5A004F00FBB198 /* Build configuration list for PBXNativeTarget "DockerTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A3CE7D981F5A004F00FBB198 /* Debug */,
-				A3CE7D991F5A004F00FBB198 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		OBJ_2 /* Build configuration list for PBXProject "Franz" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				OBJ_3 /* Debug */,
-				OBJ_4 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		OBJ_44 /* Build configuration list for PBXNativeTarget "FranzTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				OBJ_45 /* Debug */,
-				OBJ_46 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		OBJ_53 /* Build configuration list for PBXNativeTarget "Franz" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				OBJ_54 /* Debug */,
-				OBJ_55 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
+        A3CE7D9A1F5A004F00FBB198 /* Build configuration list for PBXNativeTarget "DockerTests" */ = {
+            isa = XCConfigurationList;
+            buildConfigurations = (
+                A3CE7D981F5A004F00FBB198 /* Debug */,
+                A3CE7D991F5A004F00FBB198 /* Release */,
+            );
+            defaultConfigurationIsVisible = 0;
+            defaultConfigurationName = Debug;
+        };
+        OBJ_2 /* Build configuration list for PBXProject "Franz" */ = {
+            isa = XCConfigurationList;
+            buildConfigurations = (
+                OBJ_3 /* Debug */,
+                OBJ_4 /* Release */,
+            );
+            defaultConfigurationIsVisible = 0;
+            defaultConfigurationName = Debug;
+        };
+        OBJ_44 /* Build configuration list for PBXNativeTarget "FranzTests" */ = {
+            isa = XCConfigurationList;
+            buildConfigurations = (
+                OBJ_45 /* Debug */,
+                OBJ_46 /* Release */,
+            );
+            defaultConfigurationIsVisible = 0;
+            defaultConfigurationName = Debug;
+        };
+        OBJ_53 /* Build configuration list for PBXNativeTarget "Franz" */ = {
+            isa = XCConfigurationList;
+            buildConfigurations = (
+                OBJ_54 /* Debug */,
+                OBJ_55 /* Release */,
+            );
+            defaultConfigurationIsVisible = 0;
+            defaultConfigurationName = Debug;
+        };
 /* End XCConfigurationList section */
-	};
-	rootObject = OBJ_1 /* Project object */;
+    };
+    rootObject = OBJ_1 /* Project object */;
 }
