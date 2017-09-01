@@ -511,7 +511,7 @@ class Broker: KafkaType {
         }
     }
 	
-	func getTopicMetadata(topics: [TopicName], clientId: String, completion: @escaping (MetadataResponse) -> Void) {
+	func getTopicMetadata(topics: [TopicName] = [], clientId: String, completion: @escaping (MetadataResponse) -> Void) {
 		let topicMetadataRequest = TopicMetadataRequest(topics: topics)
 		
 		connect(clientId).write(topicMetadataRequest) { data in

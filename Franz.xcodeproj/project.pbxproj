@@ -19,7 +19,7 @@
 		A3CE7D951F5A004F00FBB198 /* Franz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "franz::franz::Product" /* Franz.framework */; };
 		A3CE7D9B1F5A006100FBB198 /* ConsumerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */; };
 		A3CE7D9C1F5A006100FBB198 /* DockerTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */; };
-		A3CE7D9D1F5A00AA00FBB198 /* docker-compose.yml in Sources */ = {isa = PBXBuildFile; fileRef = A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */; };
+		A3CE7D9E1F5A066100FBB198 /* docker-compose.yml in Resources */ = {isa = PBXBuildFile; fileRef = A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */; };
 		OBJ_50 /* Franz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "franz::franz::Product" /* Franz.framework */; };
 		OBJ_57 /* AdminAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* AdminAPI.swift */; };
 		OBJ_58 /* Broker.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* Broker.swift */; };
@@ -213,11 +213,11 @@
 		OBJ_8 /* Franz */ = {
 			isa = PBXGroup;
 			children = (
-				A38E699D1F391B960044D3D3 /* Consumer.swift */,
 				OBJ_9 /* AdminAPI.swift */,
 				OBJ_10 /* Broker.swift */,
 				OBJ_11 /* Cluster.swift */,
 				OBJ_12 /* Connection.swift */,
+				A38E699D1F391B960044D3D3 /* Consumer.swift */,
 				OBJ_14 /* Crypt */,
 				OBJ_16 /* Enumerations.swift */,
 				OBJ_18 /* FetchAPI.swift */,
@@ -286,7 +286,6 @@
 			buildPhases = (
 				OBJ_47 /* Sources */,
 				OBJ_49 /* Frameworks */,
-				A3850F4D1F49C6FA00C62CF1 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -339,17 +338,11 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		A3850F4D1F49C6FA00C62CF1 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		A3CE7D8E1F5A004E00FBB198 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A3CE7D9E1F5A066100FBB198 /* docker-compose.yml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -360,7 +353,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A3CE7D9D1F5A00AA00FBB198 /* docker-compose.yml in Sources */,
 				A3CE7D9C1F5A006100FBB198 /* DockerTestBase.swift in Sources */,
 				A3CE7D9B1F5A006100FBB198 /* ConsumerTests.swift in Sources */,
 			);

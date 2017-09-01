@@ -20,32 +20,13 @@ public class Consumer {
 		if #available(OSX 10.12, *) {
 			Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in self.commitGroupoffsets() }
 			Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in
-				guard let groupId = self.membership?.group.id,
-					let generationId = self.membership?.group.generationId,
-					let memberId = self.membership?.memberId else {
-						return
-				}
-				self.broker?.heartbeatRequest(groupId, generationId: generationId, memberId: memberId, clientId: cluster.clientId)
+				self.sendHeartbeat()
 			}
 		} else {
 			// Fallback on earlier versions
 			Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(commitGroupoffsets), userInfo: nil, repeats: true)
+			Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(sendHeartbeat), userInfo: nil, repeats: true)
 		}
-	}
-	
-	func subscribe(topic: String) {
-		topicsToSubscribeTo.append(topic)
-		DispatchQueue(label: "FranzConsumerSubscribeQueue").async {
-			self.joinedGroupSemaphore.wait()
-			self.subscripeToTopics()
-		}
-	}
-	
-	private var topicsToSubscribeTo = [TopicName]()
-	private func subscripeToTopics() {
-		topicsToSubscribeTo.forEach { membership!.group.topics.insert($0) }
-		cluster.addTargetTopics(topics: topicsToSubscribeTo)
-		topicsToSubscribeTo.removeAll()
 	}
 	
 	private let listenQueue = DispatchQueue(label: "FranzConsumerListenQueue")
@@ -56,14 +37,27 @@ public class Consumer {
 		broker.commitGroupOffset(groupId: groupId, topics: offsetsToCommit, clientId: cluster.clientId)
 	}
 	
+	@objc private func sendHeartbeat() {
+		guard let groupId = self.membership?.group.id,
+			let generationId = self.membership?.group.generationId,
+			let memberId = self.membership?.memberId else {
+				return
+		}
+		self.broker?.heartbeatRequest(groupId, generationId: generationId, memberId: memberId, clientId: cluster.clientId)
+	}
+	
+	/**
+	Returns messages from the topics that the consumer is subscribed to.
+
+	- parameters:
+		- handler: Called whenever a message is received, along with that message.
+	*/
 	public func listen(handler: @escaping (Message) -> Void) {
 		listenQueue.async {
 			self.joinedGroupSemaphore.wait()
 			guard let membership = self.membership, let broker = self.broker else {
 				return
 			}
-			
-			self.subscripeToTopics()
 			
 			self.cluster.getParitions(for: Array(membership.group.topics)) { partitions in
 				let ids = partitions.reduce([TopicName: [PartitionId]](), { (result, arg1) in

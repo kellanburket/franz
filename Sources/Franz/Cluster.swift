@@ -149,14 +149,6 @@ open class Cluster {
             throw ClusterError.noBatchForTopicPartition(topic: topic, partition: partition)
         }
     }
-	
-	
-	//TODO: Remove? Dunno why this is here
-	var targetTopics = Set<String>()
-	
-	func addTargetTopics(topics: [String]) {
-		targetTopics.formUnion(topics)
-	}
 
     /**
         List all available topics
@@ -164,7 +156,7 @@ open class Cluster {
         - Parameter callback:
      */
     open func listTopics(_ callback: @escaping ([Topic]) -> ()) {
-		_brokers.first?.value.getTopicMetadata(topics: Array(targetTopics), clientId: clientId) { response in
+		_brokers.first?.value.getTopicMetadata(clientId: clientId) { response in
 			var topics = [Topic]()
 			for (name, topic) in response.topics {
 				var partitions = [PartitionId]()
@@ -328,6 +320,17 @@ open class Cluster {
         return consumer
     }
 	
+	/**
+	Initialize a Consumer that can be used to listen for messages.
+	
+	- parameters:
+		- topics: The list of topics that the consumer should be subscribed to.
+		- groupId: The id of the consumer group that the consumer group should belong to.
+	
+	- returns: The Consumer object that can then listen for messages.
+	
+	- seealso: `Consumer`
+	*/
 	public func getConsumer(topics: [TopicName], groupId: String) -> Consumer {
 		let consumer = Consumer(cluster: self, groupId: groupId)
 		joinGroup(id: groupId, topics: topics, callback: { broker, membership in

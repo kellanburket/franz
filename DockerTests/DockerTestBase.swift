@@ -14,7 +14,7 @@ class DockerTestBase: XCTestCase {
 	static let startedSemaphore = DispatchSemaphore(value: 0)
 	
 	static let compose = URL(fileURLWithPath: "/usr/local/bin/docker-compose")
-	static let yml = Bundle(for: ConsumerTests.self).url(forResource: "docker-compose", withExtension: "yml")!
+	static let yml = Bundle(for: DockerTestBase.self).url(forResource: "docker-compose", withExtension: "yml")!
 	
 	override class func setUp() {
 		do {
