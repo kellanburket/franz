@@ -17,7 +17,7 @@ public class Consumer {
 	internal init(cluster: Cluster, groupId: String) {
 		self.cluster = cluster
 		
-		if #available(OSX 10.12, *) {
+		if #available(OSX 10.12, iOS 10, tvOS 10, watchOS 3, *) {
 			Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in self.commitGroupoffsets() }
 			Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in
 				self.sendHeartbeat()

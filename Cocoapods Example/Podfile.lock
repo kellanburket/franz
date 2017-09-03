@@ -1,13 +1,7 @@
 PODS:
-  - FBSnapshotTestCase (2.0.7):
-    - FBSnapshotTestCase/SwiftSupport (= 2.0.7)
-  - FBSnapshotTestCase/Core (2.0.7)
-  - FBSnapshotTestCase/SwiftSupport (2.0.7):
-    - FBSnapshotTestCase/Core
   - Franz (0.1.0)
 
 DEPENDENCIES:
-  - FBSnapshotTestCase
   - Franz (from `../`)
 
 EXTERNAL SOURCES:
@@ -15,9 +9,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  FBSnapshotTestCase: 7e85180d0d141a0cf472352edda7e80d7eaeb547
   Franz: '099af2ab9705201bc585ed3e4de8a2b703059dac'
 
-PODFILE CHECKSUM: c032817a93acb37931673057189ebbe64248ebf3
+PODFILE CHECKSUM: 2cde30658617a6dbe8248094a35efba117c6dac5
 
 COCOAPODS: 1.2.1

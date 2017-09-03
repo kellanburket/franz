@@ -1,12 +1,7 @@
-source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, '10.0'
 use_frameworks!
 
 target 'Franz_Example' do
   pod "Franz", :path => "../"
 end
 
-target 'Franz_Tests' do
-  pod "Franz", :path => "../"
-
-  pod 'FBSnapshotTestCase'
-end
