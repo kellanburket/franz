@@ -11,27 +11,29 @@ import Foundation
 class OffsetRequest: KafkaRequest {
 
     convenience init(
-        topic: String,
-        partitions: [Int32],
+		topics: [TopicName: [PartitionId]],
         time: TimeOffset = TimeOffset.latest,
         maxNumberOfOffsets: Int32 = 10,
         replicaId: ReplicaId = .none
     ) {
-        var topicValues = [Int32:(TimeOffset, Int32)]()
-        for partition in partitions {
-            topicValues[partition] = (time, maxNumberOfOffsets)
-        }
+		let topicsWithSettings = topics.mapValues { partitions -> [PartitionId: (TimeOffset, Int32)] in
+			var topicValues = [PartitionId: (TimeOffset, Int32)]()
+			for partition in partitions {
+				topicValues[partition] = (time, maxNumberOfOffsets)
+			}
+			return topicValues
+		}
         
         self.init(
             value: OffsetRequestMessage(
-                topics: [topic: topicValues],
+                topics: topicsWithSettings,
                 replicaId: replicaId
             )
         )
     }
     
     convenience init(
-        topics: [String:[Int32:(TimeOffset,Int32)]],
+        topics: [TopicName: [PartitionId: (TimeOffset, Int32)]],
         replicaId: ReplicaId = .none
     ) {
         self.init(

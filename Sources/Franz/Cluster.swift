@@ -182,10 +182,9 @@ open class Cluster {
         callback: @escaping ([Int64]) -> ()
     ) {
         findTopicLeader(topic, partition: partition, { leader in
-            leader.getOffsets(for: topic,
-                partition: partition,
+			leader.getOffsets(for: [topic: [partition]],
                 clientId: self.clientId,
-                callback: callback
+                callback: { callback($0[topic]![partition]!) }
             )
         }, { error in
             print(error)
@@ -332,25 +331,27 @@ open class Cluster {
     - seealso: `Consumer`
     */
     public func getConsumer(topics: [TopicName], groupId: String) -> Consumer {
-        let consumer = Consumer(cluster: self, groupId: groupId)
-        joinGroup(id: groupId, topics: topics, callback: { broker, membership in
-            consumer.broker = broker
-            consumer.membership = membership
-            membership.group.getState { groupId, state in
-                if state == GroupState.AwaitingSync {
-                    self.assignRoundRobin(members: membership.members.map { $0.memberId }, topics: topics) { assignments in
-                        membership.sync(assignments[membership.memberId]!, data: Data()) {
-                            consumer.joinedGroupSemaphore.signal()
-                        }
-                    }
-                }
-                if state == .Empty {
-                    print("Group shouldn't be empty")
-                }
-            }
-        }, error: { error in
-            
-        })
+		let consumer = Consumer(cluster: self, groupId: groupId)
+		DispatchQueue(label: "FranzConsumerGetQueue").async {
+			self.joinGroup(id: groupId, topics: topics, callback: { broker, membership in
+				consumer.broker = broker
+				consumer.membership = membership
+				membership.group.getState { groupId, state in
+					if state == GroupState.AwaitingSync {
+						self.assignRoundRobin(members: membership.members.map { $0.memberId }, topics: topics) { assignments in
+							membership.sync(assignments[membership.memberId]!, data: Data()) {
+								consumer.joinedGroupSemaphore.signal()
+							}
+						}
+					}
+					if state == .Empty {
+						print("Group shouldn't be empty")
+					}
+				}
+			}, error: { error in
+				
+			})
+		}
         return consumer
     }
     

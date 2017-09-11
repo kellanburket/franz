@@ -140,12 +140,19 @@ class Broker: KafkaType {
         return _connection!
     }
 
-	func poll(topics: [TopicName: [PartitionId]], groupId: String, clientId: String, replicaId: ReplicaId, callback: @escaping (TopicName, PartitionId, Offset, [Message]) -> (), errorCallback: ((BrokerError) -> Void)? = nil) {
+	func poll(topics: [TopicName: [PartitionId]], fromStart: Bool, groupId: String, clientId: String, replicaId: ReplicaId, callback: @escaping (TopicName, PartitionId, Offset, [Message]) -> (), errorCallback: ((BrokerError) -> Void)? = nil) {
         guard groupMembership[groupId] != nil else {
 			errorCallback?(.noGroupMembershipForBroker)
 			return
 		}
-		fetchOffsets(groupId: groupId, topics: topics, clientId: clientId) { topicsWithOffsets in
+		getOffsets(for: topics, clientId: clientId, time: fromStart ? .earliest : .latest) { offsets in
+			let topicsWithOffsets = offsets.mapValues({ partitions in
+				partitions.mapValues({ offsets in
+					offsets.sorted().last
+				})
+				.filter({ $1 != nil })
+				.mapValues({ $0! })
+			})
 			self.poll(topics: topicsWithOffsets, clientId: clientId, replicaId: replicaId, callback: callback, errorCallback: errorCallback)
 		}
     }
@@ -241,7 +248,8 @@ class Broker: KafkaType {
 						if let error = responsePartition.error {
 							if error.code == 0 {
 								callback?()
-							} else {
+							}
+							else {
 								print("Error with offset commit \(error)")
 							}
 						} else {
@@ -281,25 +289,28 @@ class Broker: KafkaType {
         }
     }
 
-    func getOffsets(for topic: TopicName, partition: PartitionId, clientId: String, callback: @escaping ([Offset]) -> ()) {
-        let request = OffsetRequest(topic: topic, partitions: [partition])
+	func getOffsets(for topics: [TopicName: [PartitionId]], clientId: String, time: TimeOffset = .latest, callback: @escaping ([TopicName: [PartitionId: [Offset]]]) -> ()) {
+		let request = OffsetRequest(topics: topics, time: time)
         connect(clientId).write(request) { data in
             self._metadataReadQueue.async {
                 var mutableData = data
                 let response = OffsetResponse(data: &mutableData)
-                for topicalPartitionedOffsets in response.topicalPartitionedOffsets {
-                    for (_, partitionedOffsets) in topicalPartitionedOffsets.partitionedOffsets {
-                        if let error = partitionedOffsets.error {
-                            if error.code == 0 {
-                                callback(partitionedOffsets.offsets)
-                            } else {
-                                print("ERROR: \(error.description)")
-                            }
-                        } else {
-                            print("Unable to parse error.")
-                        }
-                    }
-                }
+				
+				if let error = response.topicalPartitionedOffsets.flatMap({ $0.partitionedOffsets.flatMap { $0.value.error } })
+					.filter({ $0 != .noError })
+					.first {
+					print("ERROR: \(error.description)")
+					return
+				}
+				
+				let topicsWithOffsets = Dictionary(uniqueKeysWithValues: response.topicalPartitionedOffsets.map { topic -> (TopicName, [PartitionId : [Offset]]) in
+					let partitions = Dictionary(uniqueKeysWithValues: topic.partitionedOffsets.map { (partitionId, offsets) in
+						(partitionId, offsets.offsets)
+					})
+					return (topic.topicName, partitions)
+				})
+				
+				callback(topicsWithOffsets)
             }
         }
     }

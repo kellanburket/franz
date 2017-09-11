@@ -29,7 +29,7 @@ public class Consumer {
 		}
 	}
 	
-	private let listenQueue = DispatchQueue(label: "FranzConsumerListenQueue")
+	private let listenQueue = DispatchQueue(label: "FranzConsumerListenQueue", attributes: .concurrent)
 	
 	var offsetsToCommit = [TopicName: [PartitionId: (Offset, OffsetMetadata?)]]()
 	@objc private func commitGroupoffsets() {
@@ -50,9 +50,10 @@ public class Consumer {
 	Returns messages from the topics that the consumer is subscribed to.
 
 	- parameters:
+		- fromStart: If true the consumer will call the handler for all existing messages, and if false the consumer will only call the handler for new messages.
 		- handler: Called whenever a message is received, along with that message.
 	*/
-	public func listen(handler: @escaping (Message) -> Void) {
+	public func listen(fromStart: Bool = true, handler: @escaping (Message) -> Void) {
 		listenQueue.async {
 			self.joinedGroupSemaphore.wait()
 			guard let membership = self.membership, let broker = self.broker else {
@@ -67,7 +68,7 @@ public class Consumer {
 					return copy
 				})
 				
-				broker.poll(topics: ids, groupId: membership.group.id, clientId: "test", replicaId: ReplicaId.none, callback: { topic, partitionId, offset, messages in
+				broker.poll(topics: ids, fromStart: fromStart, groupId: membership.group.id, clientId: "test", replicaId: ReplicaId.none, callback: { topic, partitionId, offset, messages in
 						messages.forEach(handler)
 						
 						if var topicOffsets = self.offsetsToCommit[topic] {

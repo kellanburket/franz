@@ -232,7 +232,7 @@ public class HighLevelConsumer: OldConsumer {
 			return
 		}
 		
-		coordinator.poll(topics: [_topic: [_partition]], groupId: groupId, clientId: _clientId, replicaId: .none, callback: { (topicName, partitionId, offset, messages) in
+		coordinator.poll(topics: [_topic: [_partition]], fromStart: true, groupId: groupId, clientId: _clientId, replicaId: .none, callback: { (topicName, partitionId, offset, messages) in
 			for (idx, message) in messages.enumerated() {
 				self.delegate.consumerDidReturnMessage(
 					message,
