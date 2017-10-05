@@ -139,21 +139,26 @@ class KafkaConnection: NSObject, Connection, StreamDelegate {
 
         inputStream = readStream?.takeUnretainedValue()
         outputStream = writeStream?.takeUnretainedValue()
+		
+		DispatchQueue(label: "FranzConnectionQueue").async {
+			self.inputStream?.delegate = self
+			self.inputStream?.schedule(
+				in: RunLoop.current,
+				forMode: RunLoopMode.defaultRunLoopMode
+			)
+			
+			self.outputStream?.delegate = self
+			self.outputStream?.schedule(
+				in: RunLoop.current,
+				forMode: RunLoopMode.defaultRunLoopMode
+			)
+			
+			self.inputStream?.open()
+			self.outputStream?.open()
+			
+			RunLoop.current.run()
+		}
 
-        self.inputStream?.delegate = self
-        self.inputStream?.schedule(
-            in: RunLoop.main,
-            forMode: RunLoopMode.defaultRunLoopMode
-        )
-
-        self.outputStream?.delegate = self
-        self.outputStream?.schedule(
-            in: RunLoop.main,
-            forMode: RunLoopMode.defaultRunLoopMode
-        )
-
-        self.inputStream?.open()
-        self.outputStream?.open()
     }
     
     private func read(_ timeout: Double = 3000) {
@@ -186,6 +191,7 @@ class KafkaConnection: NSObject, Connection, StreamDelegate {
                     }
                     
                     if let callback = self._requestCallbacks[correlationId] {
+						self._requestCallbacks.removeValue(forKey: correlationId)
 						callback(Data(bytes: bytes))
                     } else {
                         print(

@@ -41,6 +41,8 @@ class DockerTestBase: XCTestCase {
 		var inputStream: InputStream?, outputStream: OutputStream?
 		var timer: Timer?
 		
+		var runLoopToStop: CFRunLoop!
+		
 		DispatchQueue(label: "dockerStreamPoll").async {
 			if #available(OSX 10.12, *) {
 				timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
@@ -72,9 +74,12 @@ class DockerTestBase: XCTestCase {
 			} else {
 				fatalError("Upgrade to macOS 10.12 to run Docker tests")
 			}
-			RunLoop.current.run()
+			runLoopToStop = CFRunLoopGetCurrent()
+			CFRunLoopRun()
 		}
 		startedSemaphore.wait()
+		
+		CFRunLoopStop(runLoopToStop)
 		
 		print("Kafka server is ready")
 		

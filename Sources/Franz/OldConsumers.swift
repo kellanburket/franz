@@ -178,7 +178,8 @@ public class SimpleConsumer: OldConsumer {
 		guard let coordinator = broker else {
 			return
 		}
-		coordinator.poll(topics: [_topic: [_partition: offset]], clientId: _clientId, replicaId: .none, callback: { topicName, partitionId, offset, messages in
+		
+		_ = coordinator.poll(topics: [_topic: [_partition: offset]], clientId: _clientId, replicaId: .none, callback: { topicName, partitionId, offset, messages in
 			messages.forEach { self.delegate.consumerDidReturnMessage($0, offset: offset) }
 		}, errorCallback: { error in
 			switch error {
@@ -232,7 +233,7 @@ public class HighLevelConsumer: OldConsumer {
 			return
 		}
 		
-		coordinator.poll(topics: [_topic: [_partition]], fromStart: true, groupId: groupId, clientId: _clientId, replicaId: .none, callback: { (topicName, partitionId, offset, messages) in
+		_ = coordinator.poll(topics: [_topic: [_partition]], fromStart: true, groupId: groupId, clientId: _clientId, replicaId: .none, callback: { (topicName, partitionId, offset, messages) in
 			for (idx, message) in messages.enumerated() {
 				self.delegate.consumerDidReturnMessage(
 					message,

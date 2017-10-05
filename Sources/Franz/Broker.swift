@@ -139,11 +139,22 @@ class Broker: KafkaType {
         
         return _connection!
     }
+	
+	class CancelToken {
+		fileprivate var shouldCancel = false
+		
+		func cancel() {
+			shouldCancel = true
+		}
+	}
 
-	func poll(topics: [TopicName: [PartitionId]], fromStart: Bool, groupId: String, clientId: String, replicaId: ReplicaId, callback: @escaping (TopicName, PartitionId, Offset, [Message]) -> (), errorCallback: ((BrokerError) -> Void)? = nil) {
+	func poll(topics: [TopicName: [PartitionId]], fromStart: Bool, groupId: String, clientId: String, replicaId: ReplicaId, callback: @escaping (TopicName, PartitionId, Offset, [Message]) -> (), errorCallback: ((BrokerError) -> Void)? = nil) -> CancelToken {
+		
+		let cancelToken = CancelToken()
+		
         guard groupMembership[groupId] != nil else {
 			errorCallback?(.noGroupMembershipForBroker)
-			return
+			return cancelToken
 		}
 		getOffsets(for: topics, clientId: clientId, time: fromStart ? .earliest : .latest) { offsets in
 			let topicsWithOffsets = offsets.mapValues({ partitions in
@@ -153,15 +164,21 @@ class Broker: KafkaType {
 				.filter({ $1 != nil })
 				.mapValues({ $0! })
 			})
-			self.poll(topics: topicsWithOffsets, clientId: clientId, replicaId: replicaId, callback: callback, errorCallback: errorCallback)
+			self.poll(topics: topicsWithOffsets, clientId: clientId, replicaId: replicaId, cancelToken: cancelToken, callback: callback, errorCallback: errorCallback)
 		}
+		return cancelToken
     }
 	
-	func poll(topics: [TopicName: [PartitionId: Offset]], clientId: String, replicaId: ReplicaId, callback: @escaping (TopicName, PartitionId, Offset, [Message]) -> (), errorCallback: ((BrokerError) -> Void)? = nil) {
+	func poll(topics: [TopicName: [PartitionId: Offset]], clientId: String, replicaId: ReplicaId, cancelToken: CancelToken? = nil, callback: @escaping (TopicName, PartitionId, Offset, [Message]) -> (), errorCallback: ((BrokerError) -> Void)? = nil) {
 		
 		let request = FetchRequest(topics: topics, replicaId: replicaId)
 		
         connect(clientId).write(request) { data in
+			//Check to see if we should stop polling
+			if let token = cancelToken, token.shouldCancel {
+				return
+			}
+			
 			var mutableData = data
 			let response = FetchResponse(data: &mutableData)
 			
@@ -191,7 +208,7 @@ class Broker: KafkaType {
 			}
 			
 			//Poll again with new offsets
-			self.poll(topics: topicsWithNewOffsets, clientId: clientId, replicaId: replicaId, callback: callback, errorCallback: errorCallback)
+			self.poll(topics: topicsWithNewOffsets, clientId: clientId, replicaId: replicaId, cancelToken: cancelToken, callback: callback, errorCallback: errorCallback)
         }
     }
 	

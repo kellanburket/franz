@@ -64,27 +64,61 @@ class ConsumerTests: DockerTestBase {
 		waitForExpectations(timeout: 60)
 	}
 	
+	func testConsumerStops() {
+		let consumer = cluster.getConsumer(topics: ["stop"], groupId: "newgroup")
+		
+		let e = expectation(description: "Receives message from start")
+		
+		consumer.listen { message in
+			if String(data: message.value, encoding: .utf8)! == "test" {
+				e.fulfill()
+			} else {
+				XCTFail("Shouldn't have recevied message")
+			}
+		}
+		
+		cluster.sendMessage("stop", message: "test")
+		
+		waitForExpectations(timeout: 10)
+		
+		consumer.stop()
+
+		DispatchQueue.global().asyncAfter(deadline: .now() + 3) {
+			self.cluster.sendMessage("stop", message: "stop")
+		}
+
+		Thread.sleep(forTimeInterval: 10)
+	}
+	
 	func testFromStart() {
 		cluster.sendMessage("fromStart", message: "test")
 		
 		let consumer1 = cluster.getConsumer(topics: ["fromStart"], groupId: "newgroup")
 		
-		let e = expectation(description: "Receives message from start")
+		let first = expectation(description: "Receives message from start")
+		let second = expectation(description: "Receives second message")
 		
 		consumer1.listen(fromStart: true) { message in
 			if String(data: message.value, encoding: .utf8)! == "test" {
-				e.fulfill()
+				first.fulfill()
 			}
 		}
 		
 		let consumer2 = cluster.getConsumer(topics: ["fromStart"], groupId: "newGroup")
 		
-		consumer2.listen(fromStart: false) { _ in
-			XCTFail("Shouldn't have received any messages from earlier")
+		consumer2.listen(fromStart: false) { message in
+			if String(data: message.value, encoding: .utf8)! == "second" {
+				second.fulfill()
+			} else {
+				XCTFail("Shouldn't have received any messages from earlier")
+			}
 		}
 		
-		Thread.sleep(forTimeInterval: 10)
-		waitForExpectations(timeout: 10)
+		wait(for: [first], timeout: 10)
+		
+		cluster.sendMessage("fromStart", message: "second")
+		
+		wait(for: [second], timeout: 10)
 	}
 	
 	func testDoesntReceiveUnsubscribedTopics() {
@@ -97,7 +131,7 @@ class ConsumerTests: DockerTestBase {
 		
 		cluster.sendMessage("test", message: "Foo")
 
-		Thread.sleep(forTimeInterval: 10)
+		Thread.sleep(forTimeInterval: 30)
 	}
 	
 }

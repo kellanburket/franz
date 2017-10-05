@@ -40,7 +40,26 @@
                ReferencedContainer = "container:Franz.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "A3CE7D8F1F5A004E00FBB198"
+               BuildableName = "DockerTests.xctest"
+               BlueprintName = "DockerTests"
+               ReferencedContainer = "container:Franz.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "franz::franz"
+            BuildableName = "Franz.framework"
+            BlueprintName = "Franz"
+            ReferencedContainer = "container:Franz.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -73,6 +92,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "franz::franz"
+            BuildableName = "Franz.framework"
+            BlueprintName = "Franz"
+            ReferencedContainer = "container:Franz.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

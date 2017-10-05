@@ -54,6 +54,11 @@ public class Consumer {
 		- handler: Called whenever a message is received, along with that message.
 	*/
 	public func listen(fromStart: Bool = true, handler: @escaping (Message) -> Void) {
+		if listening {
+			fatalError("Cannot listen multiple times from the same consumer")
+		} else {
+			listening = true
+		}
 		listenQueue.async {
 			self.joinedGroupSemaphore.wait()
 			guard let membership = self.membership, let broker = self.broker else {
@@ -68,7 +73,7 @@ public class Consumer {
 					return copy
 				})
 				
-				broker.poll(topics: ids, fromStart: fromStart, groupId: membership.group.id, clientId: "test", replicaId: ReplicaId.none, callback: { topic, partitionId, offset, messages in
+				self.cancelToken = broker.poll(topics: ids, fromStart: fromStart, groupId: membership.group.id, clientId: "test", replicaId: ReplicaId.none, callback: { topic, partitionId, offset, messages in
 						messages.forEach(handler)
 						
 						if var topicOffsets = self.offsetsToCommit[topic] {
@@ -81,5 +86,17 @@ public class Consumer {
 				})
 			}
 		}
+	}
+
+	private var cancelToken: Broker.CancelToken?
+	
+	private var listening = false
+	
+	/**
+	Stops listening for incoming messages if `listen` was called.
+	*/
+	public func stop() {
+		cancelToken?.cancel()
+		listening = false
 	}
 }
