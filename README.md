@@ -5,23 +5,49 @@
 [![License](https://img.shields.io/cocoapods/l/Franz.svg?style=flat)](http://cocoapods.org/pods/Franz)
 [![Platform](https://img.shields.io/cocoapods/p/Franz.svg?style=flat)](http://cocoapods.org/pods/Franz)
 
+
+Franz is an Apache Kafka 0.9.0 client for iOS and macOS.
+
 ## Usage
 
-Franz is an Apache Kafka 0.9.0 client for iOS and OSx.
+```swift
+import Franz
 
-Franz supports Apache Kafka's simple and high-level consumer models.
+let cluster = Cluster(brokers: [("localhost", 9092)], clientId: "FranzExample")
+
+let consumer = cluster.getConsumer(topics: ["test"], groupId: "group")
+consumer.listen { message in
+	print(String(data: message.value, encoding: .utf8)!)
+}
+
+cluster.sendMessage("test", message: "Hello world!")
+```
 
 The current release of Franz should be considered beta. It is not necessarily ready for production code.
 
-To run the example project, clone the repo, and run `pod install` from the Example directory first. 
+The repo has example projects for CocoaPods and Swift Package Manager. 
 
 ## Installation
 
-Franz is available through [CocoaPods](http://cocoapods.org). To install
-it, simply add the following line to your Podfile:
+### [CocoaPods](http://cocoapods.org)
+
+Add the following line to your `Podfile`:
 
 ```ruby
 pod "Franz"
+```
+
+### Swift Package Manager
+
+Add the following dependency to your `Package.swift`
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/kellanburket/franz.git", from: "1.0.0"),
+],
+targets: [
+    .target(name: "MyTarget", dependencies: ["Franz"])
+]
 ```
 
 ## Author
