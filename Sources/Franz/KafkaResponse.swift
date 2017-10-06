@@ -8,10 +8,8 @@
 
 import Foundation
 
-class KafkaResponse: NSObject, Readable {    
-    
-    required init(bytes: inout [UInt8]) {
-
-    }
-
+protocol KafkaResponse {
+	
+	init(data: inout Data)
+	
 }

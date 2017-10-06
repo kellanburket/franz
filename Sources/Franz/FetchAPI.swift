@@ -78,13 +78,13 @@ class FetchRequest: KafkaRequest {
     }
     
     convenience init(
-        partitions: [String:[Int32:Int64]],
+        topics: [TopicName: [PartitionId: Offset]],
         replicaId: ReplicaId = .none,
         minBytes: MinBytes = .one,
         maxWaitTime: Int32 = 500
     ) {
         let message = FetchRequestMessage(
-            partitions: partitions,
+            partitions: topics,
             replicaId: replicaId,
             minBytes: minBytes,
             maxWaitTime: maxWaitTime
@@ -99,23 +99,27 @@ class FetchRequest: KafkaRequest {
 
 }
 
-class FetchRequestMessage: KafkaClass {
+class FetchRequestMessage: KafkaType {
 
-    private var _replicaId: KafkaInt32
-    private var _maxWaitTime: KafkaInt32
-    private var _minBytes: KafkaInt32
+    private var _replicaId: Int32
+    private var _maxWaitTime: Int32
+    private var _minBytes: Int32
     private var _topics: KafkaArray<TopicalFetchMessage>
 
     var replicaId: Int32 {
-        return _replicaId.value
+        return _replicaId
     }
     
     var minBytes: Int32 {
-        return _minBytes.value
+        return _minBytes
     }
+	
+	var topics: [TopicalFetchMessage] {
+		return _topics.values
+	}
     
     init(
-        partitions: [String:[Int32:Int64]],
+        partitions: [TopicName: [PartitionId: Offset]],
         replicaId: ReplicaId = .debug,
         minBytes: MinBytes = .one,
         maxWaitTime: Int32 = 500
@@ -126,28 +130,28 @@ class FetchRequestMessage: KafkaClass {
             tempTopics.append(TopicalFetchMessage(value: topic, partitions: ps))
         }
         
-        _topics = KafkaArray(values: tempTopics)
-        _replicaId = KafkaInt32(value: replicaId.value)
-        _minBytes = KafkaInt32(value: minBytes.value)
-        _maxWaitTime = KafkaInt32(value: Int32(maxWaitTime))
+        _topics = KafkaArray(tempTopics)
+        _replicaId = replicaId.value
+        _minBytes = minBytes.value
+        _maxWaitTime = Int32(maxWaitTime)
     }
     
-	required init( bytes: inout [UInt8]) {
-        _replicaId = KafkaInt32(bytes: &bytes)
-        _maxWaitTime = KafkaInt32(bytes: &bytes)
-        _minBytes = KafkaInt32(bytes: &bytes)
-        _topics = KafkaArray(bytes: &bytes)
+	required init(data: inout Data) {
+        _replicaId = Int32(data: &data)
+        _maxWaitTime = Int32(data: &data)
+        _minBytes = Int32(data: &data)
+        _topics = KafkaArray(data: &data)
     }
     
-    lazy var length: Int = {
-        return self._replicaId.length +
-            self._maxWaitTime.length +
-            self._minBytes.length +
-            self._topics.length
+    lazy var dataLength: Int = {
+        return self._replicaId.dataLength +
+            self._maxWaitTime.dataLength +
+            self._minBytes.dataLength +
+            self._topics.dataLength
     }()
     
     lazy var data: Data = {
-        var data = Data(capacity: self.length)
+        var data = Data(capacity: self.dataLength)
         data.append(self._replicaId.data)
         data.append(self._maxWaitTime.data)
         data.append(self._minBytes.data)
@@ -156,30 +160,25 @@ class FetchRequestMessage: KafkaClass {
         //print(self.description)
         return data
     }()
-    
-    lazy var description: String = {
-        return "FETCH REQUEST(\(self.length)):\n" +
-            "\tREPLICA ID(\(self._replicaId.length)): \(self.replicaId) => \(self._replicaId.data)\n" +
-            "\tMAX WAIT TIME(\(self._maxWaitTime.length)): \(self._maxWaitTime.value) => \(self._maxWaitTime.data)\n" +
-            "\tMIN BYTES(\(self._minBytes.length)): \(self._minBytes.value) => \(self._minBytes.data)\n" +
-            "\tTOPICS(\(self._topics.length)):" +
-            self._topics.description
-    }()
 }
 
-class TopicalFetchMessage: KafkaClass {
-    private var _topicName: KafkaString
+class TopicalFetchMessage: KafkaType {
+    private var _topicName: String
     private var _partitions: KafkaArray<PartitionedFetchMessage>
 
-    var topicName: String {
-        return _topicName.value ?? String()
+    var topicName: TopicName {
+        return _topicName
     }
+	
+	var partitions: [PartitionedFetchMessage] {
+		return _partitions.values
+	}
     
     init(
         value: String,
-        partitions: [Int32: Int64]
+        partitions: [PartitionId: Offset]
     ) {
-        _topicName = KafkaString(value: value)
+        _topicName = value
         var tempPartitions = [PartitionedFetchMessage]()
         for (partition, offset) in partitions {
             //print("PARTITION(\(partition)), OFFSET(\(offset))")
@@ -187,200 +186,172 @@ class TopicalFetchMessage: KafkaClass {
                 PartitionedFetchMessage(value: partition, offset: offset)
             )
         }
-        _partitions = KafkaArray(values: tempPartitions)
+        _partitions = KafkaArray(tempPartitions)
     }
     
-	required init( bytes: inout [UInt8]) {
-        _topicName = KafkaString(bytes: &bytes)
-        _partitions = KafkaArray(bytes: &bytes)
+	required init(data: inout Data) {
+        _topicName = String(data: &data)
+        _partitions = KafkaArray(data: &data)
     }
     
-    lazy var length: Int = {
-        return self._topicName.length + self._partitions.length
+    lazy var dataLength: Int = {
+        return self._topicName.dataLength + self._partitions.dataLength
     }()
     
     lazy var data: Data = {
-        var data = Data(capacity: self.length)
+        var data = Data(capacity: self.dataLength)
         data.append(self._topicName.data)
         data.append(self._partitions.data)
         return data
     }()
-    
-    lazy var description: String = {
-        return "\t\tTOPIC NAME(\(self._topicName.length)): " +
-                "\(self.topicName) => \(self._topicName.data)\n" +
-            "\t\tPARTITIONS(\(self._partitions.length)):" +
-                self._partitions.description
-    }()
 }
 
-class PartitionedFetchMessage: KafkaClass {
-    private var _partition: KafkaInt32
-    private var _fetchOffset: KafkaInt64
-    private var _maxBytes: KafkaInt32 = KafkaInt32(value: 6400)
+class PartitionedFetchMessage: KafkaType {
+    private var _partition: Int32
+    private var _fetchOffset: Int64
+    private var _maxBytes: Int32 = 6400
     
-    var partition: Int32 {
-        return _partition.value
+    var partition: PartitionId {
+        return _partition
     }
     
-    var offset: Int64 {
-        return _fetchOffset.value
+    var offset: Offset {
+        return _fetchOffset
     }
     
     var maxBytes: Int32 {
-        return _maxBytes.value
+        return _maxBytes
     }
     
     init(value: Int32, offset: Int64 = 0) {
-        _partition = KafkaInt32(value: value)
-        _fetchOffset = KafkaInt64(value: offset)
+        _partition = value
+        _fetchOffset = offset
     }
 
-	required init( bytes: inout [UInt8]) {
-        _partition = KafkaInt32(bytes: &bytes)
-        _fetchOffset = KafkaInt64(bytes: &bytes)
-        _maxBytes = KafkaInt32(bytes: &bytes)
+	required init(data: inout Data) {
+        _partition = Int32(data: &data)
+        _fetchOffset = Int64(data: &data)
+        _maxBytes = Int32(data: &data)
     }
 
-    lazy var length: Int = {
-        return self._partition.length +
-            self._fetchOffset.length +
-            self._maxBytes.length
+    lazy var dataLength: Int = {
+        return self._partition.dataLength +
+            self._fetchOffset.dataLength +
+            self._maxBytes.dataLength
     }()
     
     lazy var data: Data = {
-        var data = Data(capacity: self.length)
+        var data = Data(capacity: self.dataLength)
         data.append(self._partition.data)
         data.append(self._fetchOffset.data)
         data.append(self._maxBytes.data)
         return data
     }()
-    
-    lazy var description: String = {
-        return "\n\t\t\t----------\n" +
-            "\t\t\tPARTITION(\(self._partition.length)): \(self.partition) => \(self._partition.data)\n" +
-            "\t\t\tFETCH OFFSET(\(self._fetchOffset.length)): \(self.offset) => \(self._fetchOffset.data)\n" +
-            "\t\t\tMAX BYTES(\(self._maxBytes.length)): \(self.maxBytes) => \(self._maxBytes.data)"
-        
-    }()
+	
 }
 
 
 class FetchResponse: KafkaResponse {
+	
+	var data: Data {
+		return _topics.data
+	}
+	
+	var dataLength: Int {
+		return _topics.dataLength
+	}
+	
     
     private var _topics: KafkaArray<TopicalFetchResponse>
     
-	required init( bytes: inout [UInt8]) {
-        _topics = KafkaArray(bytes: &bytes)
-        super.init(bytes: &bytes)
+	required init(data: inout Data) {
+        _topics = KafkaArray(data: &data)
     }
-    
-    override var description: String {
-        return _topics.description
-    }
-    
+	
     var topics: [TopicalFetchResponse] {
         return _topics.values
     }
 }
 
 
-class TopicalFetchResponse: KafkaClass {
-    private var _topicName: KafkaString
+class TopicalFetchResponse: KafkaType {
+    private var _topicName: String
     private var _partitions: KafkaArray<PartitionedFetchResponse>
     
-    var topicName: String {
-        return _topicName.value ?? String()
+    var topicName: TopicName {
+		return _topicName 
     }
     
     var partitions: [PartitionedFetchResponse] {
         return _partitions.values
     }
     
-	required init( bytes: inout [UInt8]) {
-        _topicName = KafkaString(bytes: &bytes)
-        _partitions = KafkaArray(bytes: &bytes)
+	required init(data: inout Data) {
+        _topicName = String(data: &data)
+        _partitions = KafkaArray(data: &data)
     }
     
-    lazy var length: Int = {
-        return self._topicName.length + self._partitions.length
+    lazy var dataLength: Int = {
+        return self._topicName.dataLength + self._partitions.dataLength
     }()
     
     lazy var data: Data = {
-        var data = Data(capacity: self.length)
+        var data = Data(capacity: self.dataLength)
         data.append(self._topicName.data)
         data.append(self._partitions.data)
         return data
     }()
-    
-    lazy var description: String = {
-        return "\t\tTOPIC NAME(\(self._topicName.length )): " +
-                "\(self.topicName) => \(self._topicName.data)\n" +
-            "\t\tPARTITIONS(\(self._partitions.length)):" +
-                self._partitions.description
-    }()
 }
 
 
-class PartitionedFetchResponse: KafkaClass {
+class PartitionedFetchResponse: KafkaType {
 
-    private var _partition: KafkaInt32
-    private var _errorCode: KafkaInt16
-    private var _highwaterMarkOffset: KafkaInt64
-    private var _messageSetSize: KafkaInt32
+    private var _partition: Int32
+    private var _errorCode: Int16
+    private var _highwaterMarkOffset: Int64
+    private var _messageSetSize: Int32
     private var _messageSet: MessageSet
     
-    var partition: Int32 {
-        return _partition.value
+    var partition: PartitionId {
+        return _partition
     }
     
     var error: KafkaErrorCode? {
-        return KafkaErrorCode(rawValue: _errorCode.value)
+        return KafkaErrorCode(rawValue: _errorCode)
     }
     
     var offset: Int64 {
-        return _highwaterMarkOffset.value
+        return _highwaterMarkOffset
     }
     
     var messages: [Message] {
-        return _messageSet.messages
+		return _messageSet.values.map { $0.message }
+    }
+	
+	required init(data: inout Data) {
+        _partition = Int32(data: &data)
+        _errorCode = Int16(data: &data)
+        _highwaterMarkOffset = Offset(data: &data)
+        _messageSetSize = Int32(data: &data)
+		var messageSetData = data.take(first: Int(_messageSetSize))
+        _messageSet = MessageSet(data: &messageSetData)
     }
     
-	required init( bytes: inout [UInt8]) {
-        _partition = KafkaInt32(bytes: &bytes)
-        _errorCode = KafkaInt16(bytes: &bytes)
-        _highwaterMarkOffset = KafkaInt64(bytes: &bytes)
-        _messageSetSize = KafkaInt32(bytes: &bytes)
-		var messageSetBytes = bytes.slice(0, length: _messageSetSize.value.toInt())
-        _messageSet = MessageSet(bytes: &messageSetBytes)
-    }
-    
-    lazy var length: Int = {
-        return self._partition.length +
-            self._errorCode.length +
-            self._highwaterMarkOffset.length +
-            self._messageSetSize.length +
-            self._messageSet.length
+    lazy var dataLength: Int = {
+        return self._partition.dataLength +
+            self._errorCode.dataLength +
+            self._highwaterMarkOffset.dataLength +
+            self._messageSetSize.dataLength +
+            self._messageSet.dataLength
     }()
     
     lazy var data: Data = {
-        var data = Data(capacity: self.length)
+        var data = Data(capacity: self.dataLength)
         data.append(self._partition.data)
         data.append(self._errorCode.data)
         data.append(self._highwaterMarkOffset.data)
         data.append(self._messageSetSize.data)
         data.append(self._messageSet.data)
         return data
-    }()
-    
-    lazy var description: String = {
-        return "\n\t\t\t---------\n" +
-            "\t\t\tPARTITION: \(self.partition) => \(self._partition.data)\n" +
-            "\t\t\tERROR CODE: \(self.error?.code ?? 0)\n" +
-            "\t\t\tERROR DESCRIPTION: \(self.error?.description ?? String())\n" +
-            "\t\t\tHIGHWATER MARK OFFSET: \(self.offset) => \(self._highwaterMarkOffset.data)\n" +
-            "\t\t\tMESSAGE SET SIZE: \(self._messageSetSize.value) => \(self._messageSetSize.data)\n" +
-            "\t\t\tMESSAGE SET(\(self._messageSet.length)):" +
-            self._messageSet.description
     }()
 }

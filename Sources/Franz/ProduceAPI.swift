@@ -41,33 +41,33 @@ class ProduceRequest: KafkaRequest {
     }
 }
 
-class ProduceRequestMessage: KafkaClass {
+class ProduceRequestMessage: KafkaType {
 
     var values: KafkaArray<KafkaTopicalMessageSet>
-    var requestAcks: KafkaInt16
-    var timeout: KafkaInt32
+    var requestAcks: Int16
+    var timeout: Int32
     
     init(
         values: [KafkaTopicalMessageSet],
         timeout: Int32 = Int32(0x05DC)
     ) {
-        self.values = KafkaArray(values: values)
-        self.requestAcks = KafkaInt16(value: RequestAcknowledgement.noResponse.value)
-        self.timeout = KafkaInt32(value: timeout)
+        self.values = KafkaArray(values)
+        self.requestAcks = RequestAcknowledgement.noResponse.value
+        self.timeout = timeout
     }
 
-    required init(bytes: inout [UInt8]) {
-        values = KafkaArray(bytes: &bytes)
-        requestAcks = KafkaInt16(bytes: &bytes)
-        timeout = KafkaInt32(bytes: &bytes)
+    required init(data: inout Data) {
+        values = KafkaArray(data: &data)
+        requestAcks = Int16(data: &data)
+        timeout = Int32(data: &data)
     }
 
-    var length: Int {
-        return requestAcks.length + timeout.length + values.length
+    var dataLength: Int {
+        return requestAcks.dataLength + timeout.dataLength + values.dataLength
     }
     
     var data: Data {
-        var data = Data(capacity: length)
+        var data = Data(capacity: dataLength)
 
         data.append(requestAcks.data)
         data.append(timeout.data)
@@ -75,170 +75,134 @@ class ProduceRequestMessage: KafkaClass {
         
         return data
     }
-
-    var description: String {
-        return values.description
-    }
 }
 
 class ProduceResponse: KafkaResponse {
+	var data: Data {
+		return values.data
+	}
+	
+	var dataLength: Int {
+		return values.dataLength
+	}
+	
 
     var values: KafkaArray<TopicalResponse>
     
-    required init(bytes: inout [UInt8]) {
-        values = KafkaArray(bytes: &bytes)
-        super.init(bytes: &bytes)
-    }
-    
-    override var description: String {
-        return values.description
+    required init(data: inout Data) {
+        values = KafkaArray(data: &data)
     }
 }
 
-class TopicalResponse: KafkaClass {
+class TopicalResponse: KafkaType {
     
-    private var _topicName: KafkaString
-    private var _partitions: KafkaArray<PartitionedResponse>
+	var topicName: TopicName
+    let partitions: KafkaArray<PartitionedResponse>
     
-    var topicName: String {
-        return _topicName.value ?? String()
+    required init(data: inout Data) {
+        topicName = TopicName(data: &data)
+        partitions = KafkaArray(data: &data)
     }
     
-    var partitions: [PartitionedResponse] {
-        var values: [PartitionedResponse] = []
-
-        for partition in _partitions.values {
-            values.append(partition)
-        }
-        
-        return values
-    }
-    
-    required init(bytes: inout [UInt8]) {
-        _topicName = KafkaString(bytes: &bytes)
-        _partitions = KafkaArray(bytes: &bytes)
-    }
-    
-    var length: Int {
-        return _topicName.length + _partitions.length
+    var dataLength: Int {
+        return topicName.dataLength + partitions.dataLength
     }
     
     var data: Data {
         return Data()
     }
-
-    var description: String {
-        return "----------\nTOPICAL RESPONSE:\n" +
-            "\tTOPIC NAME: \(topicName)\n" +
-            "\tPARTITIONS: \(_partitions.description)"
-    }
 }
 
-class PartitionedResponse: KafkaClass {
-    private var _partition: KafkaInt32
-    private var _errorCode: KafkaInt16
-    private var _offset: KafkaInt64
+class PartitionedResponse: KafkaType {
+    private var _partition: Int32
+    private var _errorCode: Int16
+    private var _offset: Int64
 
-    required init(bytes: inout [UInt8]) {
-        _partition = KafkaInt32(bytes: &bytes)
-        _errorCode = KafkaInt16(bytes: &bytes)
-        _offset = KafkaInt64(bytes: &bytes)
+    required init(data: inout Data) {
+        _partition = Int32(data: &data)
+        _errorCode = Int16(data: &data)
+        _offset = Int64(data: &data)
     }
 
     var partition: Int32 {
-        return _partition.value
+        return _partition
     }
     
     var offset: Int64 {
-        return _offset.value
+        return _offset
     }
 
     var error: KafkaErrorCode? {
-        return KafkaErrorCode(rawValue: _errorCode.value)
+        return KafkaErrorCode(rawValue: _errorCode)
     }
     
-    var length: Int {
-        return _partition.length + _errorCode.length + _offset.length
+    var dataLength: Int {
+        return _partition.dataLength + _errorCode.dataLength + _offset.dataLength
     }
 
     var data: Data {
         return Data()
     }
-
-    var description: String {
-        let errorDesscription = error?.description ?? ""
-        let errorCode = error?.code ?? 0
-        
-        return "----------\nPARTITIONED RESPONSE:\n" +
-            "\tPARTITION: \(partition)\n" +
-            "\tERROR CODE: \(errorCode)\n" +
-            "\tERROR DESCRIPTION: \(errorDesscription)\n" +
-            "\tOFFSET: \(offset)"
-    }
 }
 
-class KafkaTopicalMessageSet: KafkaClass {
+class KafkaTopicalMessageSet: KafkaType {
     var values: KafkaArray<KafkaPartitionedMessageSet>
-    var topic: KafkaString
+    var topic: String
     
     init(values: [KafkaPartitionedMessageSet], topic: String) {
-        self.values = KafkaArray(values: values)
-        self.topic = KafkaString(value: topic)
+        self.values = KafkaArray(values)
+        self.topic = topic
     }
     
-    required init(bytes: inout [UInt8]) {
-        values = KafkaArray(bytes: &bytes)
-        topic = KafkaString(bytes: &bytes)
+    required init(data: inout Data) {
+        values = KafkaArray(data: &data)
+        topic = String(data: &data)
     }
     
-    var length: Int {
-        return topic.length + values.length
+    var dataLength: Int {
+        return topic.dataLength + values.dataLength
     }
     
     var data: Data {
-        var data = Data(capacity: length)
+        var data = Data(capacity: dataLength)
         
         data.append(topic.data)
         data.append(values.data)
         
         return data
     }
-    
-    var description: String {
-        return "\tTOPIC: \(topic.value ?? "nil") => \(topic.data)\n" +
-            values.description
-    }
 }
 
 
-class KafkaPartitionedMessageSet: KafkaClass {
+class KafkaPartitionedMessageSet: KafkaType {
     var value: MessageSet
-    var partition: KafkaInt32
+    var partition: Int32
     
     init(value: MessageSet, partition: Int32) {
         self.value = value
-        self.partition = KafkaInt32(value: partition)
+        self.partition = partition
     }
     
-    required init(bytes: inout [UInt8]) {
-        value = MessageSet(bytes: &bytes)
-        partition = KafkaInt32(bytes: &bytes)
+    required init(data: inout Data) {
+        value = MessageSet(data: &data)
+        partition = Int32(data: &data)
     }
-    
-    var length: Int {
-        return partition.length + value.length
-    }
+	
+	var messageSetSize: Int32 {
+		return Int32(value.dataLength)
+	}
+
+    var dataLength: Int {
+        return partition.dataLength + messageSetSize.dataLength + value.dataLength
+	}
     
     var data: Data {
-        var data = Data(capacity: length)
+        var data = Data(capacity: dataLength)
         
         data.append(partition.data)
+		data.append(messageSetSize.data)
         data.append(value.data)
         
         return data
-    }
-    
-    var description: String {
-        return "\t\tPARTITION: \(partition.value)\n\(value.description)"
     }
 }

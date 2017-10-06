@@ -67,6 +67,9 @@ open class Group {
             callback(id, state)
         }
     }
+	
+	var topics = Set<TopicName>()
+	internal(set) var assignedPartitions = [TopicName: [PartitionId]]()
 }
 
 
@@ -97,6 +100,7 @@ open class ConsumerGroup: Group {
 open class GroupMembership {
     var _group: Group
     var _memberId: String
+	let members: [Member]
     
     /**
         A Group
@@ -112,16 +116,17 @@ open class GroupMembership {
         return _memberId
     }
     
-    init(group: Group, memberId: String) {
+	init(group: Group, memberId: String, members: [Member]) {
         self._group = group
         self._memberId = memberId
+		self.members = members
     }
 
     /**
         Sync the broker with the Group Coordinator
     */
-    open func sync(
-        _ topics: [String: [Int32]],
+    func sync(
+		_ topics: [TopicName: [PartitionId]],
         data: Data = Data(),
         callback: (() -> ())? = nil
     ) {
@@ -132,9 +137,13 @@ open class GroupMembership {
             topics: topics,
             userData: data,
             clientId: group._clientId,
-            version: group._version,
-            callback: callback
-        )
+            version: group._version) { membership in
+			for assignment in membership.partitionAssignment.values {
+				self.group.assignedPartitions[assignment.topic] = assignment.partitions.values.map { $0 }
+			}
+			self.group.topics = Set(membership.partitionAssignment.values.map { $0.topic })
+			callback?()
+		}
     }
     
     /**

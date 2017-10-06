@@ -3,10 +3,10 @@
     "pins": [
       {
         "package": "Franz",
-        "repositoryURL": "/Users/luke/Documents/franz",
+        "repositoryURL": "/Users/luke/Repos/franz",
         "state": {
           "branch": null,
-          "revision": "d648f4868d0b449c37fd5fac5e783e66cf35cc1b",
+          "revision": "ecfecf72539cb172c115d41f05ea9eab8d1a6e40",
           "version": "0.2.0"
         }
       }

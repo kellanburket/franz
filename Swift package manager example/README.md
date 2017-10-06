@@ -1,5 +1,5 @@
-# Franz Example with Swift Package Manager
+# Swift Package Manager Example
 
-Follow [this guide](https://gist.github.com/nathanborror/4ecb16bcb1ae0bd11e7eed043c6cd8bd) to set it up with your own iOS/MacOS project. 
+To try it out, just run `swift run`.
 
-To get this example to build from Xcode, first run `swift package restore`.
+If you are building a command line application, you must call `RunLoop.main.run()` to allow Franz to schedule the socket streams.

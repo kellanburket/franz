@@ -8,9 +8,10 @@
 
 import Foundation
 
+public typealias TopicName = String
 
 open class Topic: NSObject {
-    private var _name: String
+    private var _name: TopicName
     private var _partitions: [Int32]
     
     open var name: String {
@@ -27,13 +28,13 @@ open class Topic: NSObject {
     }
 }
 
-internal class KafkaTopic: KafkaClass {
-    private var _errorCode: KafkaInt16
-    private var _topicName: KafkaString
+internal class KafkaTopic: KafkaType {
+    private var _errorCode: Int16
+    private var _topicName: String
     private var _partitionMetadata: KafkaArray<Partition>
     
     var error: KafkaErrorCode? {
-        if let error = KafkaErrorCode(rawValue: _errorCode.value) {
+        if let error = KafkaErrorCode(rawValue: _errorCode) {
             return error
         } else {
             return nil
@@ -51,41 +52,26 @@ internal class KafkaTopic: KafkaClass {
     }
     
     var name: String? {
-        return _topicName.value
-    }
-    
-    var description: String {
-		var description = """
-			TOPIC METADATA
-			ERROR CODE: \(error?.code ?? 0)
-			ERROR DESCRIPTION: \(error?.description ?? "nil")
-			TOPIC: \(name ?? "nil")
-		"""
-		
-        for (_, partition) in partitions {
-            description += "----------\n\(partition.description)\n"
-        }
-        
-        return description
+        return _topicName
     }
     
     init(errorCode: Int, name: String, partitionMetadata: [Partition]) {
-        self._errorCode = KafkaInt16(value: Int16(errorCode))
-        self._topicName = KafkaString(value: name)
-        self._partitionMetadata = KafkaArray(values: partitionMetadata)
+        self._errorCode = Int16(errorCode)
+        self._topicName = name
+        self._partitionMetadata = KafkaArray(partitionMetadata)
     }
     
-    required init(bytes: inout [UInt8]) {
-        _errorCode = KafkaInt16(bytes: &bytes)
-        _topicName = KafkaString(bytes: &bytes)
-        _partitionMetadata = KafkaArray(bytes: &bytes)
+    required init(data: inout Data) {
+        _errorCode = Int16(data: &data)
+        _topicName = String(data: &data)
+        _partitionMetadata = KafkaArray(data: &data)
     }
     
-    lazy var length: Int = {
-        return self._errorCode.length
+    lazy var dataLength: Int = {
+        return self._errorCode.dataLength
     }()
     
     var data: Data {
-        return Data()
+        return _errorCode.data + _topicName.data + _partitionMetadata.data
     }
 }

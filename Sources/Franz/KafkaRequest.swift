@@ -8,95 +8,65 @@
 
 import Foundation
 
-class KafkaRequest: NSObject {
+class KafkaRequest {
 
     static private var _correlationIdIndex: Int32 = 0
-    
-    private var _apiKey: KafkaInt16
-    private var _apiVersion: KafkaInt16
-    private var _clientId: KafkaString?
-    private var _correlationId: KafkaInt32
-    private var value: KafkaClass?
-    
-    var clientId: KafkaString {
-        get {
-            return _clientId ?? KafkaString(value: "")
-        }
 
-        set(newString) {
-            _clientId = newString
-        }
-    }
-    
+    private var _apiKey: Int16
+    private var _apiVersion: Int16
+    private var _correlationId: Int32
+    private var value: KafkaType?
+	var clientId: String?
+
     var correlationId: Int32 {
-        return _correlationId.value
+        return _correlationId
     }
-    
-    var message: KafkaClass? {
+
+    var message: KafkaType? {
         return value
     }
-    
-    init(
-        apiKey: ApiKey,
-        value: KafkaClass? = nil,
-        apiVersion: ApiVersion = ApiVersion.defaultVersion
-    ) {
+
+    init(apiKey: ApiKey, value: KafkaType? = nil, apiVersion: ApiVersion = .defaultVersion) {
 		KafkaRequest._correlationIdIndex += 1
-        self._correlationId = KafkaInt32(value: KafkaRequest._correlationIdIndex)
-        self._apiKey = KafkaInt16(value: apiKey.rawValue)
-        self._apiVersion = KafkaInt16(value: apiVersion.rawValue)
+        self._correlationId = Int32(KafkaRequest._correlationIdIndex)
+        self._apiKey = Int16(apiKey.rawValue)
+        self._apiVersion = Int16(apiVersion.rawValue)
         self.value = value
-        super.init()
     }
-    
+
     var headerLength: Int {
-        return _apiKey.length +
-            _apiVersion.length +
-            _correlationId.length +
-            clientId.length
+        return _apiKey.dataLength +
+            _apiVersion.dataLength +
+            _correlationId.dataLength +
+            clientId.dataLength
     }
-    
-    var length: Int {
-        return headerLength + (value?.length ?? 0)
+
+    var dataLength: Int {
+        return headerLength + (value?.dataLength ?? 0)
     }
-    
+
     var sizeDataLength: Int {
         return 4
     }
-    
+
     var sizeData: Data {
-        return Int32(self.length).data
+        return Int32(self.dataLength).data
     }
-    
+
     lazy var data: Data = {
-        var data = Data(capacity: self.length)
-        
+        var data = Data(capacity: self.dataLength)
+
         data.append(self.sizeData)
         data.append(self._apiKey.data)
         data.append(self._apiVersion.data)
         data.append(self.correlationId.data)
         data.append(self.clientId.data)
-        
+
         if let value = self.value {
             data.append(value.data)
         }
-        
-        //print("REQUEST LENGTH: \(data.length)")
-        //print(self.description)
+
         return data
     }()
-    
-    override var description: String {
-        let value = self.value?.description ?? "nil"
-		
-		return """
-			REQUEST(\(length)):
-				SIZE(\(sizeDataLength)): \(sizeData)
-				API_KEY(\(_apiKey.length)): \(_apiKey.data)
-				API_VERSION(\(_apiVersion.length)): \(_apiVersion.data)
-				CORRELATION_ID(\(_correlationId.length)): \(correlationId.data)
-				CLIENT_ID(\(clientId.length)): \(clientId.value ?? "nil") => \(clientId.data)
-				\(value))
-		"""
-    }
 }
+

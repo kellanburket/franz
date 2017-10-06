@@ -1,0 +1,16 @@
+PODS:
+  - Franz (0.1.0)
+
+DEPENDENCIES:
+  - Franz (from `../`)
+
+EXTERNAL SOURCES:
+  Franz:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  Franz: '099af2ab9705201bc585ed3e4de8a2b703059dac'
+
+PODFILE CHECKSUM: 2cde30658617a6dbe8248094a35efba117c6dac5
+
+COCOAPODS: 1.2.1
