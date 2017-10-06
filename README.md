@@ -39,7 +39,7 @@ pod "Franz"
 
 ### Swift Package Manager
 
-Add the following dependency to your `Package.swift`
+Add the following dependency to your `Package.swift`:
 
 ```swift
 dependencies: [
