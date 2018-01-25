@@ -10,14 +10,14 @@ import Foundation
 
 
 class MessageSet: KafkaType {
-    let values: KafkaArray<MessageSetItem>
+    let values: [MessageSetItem]
 	
     init(values: [MessageSetItem]) {
-        self.values = KafkaArray(values)
+        self.values = values
     }
 
     required init(data: inout Data) {
-        var tempValues = KafkaArray<MessageSetItem>()
+        var tempValues = [MessageSetItem]()
 		
         while data.count > 0 {
             tempValues.append(MessageSetItem(data: &data))

@@ -31,7 +31,7 @@ open class Topic: NSObject {
 internal class KafkaTopic: KafkaType {
     private var _errorCode: Int16
     private var _topicName: String
-    private var _partitionMetadata: KafkaArray<Partition>
+    private var _partitionMetadata: [Partition]
     
     var error: KafkaErrorCode? {
         if let error = KafkaErrorCode(rawValue: _errorCode) {
@@ -44,7 +44,7 @@ internal class KafkaTopic: KafkaType {
     var partitions: [Int32: Partition] {
         
         var values = [Int32: Partition]()
-        for value in _partitionMetadata.values {
+        for value in _partitionMetadata {
             values[value.id] = value
         }
         
@@ -58,13 +58,13 @@ internal class KafkaTopic: KafkaType {
     init(errorCode: Int, name: String, partitionMetadata: [Partition]) {
         self._errorCode = Int16(errorCode)
         self._topicName = name
-        self._partitionMetadata = KafkaArray(partitionMetadata)
+        self._partitionMetadata = partitionMetadata
     }
     
     required init(data: inout Data) {
         _errorCode = Int16(data: &data)
         _topicName = String(data: &data)
-        _partitionMetadata = KafkaArray(data: &data)
+        _partitionMetadata = [Partition](data: &data)
     }
     
     lazy var dataLength: Int = {

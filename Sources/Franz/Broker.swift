@@ -313,7 +313,7 @@ class Broker: KafkaType {
                 var mutableData = data
                 let response = OffsetResponse(data: &mutableData)
 				
-				if let error = response.topicalPartitionedOffsets.flatMap({ $0.partitionedOffsets.flatMap { $0.value.error } })
+				if let error = response.topicalPartitionedOffsets.flatMap({ $0.partitionedOffsets.compactMap { $0.value.error } })
 					.filter({ $0 != .noError })
 					.first {
 					print("ERROR: \(error.description)")

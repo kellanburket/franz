@@ -148,88 +148,42 @@ extension Optional where Wrapped == Data {
 	}
 }
 
-//TODO: Replace with Array extension conditional conformance is released
-struct KafkaArray<T: KafkaType>: KafkaType, Collection {
-	
-	typealias Element = T
-	typealias SubSequence = ArraySlice<T>
-	typealias Index = Int
-	
-	var startIndex: Index {
-		return values.startIndex
-	}
-	
-	var endIndex: Index {
-		return values.endIndex
-	}
-	
-	subscript (position: Index) -> Iterator.Element {
-		return values[position]
-	}
-	
-	func index(after i: Index) -> Index {
-		return values.index(after: i)
-	}
-	
-	mutating func append(_ item: T) {
-		values.append(item)
-	}
-	
-	var values: [T]
-	
-	init(_ values: [T] = []) {
-		self.values = values
-	}
-	
+extension Array: KafkaType where Element: KafkaType {
 	init(data: inout Data) {
 		let count = Int32(data: &data)
 		
-		values = [T]()
-		
+		var temp: [Element] = []
 		for _ in 0..<count {
-			values.append(T(data: &data))
+			temp.append(Element(data: &data))
 		}
-	}
-	
-	private let sizeDataLength = 4
-	
-	var dataLength: Int {
-		return self.valuesDataLength + self.sizeDataLength
-	}
-	
-	
-	private var valuesDataLength: Int {
-		var totalLength = 0
-		
-		for value in self.values {
-			totalLength += value.dataLength
-		}
-		
-		return totalLength
-	}
-	
-	
-	private var valuesData: Data {
-		var valuesData = Data(capacity: self.valuesDataLength)
-		
-		for value in self.values {
-			valuesData.append(value.data)
-		}
-		
-		return valuesData
+		self = temp
 	}
 	
 	var data: Data {
-		var finalData = Data(capacity: self.dataLength)
+		var finalData = Data(capacity: dataLength)
 		
-		let sizeData = Int32(self.values.count).data
+		let sizeData = Int32(count).data
 		
 		finalData.append(sizeData)
-		finalData.append(self.valuesData)
+		finalData.append(valuesData)
 		
 		return finalData
 	}
+	
+	var dataLength: Int {
+		// Value length + size length
+		return valuesDataLength + 4
+	}
+	
+	private var valuesDataLength: Int {
+		return map { $0.dataLength }.reduce(0, +)
+	}
+	
+	private var valuesData: Data {
+		return map { $0.data }.reduce(Data(), +)
+	}
 }
+
 protocol KafkaMetadata: KafkaType {
     static var protocolType: GroupProtocol { get }
 }

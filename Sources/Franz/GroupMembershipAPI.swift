@@ -40,7 +40,7 @@ class JoinGroupRequestMessage<T: KafkaMetadata>: KafkaType {
     private var _sessionTimeout: Int32
     private var _memberId: String
     private var _protocolType: String
-    private var _groupProtocols: KafkaArray<JoinGroupProtocol<T>>
+    private var _groupProtocols: [JoinGroupProtocol<T>]
     
     init(
         groupId: String,
@@ -59,7 +59,7 @@ class JoinGroupRequestMessage<T: KafkaMetadata>: KafkaType {
             values.append(JoinGroupProtocol(name: name.rawValue, metadata: metadata))
         }
             
-        _groupProtocols = KafkaArray(values)
+        _groupProtocols = values
     }
     
 	required init(data: inout Data) {
@@ -67,7 +67,7 @@ class JoinGroupRequestMessage<T: KafkaMetadata>: KafkaType {
         _sessionTimeout = Int32(data: &data)
         _memberId = String(data: &data)
         _protocolType = String(data: &data)
-        _groupProtocols = KafkaArray(data: &data)
+        _groupProtocols = [JoinGroupProtocol<T>](data: &data)
     }
     
     lazy var dataLength: Int = {
@@ -128,7 +128,7 @@ class JoinGroupProtocol<T: KafkaMetadata>: KafkaType {
 class ConsumerGroupMetadata: KafkaMetadata {
     
     private var _version: Int16
-    private var _subscription: KafkaArray<String>
+    private var _subscription: [String]
     private var _userData: Data?
     
     static var protocolType: GroupProtocol {
@@ -141,18 +141,13 @@ class ConsumerGroupMetadata: KafkaMetadata {
         version: ApiVersion = ApiVersion.defaultVersion
     ) {
         _version = version.rawValue
-        var values = [String]()
-        for s in subscription {
-            values.append(s)
-        }
-
-        _subscription = KafkaArray(values)
+        _subscription = subscription
 		_userData = userData
     }
     
     required init(data: inout Data) {
         _version = Int16(data: &data)
-        _subscription = KafkaArray(data: &data)
+        _subscription = [String](data: &data)
         _userData = Data(data: &data)
     }
     
@@ -188,28 +183,18 @@ class ConsumerGroupMetadata: KafkaMetadata {
 class JoinGroupResponse: KafkaResponse {
     
     private var _errorCode: Int16
-    private var _generationId: Int32
-    private var _groupProtocol: String
-    private var _leaderId: String
-    private var _memberId: String
-    private var _members: KafkaArray<Member>
-    
+	
     var error: KafkaErrorCode? {
         return KafkaErrorCode(rawValue: _errorCode)
     }
     
-    var generationId: Int32 {
-        return _generationId
-    }
+    private(set) var generationId: Int32
     
-    var memberId: String {
-		return _memberId
-    }
+    private(set) var memberId: String
     
-    var leaderId: String {
-		return _leaderId
-    }
-    
+    private(set) var leaderId: String
+	
+    private var _groupProtocol: String
     var groupProtocol: GroupProtocol {
         if _groupProtocol == GroupProtocol.consumer.value {
             return GroupProtocol.consumer
@@ -218,26 +203,24 @@ class JoinGroupResponse: KafkaResponse {
         }
     }
     
-    var members: [Member] {
-        return _members.values
-    }
+    private(set) var members: [Member]
     
     required init(data: inout Data) {
         _errorCode = Int16(data: &data)
-        _generationId = Int32(data: &data)
+        generationId = Int32(data: &data)
         _groupProtocol = String(data: &data)
-        _leaderId = String(data: &data)
-        _memberId = String(data: &data)
-        _members = KafkaArray(data: &data)
+        leaderId = String(data: &data)
+        memberId = String(data: &data)
+        members = [Member](data: &data)
     }
 	
 	var data: Data {
-		let values: [KafkaType] = [_errorCode, _generationId, _groupProtocol, _leaderId, _memberId, _members]
+		let values: [KafkaType] = [_errorCode, generationId, _groupProtocol, leaderId, memberId, members]
 		return values.map { $0.data }.reduce(Data(), +)
 	}
 	
 	var dataLength: Int {
-		let values: [KafkaType] = [_errorCode, _generationId, _groupProtocol, _leaderId, _memberId, _members]
+		let values: [KafkaType] = [_errorCode, generationId, _groupProtocol, leaderId, memberId, members]
 		return values.map { $0.dataLength }.reduce(0, +)
 	}
 }
@@ -302,7 +285,7 @@ class SyncGroupRequest<T: KafkaMetadata>: KafkaRequest {
 
 class GroupMemberAssignment: KafkaMetadata {
     private var _version: Int16
-    let partitionAssignment: KafkaArray<PartitionAssignment>
+    let partitionAssignment: [PartitionAssignment]
     private var _userData: Data
 
     static var protocolType: GroupProtocol {
@@ -318,19 +301,19 @@ class GroupMemberAssignment: KafkaMetadata {
                 PartitionAssignment(topic: topic, partitions: partitions)
             )
         }
-        partitionAssignment = KafkaArray(values)
+        partitionAssignment = values
 		_userData = userData
     }
 
     required init(data: inout Data) {
 		if data.count <= 0 {
 			_version = 0
-			partitionAssignment = KafkaArray([])
+			partitionAssignment = []
 			_userData = Data()
 			return
 		}
         _version = Int16(data: &data)
-        partitionAssignment = KafkaArray(data: &data)
+        partitionAssignment = [PartitionAssignment](data: &data)
         _userData = Data(data: &data)
     }
     
@@ -351,20 +334,16 @@ class GroupMemberAssignment: KafkaMetadata {
 
 class PartitionAssignment: KafkaType {
     let topic: String
-    let partitions: KafkaArray<Int32>
+    let partitions: [PartitionId]
     
-    init(topic: String, partitions: [Int32]) {
+    init(topic: String, partitions: [PartitionId]) {
         self.topic = topic
-        var values = [Int32]()
-        for partition in partitions {
-            values.append(partition)
-        }
-        self.partitions = KafkaArray(values)
+        self.partitions = partitions
     }
 
     required init(data: inout Data) {
         topic = String(data: &data)
-        partitions = KafkaArray(data: &data)
+        partitions = [PartitionId](data: &data)
     }
     
     lazy var dataLength: Int = {
@@ -386,7 +365,7 @@ class SyncGroupRequestMessage<T: KafkaMetadata>: KafkaType {
     private var _groupId: String
     private var _generationId: Int32
     private var _memberId: String
-    private var _groupAssignment: KafkaArray<GroupAssignment<T>>
+    private var _groupAssignment: [GroupAssignment<T>]
 
     init(
         groupId: String,
@@ -397,14 +376,14 @@ class SyncGroupRequestMessage<T: KafkaMetadata>: KafkaType {
         _groupId = groupId
         _generationId = generationId
         _memberId = memberId
-		_groupAssignment = KafkaArray(groupAssignment.map { GroupAssignment<T>(memberId: $0, memberAssignment: $1) })
+		_groupAssignment = groupAssignment.map { GroupAssignment<T>(memberId: $0, memberAssignment: $1) }
     }
     
     required init(data: inout Data) {
         _groupId = String(data: &data)
         _generationId = Int32(data: &data)
         _memberId = String(data: &data)
-        _groupAssignment = KafkaArray(data: &data)
+        _groupAssignment = [GroupAssignment<T>](data: &data)
     }
     
     lazy var dataLength: Int = {

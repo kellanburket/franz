@@ -104,7 +104,6 @@ class FetchRequestMessage: KafkaType {
     private var _replicaId: Int32
     private var _maxWaitTime: Int32
     private var _minBytes: Int32
-    private var _topics: KafkaArray<TopicalFetchMessage>
 
     var replicaId: Int32 {
         return _replicaId
@@ -114,9 +113,7 @@ class FetchRequestMessage: KafkaType {
         return _minBytes
     }
 	
-	var topics: [TopicalFetchMessage] {
-		return _topics.values
-	}
+	private(set) var topics: [TopicalFetchMessage]
     
     init(
         partitions: [TopicName: [PartitionId: Offset]],
@@ -130,7 +127,7 @@ class FetchRequestMessage: KafkaType {
             tempTopics.append(TopicalFetchMessage(value: topic, partitions: ps))
         }
         
-        _topics = KafkaArray(tempTopics)
+        topics = tempTopics
         _replicaId = replicaId.value
         _minBytes = minBytes.value
         _maxWaitTime = Int32(maxWaitTime)
@@ -140,14 +137,14 @@ class FetchRequestMessage: KafkaType {
         _replicaId = Int32(data: &data)
         _maxWaitTime = Int32(data: &data)
         _minBytes = Int32(data: &data)
-        _topics = KafkaArray(data: &data)
+        topics = [TopicalFetchMessage](data: &data)
     }
     
     lazy var dataLength: Int = {
         return self._replicaId.dataLength +
             self._maxWaitTime.dataLength +
             self._minBytes.dataLength +
-            self._topics.dataLength
+            self.topics.dataLength
     }()
     
     lazy var data: Data = {
@@ -155,7 +152,7 @@ class FetchRequestMessage: KafkaType {
         data.append(self._replicaId.data)
         data.append(self._maxWaitTime.data)
         data.append(self._minBytes.data)
-        data.append(self._topics.data)
+        data.append(self.topics.data)
         
         //print(self.description)
         return data
@@ -164,15 +161,12 @@ class FetchRequestMessage: KafkaType {
 
 class TopicalFetchMessage: KafkaType {
     private var _topicName: String
-    private var _partitions: KafkaArray<PartitionedFetchMessage>
 
     var topicName: TopicName {
         return _topicName
     }
 	
-	var partitions: [PartitionedFetchMessage] {
-		return _partitions.values
-	}
+	private(set) var partitions: [PartitionedFetchMessage]
     
     init(
         value: String,
@@ -186,22 +180,22 @@ class TopicalFetchMessage: KafkaType {
                 PartitionedFetchMessage(value: partition, offset: offset)
             )
         }
-        _partitions = KafkaArray(tempPartitions)
+        self.partitions = tempPartitions
     }
     
 	required init(data: inout Data) {
         _topicName = String(data: &data)
-        _partitions = KafkaArray(data: &data)
+        partitions = [PartitionedFetchMessage](data: &data)
     }
     
     lazy var dataLength: Int = {
-        return self._topicName.dataLength + self._partitions.dataLength
+        return self._topicName.dataLength + self.partitions.dataLength
     }()
     
     lazy var data: Data = {
         var data = Data(capacity: self.dataLength)
         data.append(self._topicName.data)
-        data.append(self._partitions.data)
+        data.append(self.partitions.data)
         return data
     }()
 }
@@ -254,51 +248,40 @@ class PartitionedFetchMessage: KafkaType {
 class FetchResponse: KafkaResponse {
 	
 	var data: Data {
-		return _topics.data
+		return topics.data
 	}
 	
 	var dataLength: Int {
-		return _topics.dataLength
+		return topics.dataLength
 	}
-	
-    
-    private var _topics: KafkaArray<TopicalFetchResponse>
     
 	required init(data: inout Data) {
-        _topics = KafkaArray(data: &data)
+        topics = [TopicalFetchResponse](data: &data)
     }
 	
-    var topics: [TopicalFetchResponse] {
-        return _topics.values
-    }
+    private(set) var topics: [TopicalFetchResponse]
 }
 
 
 class TopicalFetchResponse: KafkaType {
-    private var _topicName: String
-    private var _partitions: KafkaArray<PartitionedFetchResponse>
     
-    var topicName: TopicName {
-		return _topicName 
-    }
+    private(set) var topicName: TopicName
     
-    var partitions: [PartitionedFetchResponse] {
-        return _partitions.values
-    }
+    private(set) var partitions: [PartitionedFetchResponse]
     
 	required init(data: inout Data) {
-        _topicName = String(data: &data)
-        _partitions = KafkaArray(data: &data)
+        topicName = String(data: &data)
+        partitions = [PartitionedFetchResponse](data: &data)
     }
     
     lazy var dataLength: Int = {
-        return self._topicName.dataLength + self._partitions.dataLength
+        return self.topicName.dataLength + self.partitions.dataLength
     }()
     
     lazy var data: Data = {
         var data = Data(capacity: self.dataLength)
-        data.append(self._topicName.data)
-        data.append(self._partitions.data)
+        data.append(self.topicName.data)
+        data.append(self.partitions.data)
         return data
     }()
 }

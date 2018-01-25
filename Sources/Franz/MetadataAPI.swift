@@ -30,20 +30,14 @@ class TopicMetadataRequest: KafkaRequest {
 
 class TopicMetadataRequestMessage: KafkaType {
 
-    var values: KafkaArray<String>
+    var values: [String]
     
     init(values: [String]) {
-        var strings = [String]()
-
-        for value in values {
-            strings.append(value)
-        }
-        
-        self.values = KafkaArray(strings)
+        self.values = values
     }
 
     required init(data: inout Data) {
-        values = KafkaArray(data: &data)
+        values = [String](data: &data)
     }
 
     lazy var dataLength: Int = {
@@ -57,12 +51,12 @@ class TopicMetadataRequestMessage: KafkaType {
 
 class MetadataResponse: KafkaResponse {
     
-    private var _metadataBrokers: KafkaArray<Broker>
-    private var _topicMetadata: KafkaArray<KafkaTopic>
+    private var _metadataBrokers: [Broker]
+    private var _topicMetadata: [KafkaTopic]
     
     var brokers: [Int32: Broker] {
         var values = [Int32: Broker]()
-        for value in _metadataBrokers.values {
+        for value in _metadataBrokers {
             values[value.nodeId] = value
         }
         return values
@@ -70,7 +64,7 @@ class MetadataResponse: KafkaResponse {
     
     var topics: [String: KafkaTopic] {
         var values = [String: KafkaTopic]()
-        for value in _topicMetadata.values {
+        for value in _topicMetadata {
             if let name = value.name {
                 values[name] = value
             }
@@ -79,8 +73,8 @@ class MetadataResponse: KafkaResponse {
     }
     
     required init(data: inout Data) {
-        _metadataBrokers = KafkaArray(data: &data)
-        _topicMetadata = KafkaArray(data: &data)
+        _metadataBrokers = [Broker](data: &data)
+        _topicMetadata = [KafkaTopic](data: &data)
     }
 	
 	var data: Data {
