@@ -18,7 +18,7 @@ class ListGroupsRequest: KafkaRequest {
 class ListGroupsResponse: KafkaResponse {
     
     private var _errorCode: Int16
-    private var _groups: KafkaArray<ListedGroup>
+    private var _groups: [ListedGroup]
     
     var error: KafkaErrorCode? {
         return KafkaErrorCode(rawValue: _errorCode)
@@ -27,7 +27,7 @@ class ListGroupsResponse: KafkaResponse {
     var groups: [String: String] {
         var groups = [String: String]()
         
-        for group in _groups.values {
+        for group in _groups {
             groups[group.id] = group.groupProtocolType
         }
         
@@ -36,7 +36,7 @@ class ListGroupsResponse: KafkaResponse {
     
 	required init(data: inout Data) {
         _errorCode = Int16(data: &data)
-        _groups = KafkaArray(data: &data)
+        _groups = [ListedGroup](data: &data)
     }
     
     lazy var dataLength: Int = {
@@ -103,18 +103,18 @@ class DescribeGroupsRequest: KafkaRequest {
 
 
 class DescribeGroupsRequestMessage: KafkaType {
-    private var _groupIds: KafkaArray<String>
+    private var _groupIds: [String]
     
     init(groupIds: [String]) {
         var values = [String]()
         for value in groupIds {
             values.append(value)
         }
-        _groupIds = KafkaArray(values)
+        _groupIds = groupIds
     }
     
 	required init(data: inout Data) {
-        _groupIds = KafkaArray(data: &data)
+        _groupIds = [String](data: &data)
     }
     
     lazy var dataLength: Int = {
@@ -130,23 +130,20 @@ class DescribeGroupsRequestMessage: KafkaType {
 
 
 class DescribeGroupsResponse: KafkaResponse {
-    private var _groups: KafkaArray<GroupStateResponse>
-    
-    var states: [GroupStateResponse] {
-        return _groups.values
-    }
+	
+    private(set) var states: [GroupStateResponse]
     
     required init(data: inout Data) {
-        _groups = KafkaArray(data: &data)
+        states = [GroupStateResponse](data: &data)
     }
     
     lazy var dataLength: Int = {
-        return self._groups.dataLength
+        return states.dataLength
     }()
     
     lazy var data: Data = {
-        var data = Data(capacity: self.dataLength)
-        data.append(self._groups.data)
+        var data = Data(capacity: dataLength)
+        data.append(states.data)
         return data
     }()
 }
@@ -158,7 +155,6 @@ class GroupStateResponse: KafkaType {
     private var _state: String
     private var _protocolType: String
     private var _protocol: String
-    private var _members: KafkaArray<GroupMemberResponse>
     
     var id: String? {
         return _groupId
@@ -184,9 +180,7 @@ class GroupStateResponse: KafkaType {
 		return GroupState(rawValue: _state)!
     }
     
-    var members: [GroupMemberResponse] {
-        return _members.values
-    }
+    private(set) var members: [GroupMemberResponse]
 
     required init(data: inout Data) {
         _errorCode = Int16(data: &data)
@@ -194,7 +188,7 @@ class GroupStateResponse: KafkaType {
         _state = String(data: &data)
         _protocolType = String(data: &data)
         _protocol = String(data: &data)
-        _members = KafkaArray(data: &data)
+        members = [GroupMemberResponse](data: &data)
     }
     
     
@@ -204,13 +198,14 @@ class GroupStateResponse: KafkaType {
             self._state.dataLength +
             self._protocolType.dataLength +
             self._protocol.dataLength +
-            self._members.dataLength
+            self.members.dataLength
     }()
     
     lazy var data: Data = {
         var data = Data(capacity: self.dataLength)
 		data.append(self._groupId.data)
 		data.append(self._protocolType.data)
+		//TODO: this looks broken?
         return data
     }()
 	

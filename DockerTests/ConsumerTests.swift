@@ -43,6 +43,8 @@ class ConsumerTests: DockerTestBase {
 		cluster.sendMessage("test", message: "💯")
 		
 		wait(for: [worldExpectation, 💯Expectation], timeout: 10)
+		
+		consumer.stop()
 	}
 	
 	func testCount() {
@@ -62,6 +64,7 @@ class ConsumerTests: DockerTestBase {
 		}
 		
 		waitForExpectations(timeout: 60)
+		consumer.stop()
 	}
 	
 	func testConsumerStops() {
@@ -119,6 +122,7 @@ class ConsumerTests: DockerTestBase {
 		cluster.sendMessage("fromStart", message: "second")
 		
 		wait(for: [second], timeout: 10)
+		[consumer1, consumer2].map(Consumer.stop).forEach { $0() }
 	}
 	
 	func testDoesntReceiveUnsubscribedTopics() {
@@ -132,6 +136,7 @@ class ConsumerTests: DockerTestBase {
 		cluster.sendMessage("test", message: "Foo")
 
 		Thread.sleep(forTimeInterval: 30)
+		consumer.stop()
 	}
 	
 }

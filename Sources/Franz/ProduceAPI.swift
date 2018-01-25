@@ -43,7 +43,7 @@ class ProduceRequest: KafkaRequest {
 
 class ProduceRequestMessage: KafkaType {
 
-    var values: KafkaArray<KafkaTopicalMessageSet>
+    var values: [KafkaTopicalMessageSet]
     var requestAcks: Int16
     var timeout: Int32
     
@@ -51,13 +51,13 @@ class ProduceRequestMessage: KafkaType {
         values: [KafkaTopicalMessageSet],
         timeout: Int32 = Int32(0x05DC)
     ) {
-        self.values = KafkaArray(values)
+        self.values = values
         self.requestAcks = RequestAcknowledgement.noResponse.value
         self.timeout = timeout
     }
 
     required init(data: inout Data) {
-        values = KafkaArray(data: &data)
+        values = [KafkaTopicalMessageSet](data: &data)
         requestAcks = Int16(data: &data)
         timeout = Int32(data: &data)
     }
@@ -86,22 +86,21 @@ class ProduceResponse: KafkaResponse {
 		return values.dataLength
 	}
 	
-
-    var values: KafkaArray<TopicalResponse>
+    var values: [TopicalResponse]
     
     required init(data: inout Data) {
-        values = KafkaArray(data: &data)
+        values = [TopicalResponse](data: &data)
     }
 }
 
 class TopicalResponse: KafkaType {
     
 	var topicName: TopicName
-    let partitions: KafkaArray<PartitionedResponse>
+    let partitions: [PartitionedResponse]
     
     required init(data: inout Data) {
         topicName = TopicName(data: &data)
-        partitions = KafkaArray(data: &data)
+        partitions = [PartitionedResponse](data: &data)
     }
     
     var dataLength: Int {
@@ -146,16 +145,16 @@ class PartitionedResponse: KafkaType {
 }
 
 class KafkaTopicalMessageSet: KafkaType {
-    var values: KafkaArray<KafkaPartitionedMessageSet>
+    var values: [KafkaPartitionedMessageSet]
     var topic: String
     
     init(values: [KafkaPartitionedMessageSet], topic: String) {
-        self.values = KafkaArray(values)
+        self.values = values
         self.topic = topic
     }
     
     required init(data: inout Data) {
-        values = KafkaArray(data: &data)
+        values = [KafkaPartitionedMessageSet](data: &data)
         topic = String(data: &data)
     }
     

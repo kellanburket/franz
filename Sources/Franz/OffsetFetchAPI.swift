@@ -31,24 +31,21 @@ class OffsetFetchRequest: KafkaRequest {
 class OffsetFetchRequestMessage: KafkaType {
     
     private var _consumerGroup: String
-    private var _topics: KafkaArray<OffsetFetchTopic>
+    private var _topics: [OffsetFetchTopic]
     
-    init(
-        consumerGroup: String,
-        topics: [String:[Int32]]
-        ) {
-            var values = [OffsetFetchTopic]()
-            for (key, value) in topics {
-                let offsetCommitTopic = OffsetFetchTopic(topic: key, partitions: value)
-                values.append(offsetCommitTopic)
-            }
-            _consumerGroup = consumerGroup
-            _topics = KafkaArray(values)
+    init(consumerGroup: String, topics: [String:[Int32]]) {
+		var values = [OffsetFetchTopic]()
+		for (key, value) in topics {
+			let offsetCommitTopic = OffsetFetchTopic(topic: key, partitions: value)
+			values.append(offsetCommitTopic)
+		}
+		_consumerGroup = consumerGroup
+		_topics = values
     }
     
     required init(data: inout Data) {
         _consumerGroup = String(data: &data)
-        _topics = KafkaArray(data: &data)
+        _topics = [OffsetFetchTopic](data: &data)
     }
     
     lazy var dataLength: Int = {
@@ -66,31 +63,21 @@ class OffsetFetchRequestMessage: KafkaType {
 
 class OffsetFetchTopic: KafkaType {
     
-    private var _topicName: String
-    private var _partitions: KafkaArray<Int32>
+    private var _topicName: TopicName
+    private var _partitions: [PartitionId]
     
-    init(
-        topic: String,
-        partitions: [Int32]
-        ) {
-            _topicName = topic
-            var values = [Int32]()
-            
-            for partition in partitions {
-                values.append(partition)
-            }
-            
-            _partitions = KafkaArray(values)
+    init(topic: TopicName, partitions: [PartitionId]) {
+		self._topicName = topic
+		self._partitions = partitions
     }
     
     required init(data: inout Data) {
         _topicName = String(data: &data)
-        _partitions = KafkaArray(data: &data)
+        _partitions = [PartitionId](data: &data)
     }
     
     lazy var dataLength: Int = {
-        return self._topicName.dataLength +
-            self._partitions.dataLength
+        return self._topicName.dataLength + self._partitions.dataLength
     }()
     
     lazy var data: Data = {
@@ -104,53 +91,42 @@ class OffsetFetchTopic: KafkaType {
 
 class OffsetFetchResponse: KafkaResponse {
     
-    private var _topics: KafkaArray<OffsetFetchTopicResponse>
-    
     required init(data: inout Data) {
-        _topics = KafkaArray(data: &data)
+        topics = [OffsetFetchTopicResponse](data: &data)
     }
     
-    var topics: [OffsetFetchTopicResponse] {
-        return _topics.values
-    }
+    private(set) var topics: [OffsetFetchTopicResponse]
     
     lazy var dataLength: Int = {
-        return self._topics.dataLength
+        return self.topics.dataLength
     }()
     
     lazy var data: Data = {
         var data = Data(capacity: self.dataLength)
-        data.append(self._topics.data)
+        data.append(self.topics.data)
         return data
     }()
 }
 
 
 class OffsetFetchTopicResponse: KafkaType {
-    private var _topicName: String
-    private var _partitions: KafkaArray<OffsetFetchPartitionOffset>
+    var topic: TopicName
     
-    var topic: String {
-        return _topicName
-    }
-    
-    var partitions: [OffsetFetchPartitionOffset] {
-        return _partitions.values
-    }
+    private(set) var partitions: [OffsetFetchPartitionOffset]
     
     required init(data: inout Data) {
-        _topicName = String(data: &data)
-        _partitions = KafkaArray(data: &data)
+        topic = String(data: &data)
+        partitions = [OffsetFetchPartitionOffset](data: &data)
     }
     
     lazy var dataLength: Int = {
-        return self._topicName.dataLength + self._partitions.dataLength
+        return self.topic.dataLength + self.partitions.dataLength
     }()
     
     lazy var data: Data = {
         var data = Data(capacity: self.dataLength)
-        data.append(self._topicName.data)
-        data.append(self._partitions.data)
+        data.append(self.topic.data)
+        data.append(self.partitions.data)
         return data
     }()
 }

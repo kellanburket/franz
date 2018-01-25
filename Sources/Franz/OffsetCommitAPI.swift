@@ -41,14 +41,14 @@ class OffsetCommitRequestMessage: KafkaType {
     let consumerGroupGenerationId: Int32
     let consumerId: String
     let retentionTime: Int64
-    let topics: KafkaArray<OffsetCommitTopic>
+    let topics: [OffsetCommitTopic]
  
     init(consumerGroupId: String, generationId: Int32, consumerId: String, topics: [TopicName: [PartitionId: (Offset, OffsetMetadata?)]], retentionTime: Int64 = 0) {
 		self.consumerGroupId = consumerGroupId
 		self.consumerGroupGenerationId = generationId
 		self.consumerId = consumerId
 		self.retentionTime = retentionTime
-		self.topics = KafkaArray<OffsetCommitTopic>(topics.map { arg in
+		self.topics = [OffsetCommitTopic](topics.map { arg in
 			let (key, value) = arg
 			return OffsetCommitTopic(topic: key, partitions: value)
 		})
@@ -59,7 +59,7 @@ class OffsetCommitRequestMessage: KafkaType {
         consumerGroupGenerationId = Int32(data: &data)
         consumerId = String(data: &data)
         retentionTime = Int64(data: &data)
-        topics = KafkaArray(data: &data)
+        topics = [OffsetCommitTopic](data: &data)
     }
 
     var dataLength: Int {
@@ -81,19 +81,19 @@ class OffsetCommitRequestMessage: KafkaType {
 
 class OffsetCommitTopic: KafkaType {
 	let topicName: TopicName
-    let partitions: KafkaArray<OffsetCommitPartitionOffset>
+    let partitions: [OffsetCommitPartitionOffset]
 
     init(topic: TopicName, partitions: [PartitionId: (Offset, OffsetMetadata?)]) {
         self.topicName = topic
-		self.partitions = KafkaArray(partitions.map { arg in
+		self.partitions = partitions.map { arg in
 			let (key, value) = arg
 			return OffsetCommitPartitionOffset(partition: key, offset: value.0, metadata: value.1)
-		})
+		}
     }
     
 	required init(data: inout Data) {
         topicName = String(data: &data)
-        partitions = KafkaArray(data: &data)
+        partitions = [OffsetCommitPartitionOffset](data: &data)
     }
 
     var dataLength: Int {
@@ -141,10 +141,10 @@ class OffsetCommitPartitionOffset: KafkaType {
 
 class OffsetCommitResponse: KafkaResponse {
     
-    let topics: KafkaArray<OffsetCommitTopicResponse>
+    let topics: [OffsetCommitTopicResponse]
     
     required init(data: inout Data) {
-        topics = KafkaArray(data: &data)
+        topics = [OffsetCommitTopicResponse](data: &data)
     }
     
     var dataLength: Int {
@@ -159,11 +159,11 @@ class OffsetCommitResponse: KafkaResponse {
 class OffsetCommitTopicResponse: KafkaType {
     
     let topicName: String
-    let partitions: KafkaArray<OffsetCommitPartitionResponse>
+    let partitions: [OffsetCommitPartitionResponse]
     
     required init(data: inout Data) {
         topicName = String(data: &data)
-        partitions = KafkaArray(data: &data)
+        partitions = [OffsetCommitPartitionResponse](data: &data)
     }
     
     var dataLength: Int {
