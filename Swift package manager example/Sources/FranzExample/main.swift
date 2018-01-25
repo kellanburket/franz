@@ -9,5 +9,3 @@ consumer.listen { message in
 }
 
 cluster.sendMessage("test", message: "Hello world!")
-
-RunLoop.main.run()
