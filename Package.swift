@@ -25,5 +25,5 @@ let package = Package(
             name: "FranzTests",
             dependencies: ["Franz"]),
     ],
-	swiftLanguageVersions: [3, 4]
+    swiftLanguageVersions: [4]
 )
