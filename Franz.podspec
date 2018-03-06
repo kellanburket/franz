@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "Franz"
-  s.version          = "0.1.0"
+  s.version          = "1.0.0"
   s.summary          = "An Apache Kafka Client for iOS and OSX."
 
 # This description is used to generate tags and improve search results.
@@ -19,7 +19,10 @@ Pod::Spec.new do |s|
   s.description      = "Franz is an Apache Kafka 0.9.0 client for iOS and OSx. Franz supports both simple and high-level consumers."
   s.homepage         = "https://github.com/kellanburket/franz"
   s.license          = 'MIT'
-  s.author           = { "kellanburket" => "kellan.burket@gmail.com" }
+  s.author           = {
+    "kellanburket" => "kellan.burket@gmail.com",
+    "bubba" => "luke_lau@icloud.com"
+  }
   s.source           = { :git => "https://github.com/kellanburket/franz.git", :tag => s.version.to_s }
 
   s.requires_arc = true
@@ -27,4 +30,5 @@ Pod::Spec.new do |s|
   s.source_files = 'Sources/Franz/**/*'
 
   s.platforms = { :ios => '9.0' }
+  s.swift_version = "4.1"
 end

@@ -67,8 +67,8 @@ class OffsetFetchTopic: KafkaType {
     private var _partitions: [PartitionId]
     
     init(topic: TopicName, partitions: [PartitionId]) {
-		self._topicName = topic
-		self._partitions = partitions
+        self._topicName = topic
+        self._partitions = partitions
     }
     
     required init(data: inout Data) {

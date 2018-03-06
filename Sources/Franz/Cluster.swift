@@ -23,8 +23,8 @@ public enum ClusterError: Error {
 }
 
 
-/*
-    The Kafka Cluster
+/**
+A cluster that represents a connection to multiple brokers.
 */
 open class Cluster {
 
@@ -60,11 +60,10 @@ open class Cluster {
         }
     }
     
-    /*
-        Initialize brokers
-    
-        - Parameter brokers:
-        - Parameter clientId:
+    /**
+        Create a new cluster
+        - Parameter brokers: The brokers to connect to
+        - Parameter clientId: The client ID to represent you
         - Parameter nodeId:
     */
     public init(brokers: [(String, Int32)], clientId: String, nodeId: Int32? = nil) {

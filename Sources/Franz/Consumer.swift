@@ -8,6 +8,13 @@
 
 import Foundation
 
+
+/**
+A consumer that listens to and consumes messages from certain topics.
+All consumers belong to a group.
+Do not initialize a `Consumer` instance directly, instead use `Cluster.getConsumer(topics: groupId:)`
+- SeeAlso: `Cluster.getConsumer(topics: groupId:)`
+*/
 public class Consumer {
 	private let cluster: Cluster
 	internal var broker: Broker?
