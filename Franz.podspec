@@ -29,6 +29,11 @@ Pod::Spec.new do |s|
 
   s.source_files = 'Sources/Franz/**/*'
 
-  s.platforms = { :ios => '9.0' }
+  s.platforms = {
+    :ios => '9.0',
+    :osx => '10.10', 
+    :tvos => '9.0',
+    :watchos => '2.0' 
+  }
   s.swift_version = "4.1"
 end
