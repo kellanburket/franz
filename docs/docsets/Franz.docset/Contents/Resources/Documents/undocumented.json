@@ -1,0 +1,166 @@
+{
+  "warnings": [
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/Cluster.swift",
+      "line": 15,
+      "symbol": "ClusterError.noBrokersAvailable",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/Cluster.swift",
+      "line": 16,
+      "symbol": "ClusterError.brokerWithKeyNotInitialized",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/Cluster.swift",
+      "line": 17,
+      "symbol": "ClusterError.leaderNotFound",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/Cluster.swift",
+      "line": 18,
+      "symbol": "ClusterError.noMatchingBrokerFoundInCluster",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/Cluster.swift",
+      "line": 19,
+      "symbol": "ClusterError.noLeaderFoundInResponseData",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/Cluster.swift",
+      "line": 20,
+      "symbol": "ClusterError.noPartitionFoundInCluster",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/Cluster.swift",
+      "line": 21,
+      "symbol": "ClusterError.noTopicFoundInCluster",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/Cluster.swift",
+      "line": 22,
+      "symbol": "ClusterError.noBatchForTopicPartition",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/Cluster.swift",
+      "line": 29,
+      "symbol": "Cluster",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/Cluster.swift",
+      "line": 39,
+      "symbol": "Cluster.clientId",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/Cluster.swift",
+      "line": 70,
+      "symbol": "Cluster.init(brokers:clientId:nodeId:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/Consumer.swift",
+      "line": 11,
+      "symbol": "Consumer",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/Enumerations.swift",
+      "line": 281,
+      "symbol": "GroupProtocol.consumer",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/Enumerations.swift",
+      "line": 282,
+      "symbol": "GroupProtocol.custom",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/Enumerations.swift",
+      "line": 352,
+      "symbol": "AssignmentStrategy.Range",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/Enumerations.swift",
+      "line": 353,
+      "symbol": "AssignmentStrategy.RoundRobin",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/KafkaProtocol.swift",
+      "line": null,
+      "symbol": "KafkaType",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/KafkaProtocol.swift",
+      "line": null,
+      "symbol": "KafkaVariableLengthType",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/OldConsumers.swift",
+      "line": 137,
+      "symbol": "OldConsumer",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/Topic.swift",
+      "line": 11,
+      "symbol": "TopicName",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/Topic.swift",
+      "line": 13,
+      "symbol": "Topic",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/Topic.swift",
+      "line": 17,
+      "symbol": "Topic.name",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/luke/Repos/franz/Sources/Franz/Topic.swift",
+      "line": 21,
+      "symbol": "Topic.partitions",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    }
+  ],
+  "source_directory": "/Users/luke/Repos/franz"
+}

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Franz  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a title="Franz  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="index.html">Franz Docs</a> (75% documented)</p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="index.html">Franz Reference</a>
+        <img id="carat" src="img/carat.png" />
+        Franz  Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Classes/Cluster.html">Cluster</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/Consumer.html">Consumer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes.html#/s:5Franz13ConsumerGroupC">ConsumerGroup</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/Group.html">Group</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/GroupMembership.html">GroupMembership</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/HighLevelConsumer.html">HighLevelConsumer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/Message.html">Message</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes.html#/c:@M@Franz@objc(cs)OldConsumer">OldConsumer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/SimpleConsumer.html">SimpleConsumer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/Topic.html">Topic</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Enums/AssignmentStrategy.html">AssignmentStrategy</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/ClusterError.html">ClusterError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/GroupProtocol.html">GroupProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/GroupState.html">GroupState</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Protocols/ConsumerDelegate.html">ConsumerDelegate</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Protocols/HighLevelConsumerDelegate.html">HighLevelConsumerDelegate</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:5Franz9TopicNamea">TopicName</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            
+            <h1 id='franz' class='heading'>Franz</h1>
+
+<p><a href="https://travis-ci.org/kellanburket/Franz"><img src="http://img.shields.io/travis/kellanburket/Franz.svg?style=flat" alt="CI Status"></a>
+<a href="http://cocoapods.org/pods/Franz"><img src="https://img.shields.io/cocoapods/v/Franz.svg?style=flat" alt="Version"></a>
+<a href="http://cocoapods.org/pods/Franz"><img src="https://img.shields.io/cocoapods/l/Franz.svg?style=flat" alt="License"></a>
+<a href="http://cocoapods.org/pods/Franz"><img src="https://img.shields.io/cocoapods/p/Franz.svg?style=flat" alt="Platform"></a></p>
+
+<p>Franz is an Apache Kafka 0.9.0 client for iOS and macOS.</p>
+<h2 id='usage' class='heading'>Usage</h2>
+<pre class="highlight swift"><code><span class="kd">import</span> <span class="kt">Franz</span>
+
+<span class="k">let</span> <span class="nv">cluster</span> <span class="o">=</span> <span class="kt">Cluster</span><span class="p">(</span><span class="nv">brokers</span><span class="p">:</span> <span class="p">[(</span><span class="s">"localhost"</span><span class="p">,</span> <span class="mi">9092</span><span class="p">)],</span> <span class="nv">clientId</span><span class="p">:</span> <span class="s">"FranzExample"</span><span class="p">)</span>
+
+<span class="k">let</span> <span class="nv">consumer</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="nf">getConsumer</span><span class="p">(</span><span class="nv">topics</span><span class="p">:</span> <span class="p">[</span><span class="s">"test"</span><span class="p">],</span> <span class="nv">groupId</span><span class="p">:</span> <span class="s">"group"</span><span class="p">)</span>
+<span class="n">consumer</span><span class="o">.</span><span class="n">listen</span> <span class="p">{</span> <span class="n">message</span> <span class="k">in</span>
+    <span class="nf">print</span><span class="p">(</span><span class="kt">String</span><span class="p">(</span><span class="nv">data</span><span class="p">:</span> <span class="n">message</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nv">encoding</span><span class="p">:</span> <span class="o">.</span><span class="n">utf8</span><span class="p">)</span><span class="o">!</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="n">cluster</span><span class="o">.</span><span class="nf">sendMessage</span><span class="p">(</span><span class="s">"test"</span><span class="p">,</span> <span class="nv">message</span><span class="p">:</span> <span class="s">"Hello world!"</span><span class="p">)</span>
+</code></pre>
+
+<p>The current release of Franz should be considered beta. It is not necessarily ready for production code.</p>
+
+<p>The repo has example projects for CocoaPods and Swift Package Manager. </p>
+<h2 id='installation' class='heading'>Installation</h2>
+<h3 id='a-href-http-cocoapods-org-cocoapods-a' class='heading'><a href="http://cocoapods.org">CocoaPods</a></h3>
+
+<p>Add the following line to your <code>Podfile</code>:</p>
+<pre class="highlight ruby"><code><span class="n">pod</span> <span class="s2">"Franz"</span>
+</code></pre>
+<h3 id='swift-package-manager' class='heading'>Swift Package Manager</h3>
+
+<p>Add the following dependency to your <code>Package.swift</code>:</p>
+<pre class="highlight swift"><code><span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span>
+    <span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/kellanburket/franz.git"</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="s">"1.0.0"</span><span class="p">),</span>
+<span class="p">],</span>
+<span class="nv">targets</span><span class="p">:</span> <span class="p">[</span>
+    <span class="o">.</span><span class="nf">target</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"MyTarget"</span><span class="p">,</span> <span class="nv">dependencies</span><span class="p">:</span> <span class="p">[</span><span class="s">"Franz"</span><span class="p">])</span>
+<span class="p">]</span>
+</code></pre>
+<h2 id='author' class='heading'>Author</h2>
+
+<p>Kellan Cummings</p>
+
+<p>Luke Lau</p>
+<h2 id='license' class='heading'>License</h2>
+
+<p>Franz is available under the MIT license. See the LICENSE file for more info.</p>
+
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2018 <a class="link" href="https://github.com/kellanburket/franz" target="_blank" rel="external">kellanburket and bubba</a>. All rights reserved. (Last updated: 2018-03-07)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

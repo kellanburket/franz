@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Message Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/Message" class="dashAnchor"></a>
+    <a title="Message Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">Franz Docs</a> (75% documented)</p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">Franz Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        Message Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/Cluster.html">Cluster</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Consumer.html">Consumer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/s:5Franz13ConsumerGroupC">ConsumerGroup</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Group.html">Group</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/GroupMembership.html">GroupMembership</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/HighLevelConsumer.html">HighLevelConsumer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Message.html">Message</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:@M@Franz@objc(cs)OldConsumer">OldConsumer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SimpleConsumer.html">SimpleConsumer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Topic.html">Topic</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/AssignmentStrategy.html">AssignmentStrategy</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/ClusterError.html">ClusterError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/GroupProtocol.html">GroupProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/GroupState.html">GroupState</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/ConsumerDelegate.html">ConsumerDelegate</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/HighLevelConsumerDelegate.html">HighLevelConsumerDelegate</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:5Franz9TopicNamea">TopicName</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>Message</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">Message</span><span class="p">:</span> <span class="kt">NSObject</span></code></pre>
+
+                </div>
+              </div>
+            <p>A Message pulled from the Kafka Server</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5Franz7MessageC5value10Foundation4DataVvp"></a>
+                    <a name="//apple_ref/swift/Property/value" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Franz7MessageC5value10Foundation4DataVvp">value</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Message data</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="k">var</span> <span class="nv">value</span><span class="p">:</span> <span class="kt">Data</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5Franz7MessageC3key10Foundation4DataVSgvp"></a>
+                    <a name="//apple_ref/swift/Property/key" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Franz7MessageC3key10Foundation4DataVSgvp">key</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Message key</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="k">var</span> <span class="nv">key</span><span class="p">:</span> <span class="kt">Data</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2018 <a class="link" href="https://github.com/kellanburket/franz" target="_blank" rel="external">kellanburket and bubba</a>. All rights reserved. (Last updated: 2018-03-07)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

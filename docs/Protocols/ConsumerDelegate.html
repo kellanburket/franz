@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ConsumerDelegate Protocol Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Protocol/ConsumerDelegate" class="dashAnchor"></a>
+    <a title="ConsumerDelegate Protocol Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">Franz Docs</a> (75% documented)</p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">Franz Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        ConsumerDelegate Protocol Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/Cluster.html">Cluster</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Consumer.html">Consumer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/s:5Franz13ConsumerGroupC">ConsumerGroup</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Group.html">Group</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/GroupMembership.html">GroupMembership</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/HighLevelConsumer.html">HighLevelConsumer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Message.html">Message</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:@M@Franz@objc(cs)OldConsumer">OldConsumer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SimpleConsumer.html">SimpleConsumer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Topic.html">Topic</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/AssignmentStrategy.html">AssignmentStrategy</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/ClusterError.html">ClusterError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/GroupProtocol.html">GroupProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/GroupState.html">GroupState</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/ConsumerDelegate.html">ConsumerDelegate</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/HighLevelConsumerDelegate.html">HighLevelConsumerDelegate</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:5Franz9TopicNamea">TopicName</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>ConsumerDelegate</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">@objc</span> <span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">ConsumerDelegate</span></code></pre>
+
+                </div>
+              </div>
+            <p>Base consumer delegate. Used by SimpleConsumer.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@Franz@objc(pl)ConsumerDelegate(im)consumerDidReturnMessage:offset:"></a>
+                    <a name="//apple_ref/swift/Method/consumerDidReturnMessage(_:offset:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@Franz@objc(pl)ConsumerDelegate(im)consumerDidReturnMessage:offset:">consumerDidReturnMessage(_:offset:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Called when the consumer has consumed a new Message</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">consumerDidReturnMessage</span><span class="p">(</span><span class="n">_</span> <span class="nv">message</span><span class="p">:</span> <span class="kt"><a href="../Classes/Message.html">Message</a></span><span class="p">,</span> <span class="nv">offset</span><span class="p">:</span> <span class="kt">Int64</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>message</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the returned message</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>offset</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the message offset</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@Franz@objc(pl)ConsumerDelegate(im)fetchDidFail:partition:errorId:errorDescription:"></a>
+                    <a name="//apple_ref/swift/Method/fetchDidFail(_:partition:errorId:errorDescription:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@Franz@objc(pl)ConsumerDelegate(im)fetchDidFail:partition:errorId:errorDescription:">fetchDidFail(_:partition:errorId:errorDescription:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Called when a fetch request has failed and cannot be retried.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">fetchDidFail</span><span class="p">(</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>topic</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the topic requested from the server</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>partition</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the partition requested from the server</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>offset</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the last message offset requested from server</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>errorId</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the error Id returned from the server</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>errorDescription</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a description of the error returned from the server</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@Franz@objc(pl)ConsumerDelegate(im)shouldRetryFailedFetch:partition:errorId:errorDescription:"></a>
+                    <a name="//apple_ref/swift/Method/shouldRetryFailedFetch(_:partition:errorId:errorDescription:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@Franz@objc(pl)ConsumerDelegate(im)shouldRetryFailedFetch:partition:errorId:errorDescription:">shouldRetryFailedFetch(_:partition:errorId:errorDescription:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Called when a fetch has failed. Gives client the chance to retry before shutting down.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">shouldRetryFailedFetch</span><span class="p">(</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>topic</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the topic requested from the server</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>partition</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the partition requested from the server</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>offset</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the last message offset requested from server</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>errorId</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the error Id returned from the server</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>errorDescription</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a description of the error returned from the server</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>true if broker should attempt to retry request, false if not</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@Franz@objc(pl)ConsumerDelegate(im)consumerIsReady:"></a>
+                    <a name="//apple_ref/swift/Method/consumerIsReady(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@Franz@objc(pl)ConsumerDelegate(im)consumerIsReady:">consumerIsReady(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Called when the Consumer is ready to starting issuing pull requests.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">consumerIsReady</span><span class="p">(</span><span class="n">_</span> <span class="nv">consumer</span><span class="p">:</span> <span class="kt"><a href="../Classes.html#/c:@M@Franz@objc(cs)OldConsumer">OldConsumer</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>consumer</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a Consumer</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@Franz@objc(pl)ConsumerDelegate(im)topicPartitionLeaderNotFound:partition:"></a>
+                    <a name="//apple_ref/swift/Method/topicPartitionLeaderNotFound(_:partition:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@Franz@objc(pl)ConsumerDelegate(im)topicPartitionLeaderNotFound:partition:">topicPartitionLeaderNotFound(_:partition:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Called if a Leader is not found for a topic-partition</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">topicPartitionLeaderNotFound</span><span class="p">(</span><span class="n">_</span> <span class="nv">topic</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">partition</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>topic</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the topic</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>partition</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the partition</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2018 <a class="link" href="https://github.com/kellanburket/franz" target="_blank" rel="external">kellanburket and bubba</a>. All rights reserved. (Last updated: 2018-03-07)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

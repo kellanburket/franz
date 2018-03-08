@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Consumer Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/Consumer" class="dashAnchor"></a>
+    <a title="Consumer Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">Franz Docs</a> (75% documented)</p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">Franz Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        Consumer Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/Cluster.html">Cluster</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Consumer.html">Consumer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/s:5Franz13ConsumerGroupC">ConsumerGroup</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Group.html">Group</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/GroupMembership.html">GroupMembership</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/HighLevelConsumer.html">HighLevelConsumer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Message.html">Message</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:@M@Franz@objc(cs)OldConsumer">OldConsumer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SimpleConsumer.html">SimpleConsumer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Topic.html">Topic</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/AssignmentStrategy.html">AssignmentStrategy</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/ClusterError.html">ClusterError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/GroupProtocol.html">GroupProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/GroupState.html">GroupState</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/ConsumerDelegate.html">ConsumerDelegate</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/HighLevelConsumerDelegate.html">HighLevelConsumerDelegate</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:5Franz9TopicNamea">TopicName</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>Consumer</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">Consumer</span></code></pre>
+
+                </div>
+              </div>
+            <p>A consumer that listens to and consumes messages from certain topics.
+All consumers belong to a group.
+Do not initialize a <code>Consumer</code> instance directly, instead use <code>Cluster.getConsumer(topics: groupId:)</code></p>
+<div class="aside aside-see-also">
+    <p class="aside-title">See also</p>
+    <code>Cluster.getConsumer(topics: groupId:)</code>
+
+</div>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5Franz8ConsumerC6listenySb9fromStart_yAA7MessageCc7handlertF"></a>
+                    <a name="//apple_ref/swift/Method/listen(fromStart:handler:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Franz8ConsumerC6listenySb9fromStart_yAA7MessageCc7handlertF">listen(fromStart:handler:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Returns messages from the topics that the consumer is subscribed to.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">listen</span><span class="p">(</span><span class="nv">fromStart</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="nv">handler</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Classes/Message.html">Message</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>fromStart</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>If true the consumer will call the handler for all existing messages, and if false the consumer will only call the handler for new messages.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>handler</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Called whenever a message is received, along with that message.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5Franz8ConsumerC4stopyyF"></a>
+                    <a name="//apple_ref/swift/Method/stop()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Franz8ConsumerC4stopyyF">stop()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Stops listening for incoming messages if <code>listen</code> was called.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">stop</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2018 <a class="link" href="https://github.com/kellanburket/franz" target="_blank" rel="external">kellanburket and bubba</a>. All rights reserved. (Last updated: 2018-03-07)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

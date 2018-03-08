@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Cluster Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/Cluster" class="dashAnchor"></a>
+    <a title="Cluster Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">Franz Docs</a> (75% documented)</p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">Franz Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        Cluster Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/Cluster.html">Cluster</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Consumer.html">Consumer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/s:5Franz13ConsumerGroupC">ConsumerGroup</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Group.html">Group</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/GroupMembership.html">GroupMembership</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/HighLevelConsumer.html">HighLevelConsumer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Message.html">Message</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:@M@Franz@objc(cs)OldConsumer">OldConsumer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/SimpleConsumer.html">SimpleConsumer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Topic.html">Topic</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/AssignmentStrategy.html">AssignmentStrategy</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/ClusterError.html">ClusterError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/GroupProtocol.html">GroupProtocol</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/GroupState.html">GroupState</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/ConsumerDelegate.html">ConsumerDelegate</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/HighLevelConsumerDelegate.html">HighLevelConsumerDelegate</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Type Aliases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:5Franz9TopicNamea">TopicName</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>Cluster</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">Cluster</span></code></pre>
+
+                </div>
+              </div>
+            <p>A cluster that represents a connection to multiple brokers.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5Franz7ClusterC8clientIdSSvp"></a>
+                    <a name="//apple_ref/swift/Property/clientId" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Franz7ClusterC8clientIdSSvp">clientId</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="k">var</span> <span class="nv">clientId</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5Franz7ClusterCACSaySS_s5Int32VtG7brokers_SS8clientIdAESg04nodeF0tcfc"></a>
+                    <a name="//apple_ref/swift/Method/init(brokers:clientId:nodeId:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Franz7ClusterCACSaySS_s5Int32VtG7brokers_SS8clientIdAESg04nodeF0tcfc">init(brokers:clientId:nodeId:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Create a new cluster</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">brokers</span><span class="p">:</span> <span class="p">[(</span><span class="kt">String</span><span class="p">,</span> <span class="kt">Int32</span><span class="p">)],</span> <span class="nv">clientId</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">nodeId</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>brokers</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The brokers to connect to</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>clientId</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The client ID to represent you</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>nodeId</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5Franz7ClusterC11sendMessageySS_s5Int32V9partitionSS7messagetF"></a>
+                    <a name="//apple_ref/swift/Method/sendMessage(_:partition:message:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Franz7ClusterC11sendMessageySS_s5Int32V9partitionSS7messagetF">sendMessage(_:partition:message:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Send an unbatched message to a topic-partition</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">sendMessage</span><span class="p">(</span><span class="n">_</span> <span class="nv">topic</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">partition</span><span class="p">:</span> <span class="kt">Int32</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">message</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>topic</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>partition</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>message</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5Franz7ClusterC12batchMessageySS_s5Int32V9partitionSS7messagetF"></a>
+                    <a name="//apple_ref/swift/Method/batchMessage(_:partition:message:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Franz7ClusterC12batchMessageySS_s5Int32V9partitionSS7messagetF">batchMessage(_:partition:message:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Queue a message to a particular topic-partition</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">batchMessage</span><span class="p">(</span><span class="n">_</span> <span class="nv">topic</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">partition</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">,</span> <span class="nv">message</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>topic</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>partition</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>message</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5Franz7ClusterC9sendBatchySS_s5Int32V9partitiontKF"></a>
+                    <a name="//apple_ref/swift/Method/sendBatch(_:partition:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Franz7ClusterC9sendBatchySS_s5Int32V9partitiontKF">sendBatch(_:partition:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Send batch of queued messages for topic-partition</p>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    <p>Throws ClusterError.NoBatchForTopicPartition</p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">sendBatch</span><span class="p">(</span><span class="n">_</span> <span class="nv">topic</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">partition</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span> <span class="k">throws</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>topic</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5Franz7ClusterC10listTopicsyySayAA5TopicCGcF"></a>
+                    <a name="//apple_ref/swift/Method/listTopics(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Franz7ClusterC10listTopicsyySayAA5TopicCGcF">listTopics(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>List all available topics</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">listTopics</span><span class="p">(</span><span class="n">_</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">([</span><span class="kt"><a href="../Classes/Topic.html">Topic</a></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>callback</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5Franz7ClusterC10getOffsetsySS_s5Int32V9partitionySays5Int64VGc8callbacktF"></a>
+                    <a name="//apple_ref/swift/Method/getOffsets(_:partition:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Franz7ClusterC10getOffsetsySS_s5Int32V9partitionySays5Int64VGc8callbacktF">getOffsets(_:partition:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Get offsets for topic partition</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">getOffsets</span><span class="p">(</span>
+    <span class="n">_</span> <span class="nv">topic</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span>
+    <span class="nv">partition</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">,</span>
+    <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">([</span><span class="kt">Int64</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="p">()</span>
+<span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>topic</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>partition</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>callback</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5Franz7ClusterC11getMessagesySS_s5Int32V9partitions5Int64V6offsetyAA7MessageCc8callbacktF"></a>
+                    <a name="//apple_ref/swift/Method/getMessages(_:partition:offset:callback:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Franz7ClusterC11getMessagesySS_s5Int32V9partitions5Int64V6offsetyAA7MessageCc8callbacktF">getMessages(_:partition:offset:callback:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Consume messages starting at a particular topic-partition-offset until last message</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">getMessages</span><span class="p">(</span>
+    <span class="n">_</span> <span class="nv">topic</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span>
+    <span class="nv">partition</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">,</span>
+    <span class="nv">offset</span><span class="p">:</span> <span class="kt">Int64</span><span class="p">,</span>
+    <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt"><a href="../Classes/Message.html">Message</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">()</span>
+<span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>topic</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>partition</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>offset</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>callback</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5Franz7ClusterC10listGroupsyySS_SStcF"></a>
+                    <a name="//apple_ref/swift/Method/listGroups(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Franz7ClusterC10listGroupsyySS_SStcF">listGroups(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>List available groups</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">listGroups</span><span class="p">(</span><span class="n">_</span> <span class="nv">callback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="kt">String</span><span class="p">,</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">())</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>callback</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5Franz7ClusterC17getSimpleConsumerAA0dE0CSS_s5Int32V9partitionAA0E8Delegate_p8delegatetF"></a>
+                    <a name="//apple_ref/swift/Method/getSimpleConsumer(_:partition:delegate:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Franz7ClusterC17getSimpleConsumerAA0dE0CSS_s5Int32V9partitionAA0E8Delegate_p8delegatetF">getSimpleConsumer(_:partition:delegate:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Initialize a Simple Conusmer</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">getSimpleConsumer</span><span class="p">(</span>
+    <span class="n">_</span> <span class="nv">topic</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span>
+    <span class="nv">partition</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">,</span>
+    <span class="nv">delegate</span><span class="p">:</span> <span class="kt"><a href="../Protocols/ConsumerDelegate.html">ConsumerDelegate</a></span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/SimpleConsumer.html">SimpleConsumer</a></span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>topic</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>partition</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>delegate</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>an uninitialized Simple Consumer</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5Franz7ClusterC20getHighLevelConsumerAA0deF0CSS_s5Int32V9partitionSS7groupIdAA0deF8Delegate_p8delegatetF"></a>
+                    <a name="//apple_ref/swift/Method/getHighLevelConsumer(_:partition:groupId:delegate:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Franz7ClusterC20getHighLevelConsumerAA0deF0CSS_s5Int32V9partitionSS7groupIdAA0deF8Delegate_p8delegatetF">getHighLevelConsumer(_:partition:groupId:delegate:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Initialize a High Level Consumer</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">getHighLevelConsumer</span><span class="p">(</span>
+    <span class="n">_</span> <span class="nv">topic</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span>
+    <span class="nv">partition</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">,</span>
+    <span class="nv">groupId</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span>
+    <span class="nv">delegate</span><span class="p">:</span> <span class="kt"><a href="../Protocols/HighLevelConsumerDelegate.html">HighLevelConsumerDelegate</a></span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/HighLevelConsumer.html">HighLevelConsumer</a></span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>topic</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>partition</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>groupId</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>delegate</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p></p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>an unitialized HighLevelConsumer</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5Franz7ClusterC11getConsumerAA0D0CSaySSG6topics_SS7groupIdtF"></a>
+                    <a name="//apple_ref/swift/Method/getConsumer(topics:groupId:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5Franz7ClusterC11getConsumerAA0D0CSaySSG6topics_SS7groupIdtF">getConsumer(topics:groupId:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Initialize a Consumer that can be used to listen for messages.</p>
+<div class="aside aside-seealso">
+    <p class="aside-title">Seealso</p>
+    <p><code><a href="../Classes/Consumer.html">Consumer</a></code></p>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">getConsumer</span><span class="p">(</span><span class="nv">topics</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Typealiases.html#/s:5Franz9TopicNamea">TopicName</a></span><span class="p">],</span> <span class="nv">groupId</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/Consumer.html">Consumer</a></span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>topics</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The list of topics that the consumer should be subscribed to.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>groupId</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The id of the consumer group that the consumer group should belong to.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>The Consumer object that can then listen for messages.</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2018 <a class="link" href="https://github.com/kellanburket/franz" target="_blank" rel="external">kellanburket and bubba</a>. All rights reserved. (Last updated: 2018-03-07)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>
