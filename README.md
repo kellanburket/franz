@@ -23,6 +23,8 @@ consumer.listen { message in
 cluster.sendMessage("test", message: "Hello world!")
 ```
 
+You can view the [documentation here](//kellanburket.github.com/franz).
+
 The current release of Franz should be considered beta. It is not necessarily ready for production code.
 
 The repo has example projects for CocoaPods and Swift Package Manager. 
