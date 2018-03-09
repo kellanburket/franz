@@ -1,6 +1,6 @@
 # Franz
 
-[![CI Status](http://img.shields.io/travis/kellanburket/Franz.svg?style=flat)](https://travis-ci.org/kellanburket/Franz)
+[![Build Status](https://travis-ci.org/kellanburket/franz.svg?branch=master)](https://travis-ci.org/kellanburket/franz)
 [![Version](https://img.shields.io/cocoapods/v/Franz.svg?style=flat)](http://cocoapods.org/pods/Franz)
 [![License](https://img.shields.io/cocoapods/l/Franz.svg?style=flat)](http://cocoapods.org/pods/Franz)
 [![Platform](https://img.shields.io/cocoapods/p/Franz.svg?style=flat)](http://cocoapods.org/pods/Franz)
