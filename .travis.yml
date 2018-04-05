@@ -1,8 +1,8 @@
 language: objective-c
 xcode_project: Franz.xcodeproj
 xcode_scheme: franz-Package
-osx_image: xcode9.3beta
+osx_image: xcode9.3
 sudo: required
 services:
   - docker
-script: xcodebuild test -project Franz.xcodeproj -scheme Franz
+script: xcodebuild test -project Franz.xcodeproj -scheme Franz | xcpretty
