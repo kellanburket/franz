@@ -131,6 +131,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A34EBFBE2083B88D00A9D0AA /* API */ = {
+			isa = PBXGroup;
+			children = (
+				OBJ_9 /* AdminAPI.swift */,
+				OBJ_18 /* FetchAPI.swift */,
+				OBJ_20 /* GroupCoordinatorAPI.swift */,
+				OBJ_21 /* GroupMembershipAPI.swift */,
+				OBJ_26 /* MetadataAPI.swift */,
+				OBJ_27 /* OffsetAPI.swift */,
+				OBJ_28 /* OffsetCommitAPI.swift */,
+				OBJ_29 /* OffsetFetchAPI.swift */,
+				OBJ_31 /* ProduceAPI.swift */,
+			);
+			path = API;
+			sourceTree = "<group>";
+		};
 		A38623311F43A31F005590B8 /* Protocol */ = {
 			isa = PBXGroup;
 			children = (
@@ -213,27 +229,19 @@
 		OBJ_8 /* Franz */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_9 /* AdminAPI.swift */,
+				A34EBFBE2083B88D00A9D0AA /* API */,
 				OBJ_10 /* Broker.swift */,
 				OBJ_11 /* Cluster.swift */,
 				OBJ_12 /* Connection.swift */,
 				A38E699D1F391B960044D3D3 /* Consumer.swift */,
 				OBJ_14 /* Crypt */,
 				OBJ_16 /* Enumerations.swift */,
-				OBJ_18 /* FetchAPI.swift */,
 				OBJ_19 /* Group.swift */,
-				OBJ_20 /* GroupCoordinatorAPI.swift */,
-				OBJ_21 /* GroupMembershipAPI.swift */,
 				OBJ_22 /* KafkaProtocol.swift */,
 				OBJ_23 /* KafkaRequest.swift */,
 				OBJ_24 /* KafkaResponse.swift */,
 				OBJ_25 /* MessageSet.swift */,
-				OBJ_26 /* MetadataAPI.swift */,
-				OBJ_27 /* OffsetAPI.swift */,
-				OBJ_28 /* OffsetCommitAPI.swift */,
-				OBJ_29 /* OffsetFetchAPI.swift */,
 				OBJ_30 /* Partition.swift */,
-				OBJ_31 /* ProduceAPI.swift */,
 				OBJ_32 /* Topic.swift */,
 				OBJ_33 /* Variables.swift */,
 				A386B8081F196A730086BFF2 /* Assignment.swift */,
