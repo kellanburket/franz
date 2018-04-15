@@ -32,7 +32,7 @@ class DockerTestBase: XCTestCase {
 			waitForKafka()
 			
 		} catch {
-			print("Docker must be installed")
+			fatalError("Couldn't find docker-compose")
 		}
 	}
 	
