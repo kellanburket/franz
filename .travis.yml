@@ -7,4 +7,4 @@ services:
   - docker
 script:
   - set -o pipefail
-  - xcodebuild test -project Franz.xcodeproj -scheme Franz | xcpretty
+  - xcodebuild test -project Franz.xcodeproj -scheme Franz
