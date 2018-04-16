@@ -218,17 +218,25 @@ class Connection: NSObject, StreamDelegate {
             //print("\tReleasing Input Stream Read")
         }
     }
-
-    func write(_ request: KafkaRequest, callback: RequestCallback? = nil) {
-        request.clientId = clientId
+	
+	private static var correlationId: Int32 = 0
+	func makeCorrelationId() -> Int32 {
+		let id = Connection.correlationId
+		Connection.correlationId += 1
+		return id
+	}
+	
+	func write<T: KafkaRequest>(_ request: T, callback: RequestCallback? = nil) {
+		
         //print("Write Block Added")
+		let corId = makeCorrelationId()
         if let requestCallback = callback {
-            _requestCallbacks[request.correlationId] = requestCallback
+            _requestCallbacks[corId] = requestCallback
         }
 		let dispatchBlock = DispatchWorkItem(qos: .unspecified, flags: []) {
 			if let stream = self.outputStream {
 				if stream.hasSpaceAvailable {
-					let data = request.data
+					let data = request.data(correlationId: corId, clientId: self.clientId)
 					
 					data.withUnsafeBytes { (bytes: UnsafePointer<UInt8>) -> Void in
 						stream.write(bytes, maxLength: data.count)
@@ -250,7 +258,7 @@ class Connection: NSObject, StreamDelegate {
         }
     }
 	
-	func writeBlocking<T: KafkaRequest & AssociatedResponse>(request: T) -> T.Response {
+	func writeBlocking<T: KafkaRequest>(request: T) -> T.Response {
 		let semaphore = DispatchSemaphore(value: 0)
 		var response: T.Response!
 		print("writing \(request)")

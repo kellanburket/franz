@@ -8,7 +8,13 @@
 
 import Foundation
 
-class ProduceRequest: KafkaRequest {
+struct ProduceRequest: KafkaRequest {
+	
+	typealias Response = ProduceResponse
+	
+	var apiKey: ApiKey { return .produceRequest }
+	
+	let value: KafkaType?
     init(values: [String:[Int32:MessageSet]]) {
 
         var kafkaTopicalMessageSets = [KafkaTopicalMessageSet]()
@@ -32,14 +38,11 @@ class ProduceRequest: KafkaRequest {
             )
         }
         
-        super.init(
-            apiKey: ApiKey.produceRequest,
-            value: ProduceRequestMessage(values: kafkaTopicalMessageSets)
-        )
+        self.value = ProduceRequestMessage(values: kafkaTopicalMessageSets)
     }
 }
 
-class ProduceRequestMessage: KafkaType {
+struct ProduceRequestMessage: KafkaType {
 
     var values: [KafkaTopicalMessageSet]
     var requestAcks: Int16
@@ -54,7 +57,7 @@ class ProduceRequestMessage: KafkaType {
         self.timeout = timeout
     }
 
-    required init(data: inout Data) {
+    init(data: inout Data) {
         values = [KafkaTopicalMessageSet](data: &data)
         requestAcks = Int16(data: &data)
         timeout = Int32(data: &data)
@@ -75,7 +78,7 @@ class ProduceRequestMessage: KafkaType {
     }
 }
 
-class ProduceResponse: KafkaResponse {
+struct ProduceResponse: KafkaResponse {
 	var data: Data {
 		return values.data
 	}
@@ -86,17 +89,17 @@ class ProduceResponse: KafkaResponse {
 	
     var values: [TopicalResponse]
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         values = [TopicalResponse](data: &data)
     }
 }
 
-class TopicalResponse: KafkaType {
+struct TopicalResponse: KafkaType {
     
 	var topicName: TopicName
     let partitions: [PartitionedResponse]
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         topicName = TopicName(data: &data)
         partitions = [PartitionedResponse](data: &data)
     }
@@ -110,12 +113,12 @@ class TopicalResponse: KafkaType {
     }
 }
 
-class PartitionedResponse: KafkaType {
+struct PartitionedResponse: KafkaType {
     private var _partition: Int32
     private var _errorCode: Int16
     private var _offset: Int64
 
-    required init(data: inout Data) {
+    init(data: inout Data) {
         _partition = Int32(data: &data)
         _errorCode = Int16(data: &data)
         _offset = Int64(data: &data)
@@ -142,7 +145,7 @@ class PartitionedResponse: KafkaType {
     }
 }
 
-class KafkaTopicalMessageSet: KafkaType {
+struct KafkaTopicalMessageSet: KafkaType {
     var values: [KafkaPartitionedMessageSet]
     var topic: String
     
@@ -151,7 +154,7 @@ class KafkaTopicalMessageSet: KafkaType {
         self.topic = topic
     }
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         values = [KafkaPartitionedMessageSet](data: &data)
         topic = String(data: &data)
     }
@@ -171,7 +174,7 @@ class KafkaTopicalMessageSet: KafkaType {
 }
 
 
-class KafkaPartitionedMessageSet: KafkaType {
+struct KafkaPartitionedMessageSet: KafkaType {
     var value: MessageSet
     var partition: Int32
     
@@ -180,7 +183,7 @@ class KafkaPartitionedMessageSet: KafkaType {
         self.partition = partition
     }
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         value = MessageSet(data: &data)
         partition = Int32(data: &data)
     }

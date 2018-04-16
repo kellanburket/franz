@@ -7,46 +7,48 @@
 
 import Foundation
 
-class SaslHandshakeRequest: KafkaRequest, AssociatedResponse {
+struct SaslHandshakeRequest: KafkaRequest {
 	
 	typealias Response = SaslHandshakeResponse
 	
-	let mechanism: String
+	var apiKey: ApiKey { return .saslHandshake }
+	var apiVersion: ApiVersion { return .v1 }
 	
+	let value: KafkaType?
 	init(mechanism: String) {
-		self.mechanism = mechanism
-		super.init(apiKey: .saslHandshake, value: mechanism, apiVersion: .v1)
+		self.value = mechanism
 	}
 }
 
-class SaslHandshakeResponse: KafkaResponse {
+struct SaslHandshakeResponse: KafkaResponse {
 	let errorCode: Int16
 	let enabledMechanisms: [String]
 	
-	required init(data: inout Data) {
+	init(data: inout Data) {
 		errorCode = Int16(data: &data)
 		enabledMechanisms = [String](data: &data)
 	}
 }
 
-class SaslAuthenticateRequest: KafkaRequest, AssociatedResponse {
+struct SaslAuthenticateRequest: KafkaRequest {
 	
 	typealias Response = SaslAuthenticateResponse
 	
-	let saslAuthBytes: Data
+	var apiKey: ApiKey { return .saslAuthenticate }
+	var apiversion: ApiVersion { return .v0 }
 	
+	let value: KafkaType?
 	init(saslAuthBytes: Data) {
-		self.saslAuthBytes = saslAuthBytes
-		super.init(apiKey: .saslAuthenticate, value: saslAuthBytes, apiVersion: .v0)
+		self.value = saslAuthBytes
 	}
 }
 
-class SaslAuthenticateResponse: KafkaResponse {
+struct SaslAuthenticateResponse: KafkaResponse {
 	let errorCode: Int16
 	let errorMessage: String?
 	let saslAuthBytes: Data
 	
-	required init(data: inout Data) {
+	init(data: inout Data) {
 		errorCode = Int16(data: &data)
 		errorMessage = String(data: &data)
 		saslAuthBytes = Data(data: &data)

@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Csasl
 
 enum BrokerError: Error {
     case noConnection

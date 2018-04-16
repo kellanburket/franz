@@ -8,9 +8,12 @@
 
 import Foundation
 
-class OffsetRequest: KafkaRequest {
+struct OffsetRequest: KafkaRequest {
+	
+	typealias Response = OffsetResponse
+	var apiKey: ApiKey { return .offsetRequest }
 
-    convenience init(
+    init(
 		topics: [TopicName: [PartitionId]],
         time: TimeOffset = TimeOffset.latest,
         maxNumberOfOffsets: Int32 = 10,
@@ -32,7 +35,7 @@ class OffsetRequest: KafkaRequest {
         )
     }
     
-    convenience init(
+    init(
         topics: [TopicName: [PartitionId: (TimeOffset, Int32)]],
         replicaId: ReplicaId = .none
     ) {
@@ -43,15 +46,16 @@ class OffsetRequest: KafkaRequest {
             )
         )
     }
-    
+	
+	let value: KafkaType?
     init(value: OffsetRequestMessage) {
-        super.init(apiKey: ApiKey.offsetRequest, value: value)
+		self.value = value
     }
     
 }
 
 
-class OffsetRequestMessage: KafkaType {
+struct OffsetRequestMessage: KafkaType {
 	
     private var _topics: [TopicalOffsetMessage]
     
@@ -72,26 +76,26 @@ class OffsetRequestMessage: KafkaType {
         _topics = tempTopics
     }
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         replicaId = Int32(data: &data)
         _topics = [TopicalOffsetMessage](data: &data)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self.replicaId.dataLength +
             self._topics.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+	var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self.replicaId.data)
         data.append(self._topics.data)
         return data
-    }()
+    }
 }
 
 
-class TopicalOffsetMessage: KafkaType {
+struct TopicalOffsetMessage: KafkaType {
     private var _partitions: [PartitionedOffsetMessage]
     
     private(set) var topicName: TopicName
@@ -114,25 +118,25 @@ class TopicalOffsetMessage: KafkaType {
         _partitions = [PartitionedOffsetMessage](tempPartitions)
     }
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         topicName = String(data: &data)
         _partitions = [PartitionedOffsetMessage](data: &data)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self.topicName.dataLength + self._partitions.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self.topicName.data)
         data.append(self._partitions.data)
         return data
-    }()
+    }
 }
 
 
-class PartitionedOffsetMessage: KafkaType {
+struct PartitionedOffsetMessage: KafkaType {
     private var _partition: Int32
     private var _time: Int64
     private var _maxNumberOfOffsets: Int32
@@ -155,33 +159,33 @@ class PartitionedOffsetMessage: KafkaType {
         _maxNumberOfOffsets = maxNumberOfOffsets
     }
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         _partition = Int32(data: &data)
         _time = Int64(data: &data)
         _maxNumberOfOffsets = Int32(data: &data)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self._partition.dataLength +
             self._time.dataLength +
             self._maxNumberOfOffsets.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self._partition.data)
         data.append(self._time.data)
         data.append(self._maxNumberOfOffsets.data)
         return data
-    }()
+    }
 }
 
 
-class OffsetResponse: KafkaResponse {
+struct OffsetResponse: KafkaResponse {
 	
     var values: [TopicalPartitionedOffsets]
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         values = [TopicalPartitionedOffsets](data: &data)
     }
 
@@ -191,7 +195,7 @@ class OffsetResponse: KafkaResponse {
 }
 
 
-class TopicalPartitionedOffsets: KafkaType {
+struct TopicalPartitionedOffsets: KafkaType {
     private var _topicName: String
     private var _partitions: [PartitionedOffsets]
     
@@ -207,25 +211,25 @@ class TopicalPartitionedOffsets: KafkaType {
         return values
     }
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         _topicName = String(data: &data)
         _partitions = [PartitionedOffsets](data: &data)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self._topicName.dataLength + self._partitions.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self._topicName.data)
         data.append(self._partitions.data)
         return data
-    }()
+    }
 }
 
 
-class PartitionedOffsets: KafkaType {
+struct PartitionedOffsets: KafkaType {
     private var _partition: Int32
     private var _errorCode: Int16
     private var _offsets: [Offset]
@@ -242,23 +246,23 @@ class PartitionedOffsets: KafkaType {
 		return _offsets.reversed()
     }
 
-    required init(data: inout Data) {
+    init(data: inout Data) {
         _partition = Int32(data: &data)
         _errorCode = Int16(data: &data)
         _offsets = [Offset](data: &data)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self._partition.dataLength +
             self._errorCode.dataLength +
             self._offsets.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self._partition.data)
         data.append(self._errorCode.data)
         data.append(self._offsets.data)
         return data
-    }()
+    }
 }

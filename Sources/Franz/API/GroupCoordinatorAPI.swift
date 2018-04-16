@@ -8,20 +8,27 @@
 
 import Foundation
 
-class GroupCoordinatorRequest: KafkaRequest {
+struct GroupCoordinatorRequest: KafkaRequest {
+	
+	typealias Response = GroupCoordinatorResponse
     
-    convenience init(id: String) {
+    init(id: String) {
         self.init(value: GroupCoordinatorRequestMessage(groupId: id))
     }
-    
+	
+	var apiKey: ApiKey {
+		return .groupCoordinatorRequest
+	}
+	
+	let value: KafkaType?
     init(value: GroupCoordinatorRequestMessage) {
-        super.init(apiKey: ApiKey.groupCoordinatorRequest, value: value)
+        self.value = value
     }
     
 }
 
 
-class GroupCoordinatorRequestMessage: KafkaType {
+struct GroupCoordinatorRequestMessage: KafkaType {
     
     private var _groupId: String
     
@@ -29,19 +36,19 @@ class GroupCoordinatorRequestMessage: KafkaType {
         _groupId = groupId
     }
     
-	required init(data: inout Data) {
+	init(data: inout Data) {
         _groupId = String(data: &data)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self._groupId.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self._groupId.data)
         return data
-    }()
+    }
     
     var id: String {
 		return _groupId 
@@ -49,7 +56,7 @@ class GroupCoordinatorRequestMessage: KafkaType {
 }
 
 
-class GroupCoordinatorResponse: KafkaResponse {
+struct GroupCoordinatorResponse: KafkaResponse {
     
     var _errorCode: Int16
     var _coordinatorId: Int32
@@ -80,26 +87,26 @@ class GroupCoordinatorResponse: KafkaResponse {
 		_coordinatorPort = coordinatorPort
 	}
     
-	required init(data: inout Data) {
+	init(data: inout Data) {
         _errorCode = Int16(data: &data)
         _coordinatorId = Int32(data: &data)
         _coordinatorHost = String(data: &data)
         _coordinatorPort = Int32(data: &data)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self._errorCode.dataLength +
             self._coordinatorId.dataLength +
             self._coordinatorHost.dataLength +
             self._coordinatorPort.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self._errorCode.data)
         data.append(self._coordinatorId.data)
         data.append(self._coordinatorHost.data)
         data.append(self._coordinatorPort.data)
         return data
-    }()
+    }
 }

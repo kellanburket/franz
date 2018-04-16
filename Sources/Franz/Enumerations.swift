@@ -247,7 +247,20 @@ enum CompressionCodec: Int8 {
 }
 
 
-enum ApiKey: Int16 {
+enum ApiKey: Int16, KafkaType {
+	
+	init(data: inout Data) {
+		self.init(rawValue: Int16(data: &data))!
+	}
+	
+	var data: Data {
+		return rawValue.data
+	}
+	
+	var dataLength: Int {
+		return rawValue.dataLength
+	}
+	
     case produceRequest = 0
     case fetchRequest = 1
     case offsetRequest = 2
@@ -265,8 +278,20 @@ enum ApiKey: Int16 {
 	case saslAuthenticate = 36
 }
 
-
-enum ApiVersion: Int16 {
+enum ApiVersion: Int16, KafkaType {
+	
+	init(data: inout Data) {
+		self.init(rawValue: Int16(data: &data))!
+	}
+	
+	var data: Data {
+		return rawValue.data
+	}
+	
+	var dataLength: Int {
+		return rawValue.dataLength
+	}
+	
 	static var defaultVersion: ApiVersion {
 		return v0
 	}

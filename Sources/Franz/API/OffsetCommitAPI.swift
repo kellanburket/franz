@@ -10,9 +10,14 @@ import Foundation
 
 typealias OffsetMetadata = String
 
-class OffsetCommitRequest: KafkaRequest {
+struct OffsetCommitRequest: KafkaRequest {
 	
-    convenience init(
+	typealias Response = OffsetCommitResponse
+	
+	var apiKey: ApiKey { return .offsetCommitRequest }
+	var apiVersion: ApiVersion { return .v2 }
+	
+    init(
         consumerGroupId: String,
         generationId: Int32,
         consumerId: String,
@@ -29,13 +34,14 @@ class OffsetCommitRequest: KafkaRequest {
             )
         )
     }
-    
+	
+	let value: KafkaType?
     init(value: OffsetCommitRequestMessage) {
-		super.init(apiKey: ApiKey.offsetCommitRequest, value: value, apiVersion: .v2)
+		self.value = value
     }
 }
 
-class OffsetCommitRequestMessage: KafkaType {
+struct OffsetCommitRequestMessage: KafkaType {
 
     let consumerGroupId: String
     let consumerGroupGenerationId: Int32
@@ -54,7 +60,7 @@ class OffsetCommitRequestMessage: KafkaType {
 		})
     }
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         consumerGroupId = String(data: &data)
         consumerGroupGenerationId = Int32(data: &data)
         consumerId = String(data: &data)
@@ -79,7 +85,7 @@ class OffsetCommitRequestMessage: KafkaType {
 }
 
 
-class OffsetCommitTopic: KafkaType {
+struct OffsetCommitTopic: KafkaType {
 	let topicName: TopicName
     let partitions: [OffsetCommitPartitionOffset]
 
@@ -91,7 +97,7 @@ class OffsetCommitTopic: KafkaType {
 		}
     }
     
-	required init(data: inout Data) {
+	init(data: inout Data) {
         topicName = String(data: &data)
         partitions = [OffsetCommitPartitionOffset](data: &data)
     }
@@ -108,7 +114,7 @@ class OffsetCommitTopic: KafkaType {
 	}
 }
 
-class OffsetCommitPartitionOffset: KafkaType {
+struct OffsetCommitPartitionOffset: KafkaType {
     let partition: PartitionId
     let offset: Offset
     let metadata: String?
@@ -119,7 +125,7 @@ class OffsetCommitPartitionOffset: KafkaType {
         self.metadata = metadata
     }
 
-    required init(data: inout Data) {
+    init(data: inout Data) {
         partition = PartitionId(data: &data)
         offset = Offset(data: &data)
         metadata = String(data: &data)
@@ -139,11 +145,11 @@ class OffsetCommitPartitionOffset: KafkaType {
 }
 
 
-class OffsetCommitResponse: KafkaResponse {
+struct OffsetCommitResponse: KafkaResponse {
     
     let topics: [OffsetCommitTopicResponse]
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         topics = [OffsetCommitTopicResponse](data: &data)
     }
     
@@ -156,12 +162,12 @@ class OffsetCommitResponse: KafkaResponse {
 	}
 }
 
-class OffsetCommitTopicResponse: KafkaType {
+struct OffsetCommitTopicResponse: KafkaType {
     
     let topicName: String
     let partitions: [OffsetCommitPartitionResponse]
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         topicName = String(data: &data)
         partitions = [OffsetCommitPartitionResponse](data: &data)
     }
@@ -175,7 +181,7 @@ class OffsetCommitTopicResponse: KafkaType {
 	}
 }
 
-class OffsetCommitPartitionResponse: KafkaType {
+struct OffsetCommitPartitionResponse: KafkaType {
     
     let partition: Int32
     private var errorCode: Int16
@@ -184,7 +190,7 @@ class OffsetCommitPartitionResponse: KafkaType {
         return KafkaErrorCode(rawValue: errorCode)
     }
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         partition = Int32(data: &data)
         errorCode = Int16(data: &data)
     }
