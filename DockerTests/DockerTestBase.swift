@@ -120,7 +120,7 @@ class DockerTestBase: XCTestCase {
 			if aStream == outputStream, eventCode == .hasSpaceAvailable, !written {
 				print("Trying to contact Kafka server")
 				let req = ListGroupsRequest()
-				let data = req.data(correlationId: 0, clientId: nil)
+				let data = req.data(correlationId: 0, clientId: "test")
 					
 				data.withUnsafeBytes { (bytes: UnsafePointer<UInt8>) -> Void in
 					outputStream.write(bytes, maxLength: data.count)

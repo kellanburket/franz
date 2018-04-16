@@ -19,7 +19,7 @@ extension KafkaRequest {
 	
 	var apiVersion: ApiVersion { return .defaultVersion }
 	
-	func data(correlationId: Int32, clientId: String?) -> Data {
+	func data(correlationId: Int32, clientId: String) -> Data {
 		let content: [KafkaType?] = [apiKey, apiVersion, correlationId, clientId, value]
 		let size: Int32 = content
 			.compactMap { $0?.dataLength }
