@@ -138,14 +138,11 @@ class Broker: KafkaType {
 		
 		let request = FetchRequest(topics: topics, replicaId: replicaId)
 		
-        connect().write(request) { data in
+        connect().write(request) { response in
 			//Check to see if we should stop polling
 			if let token = cancelToken, token.shouldCancel {
 				return
 			}
-			
-			var mutableData = data
-			let response = FetchResponse(data: &mutableData)
 			
 			var topicsWithNewOffsets = topics
 			
@@ -190,10 +187,8 @@ class Broker: KafkaType {
 		
 		let request = FetchRequest(topics: topics, replicaId: replicaId)
         
-        connect().write(request) { data in
+        connect().write(request) { response in
             readQueue.async {
-                var mutableData = data
-                let response = FetchResponse(data: &mutableData)
                 for responseTopic in response.topics {
                     for responsePartition in responseTopic.partitions {
                         if let error = responsePartition.error {
@@ -221,10 +216,8 @@ class Broker: KafkaType {
 		
 		let request = OffsetCommitRequest(consumerGroupId: groupId, generationId: groupMembership.group.generationId, consumerId: groupMembership.memberId, topics: topics)
 		
-		connect().write(request) { data in
+		connect().write(request) { response in
 			self._metadataReadQueue.async {
-				var mutableData = data
-				let response = OffsetCommitResponse(data: &mutableData)
 				for responseTopic in response.topics {
 					for responsePartition in responseTopic.partitions {
 						if let error = responsePartition.error {
@@ -250,10 +243,8 @@ class Broker: KafkaType {
                 topics: topics
             )
 
-            connect().write(request) { data in
+            connect().write(request) { response in
                 self._metadataReadQueue.async {
-                    var mutableData = data
-                    let response = OffsetFetchResponse(data: &mutableData)
 					
 					var offsets = [TopicName: [PartitionId: Offset]]()
 					
@@ -273,10 +264,8 @@ class Broker: KafkaType {
 
 	func getOffsets(for topics: [TopicName: [PartitionId]], clientId: String, time: TimeOffset = .latest, callback: @escaping ([TopicName: [PartitionId: [Offset]]]) -> ()) {
 		let request = OffsetRequest(topics: topics, time: time)
-        connect().write(request) { data in
+        connect().write(request) { response in
             self._metadataReadQueue.async {
-                var mutableData = data
-                let response = OffsetResponse(data: &mutableData)
 				
 				if let error = response.topicalPartitionedOffsets.flatMap({ $0.partitionedOffsets.compactMap { $0.value.error } })
 					.filter({ $0 != .noError })
@@ -299,19 +288,14 @@ class Broker: KafkaType {
 	
 	func getGroupCoordinator(groupId: String, clientId: String, callback: @escaping (GroupCoordinatorResponse) -> Void) {
 		let request = GroupCoordinatorRequest(id: groupId)
-		connect().write(request) { data in
-			var mutableData = data
-			callback(GroupCoordinatorResponse(data: &mutableData))
-		}
+		connect().write(request, callback: callback)
 	}
     
     func listGroups(clientId: String, callback: ((String, String) -> ())? = nil) {
         let listGroupsRequest = ListGroupsRequest()
 
-        connect().write(listGroupsRequest) { data in
+        connect().write(listGroupsRequest) { response in
             self._metadataReadQueue.async {
-                var mutableData = data
-                let response = ListGroupsResponse(data: &mutableData)
                 if let error = response.error {
                     if error.code == 0 {
                         for (groupId, groupProtocol) in response.groups {
@@ -335,10 +319,8 @@ class Broker: KafkaType {
         callback: ((String, GroupState) -> ())? = nil
     ) {
         let describeGroupRequest = DescribeGroupsRequest(id: groupId)
-        connect().write(describeGroupRequest) { data in
+        connect().write(describeGroupRequest) { response in
             self._metadataReadQueue.async {
-                var mutableData = data
-                let response = DescribeGroupsResponse(data: &mutableData)
                 for groupState in response.states {
                     if let error = groupState.error {
                         if error.code == 0 {
@@ -364,12 +346,8 @@ class Broker: KafkaType {
             metadata: [AssignmentStrategy.RoundRobin: metadata]
         )
         
-        connect().write(request) { data in
+        connect().write(request) { response in
             self._groupCoordinationQueue.async {
-                var mutableData = data
-                let response = JoinGroupResponse(data: &mutableData)
-                //print(response.description)
-                
                 if let error = response.error {
                     if error.code == 0 {
                         let group = Group(
@@ -424,10 +402,8 @@ class Broker: KafkaType {
             groupAssignment: [memberId: groupAssignmentMetadata]
 		)
 
-        connect().write(request) { data in
+        connect().write(request) { response in
             self._groupCoordinationQueue.async {
-                var mutableData = data
-                let response = SyncGroupResponse<GroupMemberAssignment>(data: &mutableData)
                 if let error = response.error {
                     if error.code == 0 {
                         if let syncGroupCallback = callback {
@@ -451,10 +427,8 @@ class Broker: KafkaType {
     ) {
         let request = LeaveGroupRequest(groupId: groupId, memberId: memberId)
         
-        connect().write(request) { data in
+        connect().write(request) { response in
             self._groupCoordinationQueue.async {
-                var mutableData = data
-                let response = LeaveGroupResponse(data: &mutableData)
                 if let error = response.error {
                     if error.code == 0 {
                         if let leaveGroupCallback = callback {
@@ -483,10 +457,8 @@ class Broker: KafkaType {
             memberId: memberId
         )
         
-        connect().write(request) { data in
+        connect().write(request) { response in
             self._groupCoordinationQueue.async {
-                var mutableData = data
-                let response = HeartbeatResponse(data: &mutableData)
                 //print(response.description)
                 if let error = response.error {
 					switch error {
@@ -507,11 +479,7 @@ class Broker: KafkaType {
 	func getTopicMetadata(topics: [TopicName] = [], clientId: String, completion: @escaping (MetadataResponse) -> Void) {
 		let topicMetadataRequest = TopicMetadataRequest(topics: topics)
 		
-		connect().write(topicMetadataRequest) { data in
-			var mutableData = data
-			
-			completion(MetadataResponse(data: &mutableData))
-		}
+		connect().write(topicMetadataRequest, callback: completion)
 	}
     
     private func getReadQueue(_ topic: String, partition: Int32) -> DispatchQueue {

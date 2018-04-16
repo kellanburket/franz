@@ -8,8 +8,6 @@
 
 import Foundation
 
-typealias RequestCallback = (Data) -> Void
-
 enum ConnectionError: Error {
     case unableToOpenConnection
     case invalidIpAddress
@@ -82,7 +80,7 @@ class Connection: NSObject, StreamDelegate {
         return ApiVersion.defaultVersion
     }
 
-    private var _requestCallbacks = [Int32: RequestCallback]()
+    private var _requestCallbacks = [Int32: ((Data) -> Void)]()
     
     private var clientId: String
     
@@ -226,12 +224,15 @@ class Connection: NSObject, StreamDelegate {
 		return id
 	}
 	
-	func write<T: KafkaRequest>(_ request: T, callback: RequestCallback? = nil) {
+	func write<T: KafkaRequest>(_ request: T, callback: ((T.Response) -> Void)? = nil) {
 		
         //print("Write Block Added")
 		let corId = makeCorrelationId()
         if let requestCallback = callback {
-            _requestCallbacks[corId] = requestCallback
+			_requestCallbacks[corId] = { data in
+				var mutableData = data
+				requestCallback(T.Response.init(data: &mutableData))
+			}
         }
 		let dispatchBlock = DispatchWorkItem(qos: .unspecified, flags: []) {
 			if let stream = self.outputStream {
@@ -261,14 +262,11 @@ class Connection: NSObject, StreamDelegate {
 	func writeBlocking<T: KafkaRequest>(request: T) -> T.Response {
 		let semaphore = DispatchSemaphore(value: 0)
 		var response: T.Response!
-		print("writing \(request)")
-		write(request) { data in
-			var mutableData = data
-			response = T.Response.init(data: &mutableData)
+		write(request) { r in
+			response = r
 			semaphore.signal()
 		}
 		semaphore.wait()
-		print("received \(response)")
 		return response
 	}
 	
