@@ -80,7 +80,7 @@ public class Consumer {
 					return copy
 				})
 				
-				self.cancelToken = broker.poll(topics: ids, fromStart: fromStart, groupId: membership.group.id, clientId: "test", replicaId: ReplicaId.none, callback: { topic, partitionId, offset, messages in
+				self.cancelToken = broker.poll(topics: ids, fromStart: fromStart, groupId: membership.group.id, clientId: self.cluster.clientId, replicaId: ReplicaId.none, callback: { topic, partitionId, offset, messages in
 						messages.forEach(handler)
 						
 						if var topicOffsets = self.offsetsToCommit[topic] {

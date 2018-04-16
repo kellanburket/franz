@@ -8,8 +8,6 @@
 
 import Foundation
 
-import Foundation
-
 class ProduceRequest: KafkaRequest {
     init(values: [String:[Int32:MessageSet]]) {
 

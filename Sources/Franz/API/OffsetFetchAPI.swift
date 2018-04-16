@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 class OffsetFetchRequest: KafkaRequest {
     convenience init(
         consumerGroupId: String,

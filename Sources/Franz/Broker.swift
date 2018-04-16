@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Csasl
 
 enum BrokerError: Error {
     case noConnection
@@ -14,6 +15,7 @@ enum BrokerError: Error {
 	case fetchFailed
 	case kafkaError(KafkaErrorCode)
 }
+
 //
 //protocol BrokerProtocol {
 //
@@ -62,61 +64,30 @@ class Broker: KafkaType {
     var groupMembership = [String: GroupMembership]()
 
     var nodeId: Int32
-    var host: String
-    var port: Int32
-    
-    private var _readQueues = [Int32: DispatchQueue]()
-    
-	private lazy var _metadataReadQueue: DispatchQueue = {
-        return DispatchQueue(
-            label: "metadata.read.stream.franz",
-            attributes: []
-        )
-    }()
+    let host: String
 
-    private lazy var _metadataWriteQueue: DispatchQueue = {
-        return DispatchQueue(
-            label: "metadata.write.stream.franz",
-            attributes: []
-        )
-    }()
-
-    private lazy var _adminReadQueue: DispatchQueue = {
-        return DispatchQueue(
-            label: "admin.read.stream.franz",
-            attributes: []
-        )
-    }()
-
-    private lazy var _groupCoordinationQueue: DispatchQueue = {
-        return DispatchQueue(
-            label: "group.read.stream.franz",
-            attributes: []
-        )
-    }()
-
+	private let connectionConfig: Connection.Config
     private var _connection: Connection?
     
     var ipv4: String {
-        return host
+        return connectionConfig.ipv4
     }
+	var port: Int32 {
+		return connectionConfig.port
+	}
     
-    init(ipv4: String, port: Int32) {
-        host = ipv4
-        self.port = port
+	init(connectionConfig: Connection.Config, host: String? = nil) {
+		self.connectionConfig = connectionConfig
+		self.host = host ?? connectionConfig.ipv4
         nodeId = -1
     }
-    
-    init(nodeId: Int32, host: String, port: Int32) {
-        self.nodeId = nodeId
-        self.host = host
-        self.port = port
-    }
-    
+	
 	required init(data: inout Data) {
         nodeId = Int32(data: &data)
         host = String(data: &data)
-        port = Int32(data: &data)
+        let port = Int32(data: &data)
+		//TODO: ??? get connection config in
+		connectionConfig = Connection.Config(ipv4: host, port: port, clientId: "asdf", authentication: .none)
     }
     
     var dataLength: Int {
@@ -127,14 +98,9 @@ class Broker: KafkaType {
         return nodeId.data + host.data + port.data
     }
 
-    func connect(_ clientId: String) -> Connection {
+    func connect() -> Connection {
         if _connection == nil {
-            _connection = KafkaConnection(
-                ipv4: ipv4,
-                port: port,
-                broker: self,
-                clientId: clientId
-            )
+			_connection = Connection(config: connectionConfig)
         }
         
         return _connection!
@@ -173,7 +139,7 @@ class Broker: KafkaType {
 		
 		let request = FetchRequest(topics: topics, replicaId: replicaId)
 		
-        connect(clientId).write(request) { data in
+        connect().write(request) { data in
 			//Check to see if we should stop polling
 			if let token = cancelToken, token.shouldCancel {
 				return
@@ -225,7 +191,7 @@ class Broker: KafkaType {
 		
 		let request = FetchRequest(topics: topics, replicaId: replicaId)
         
-        connect(clientId).write(request) { data in
+        connect().write(request) { data in
             readQueue.async {
                 var mutableData = data
                 let response = FetchResponse(data: &mutableData)
@@ -248,7 +214,7 @@ class Broker: KafkaType {
     
     func send(_ topic: TopicName, partition: PartitionId, batch: MessageSet, clientId: String) {
         let request = ProduceRequest(values: [topic: [partition: batch]])
-		connect(clientId).write(request)
+		connect().write(request)
     }
 	
 	func commitGroupOffset(groupId: String, topics: [TopicName: [PartitionId: (Offset, OffsetMetadata?)]], clientId: String, callback: (() -> Void)? = nil) {
@@ -256,7 +222,7 @@ class Broker: KafkaType {
 		
 		let request = OffsetCommitRequest(consumerGroupId: groupId, generationId: groupMembership.group.generationId, consumerId: groupMembership.memberId, topics: topics)
 		
-		connect(clientId).write(request) { data in
+		connect().write(request) { data in
 			self._metadataReadQueue.async {
 				var mutableData = data
 				let response = OffsetCommitResponse(data: &mutableData)
@@ -285,7 +251,7 @@ class Broker: KafkaType {
                 topics: topics
             )
 
-            connect(clientId).write(request) { data in
+            connect().write(request) { data in
                 self._metadataReadQueue.async {
                     var mutableData = data
                     let response = OffsetFetchResponse(data: &mutableData)
@@ -308,7 +274,7 @@ class Broker: KafkaType {
 
 	func getOffsets(for topics: [TopicName: [PartitionId]], clientId: String, time: TimeOffset = .latest, callback: @escaping ([TopicName: [PartitionId: [Offset]]]) -> ()) {
 		let request = OffsetRequest(topics: topics, time: time)
-        connect(clientId).write(request) { data in
+        connect().write(request) { data in
             self._metadataReadQueue.async {
                 var mutableData = data
                 let response = OffsetResponse(data: &mutableData)
@@ -334,7 +300,7 @@ class Broker: KafkaType {
 	
 	func getGroupCoordinator(groupId: String, clientId: String, callback: @escaping (GroupCoordinatorResponse) -> Void) {
 		let request = GroupCoordinatorRequest(id: groupId)
-		connect(clientId).write(request) { data in
+		connect().write(request) { data in
 			var mutableData = data
 			callback(GroupCoordinatorResponse(data: &mutableData))
 		}
@@ -343,7 +309,7 @@ class Broker: KafkaType {
     func listGroups(clientId: String, callback: ((String, String) -> ())? = nil) {
         let listGroupsRequest = ListGroupsRequest()
 
-        connect(clientId).write(listGroupsRequest) { data in
+        connect().write(listGroupsRequest) { data in
             self._metadataReadQueue.async {
                 var mutableData = data
                 let response = ListGroupsResponse(data: &mutableData)
@@ -370,7 +336,7 @@ class Broker: KafkaType {
         callback: ((String, GroupState) -> ())? = nil
     ) {
         let describeGroupRequest = DescribeGroupsRequest(id: groupId)
-        connect(clientId).write(describeGroupRequest) { data in
+        connect().write(describeGroupRequest) { data in
             self._metadataReadQueue.async {
                 var mutableData = data
                 let response = DescribeGroupsResponse(data: &mutableData)
@@ -399,7 +365,7 @@ class Broker: KafkaType {
             metadata: [AssignmentStrategy.RoundRobin: metadata]
         )
         
-        connect(clientId).write(request) { data in
+        connect().write(request) { data in
             self._groupCoordinationQueue.async {
                 var mutableData = data
                 let response = JoinGroupResponse(data: &mutableData)
@@ -459,7 +425,7 @@ class Broker: KafkaType {
             groupAssignment: [memberId: groupAssignmentMetadata]
 		)
 
-        connect(clientId).write(request) { data in
+        connect().write(request) { data in
             self._groupCoordinationQueue.async {
                 var mutableData = data
                 let response = SyncGroupResponse<GroupMemberAssignment>(data: &mutableData)
@@ -486,7 +452,7 @@ class Broker: KafkaType {
     ) {
         let request = LeaveGroupRequest(groupId: groupId, memberId: memberId)
         
-        connect(clientId).write(request) { data in
+        connect().write(request) { data in
             self._groupCoordinationQueue.async {
                 var mutableData = data
                 let response = LeaveGroupResponse(data: &mutableData)
@@ -518,7 +484,7 @@ class Broker: KafkaType {
             memberId: memberId
         )
         
-        connect(clientId).write(request) { data in
+        connect().write(request) { data in
             self._groupCoordinationQueue.async {
                 var mutableData = data
                 let response = HeartbeatResponse(data: &mutableData)
@@ -542,7 +508,7 @@ class Broker: KafkaType {
 	func getTopicMetadata(topics: [TopicName] = [], clientId: String, completion: @escaping (MetadataResponse) -> Void) {
 		let topicMetadataRequest = TopicMetadataRequest(topics: topics)
 		
-		connect(clientId).write(topicMetadataRequest) { data in
+		connect().write(topicMetadataRequest) { data in
 			var mutableData = data
 			
 			completion(MetadataResponse(data: &mutableData))
@@ -563,4 +529,37 @@ class Broker: KafkaType {
         
         return readQueue
     }
+	
+	//MARK: Queues
+	
+	private var _readQueues = [Int32: DispatchQueue]()
+	
+	private lazy var _metadataReadQueue: DispatchQueue = {
+		return DispatchQueue(
+			label: "metadata.read.stream.franz",
+			attributes: []
+		)
+	}()
+	
+	private lazy var _metadataWriteQueue: DispatchQueue = {
+		return DispatchQueue(
+			label: "metadata.write.stream.franz",
+			attributes: []
+		)
+	}()
+	
+	private lazy var _adminReadQueue: DispatchQueue = {
+		return DispatchQueue(
+			label: "admin.read.stream.franz",
+			attributes: []
+		)
+	}()
+	
+	private lazy var _groupCoordinationQueue: DispatchQueue = {
+		return DispatchQueue(
+			label: "group.read.stream.franz",
+			attributes: []
+		)
+	}()
+	
 }

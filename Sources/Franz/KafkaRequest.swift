@@ -8,6 +8,51 @@
 
 import Foundation
 
+protocol AssociatedResponse {
+	associatedtype Response: KafkaResponse
+}
+
+protocol TestKafkaProtocol {
+	var apiKey: Int16 { get }
+	var apiVersion: Int16 { get }
+	var value: KafkaType? { get }
+}
+
+var correlationId: Int32 = 0
+
+extension TestKafkaProtocol {
+	
+	func data(correlationId: Int32, clientId: String) -> Data {
+		let size: Int32 = [apiKey, apiVersion, correlationId, clientId, value]
+			.compactMap { $0?.dataLength }
+			.map(Int32.init)
+			.reduce(Int32(Int32(0).dataLength), +)
+		
+		return [size, apiKey, apiVersion, correlationId, clientId, value]
+			.compactMap { $0?.data }
+			.reduce(Data(), +)
+	}
+	
+}
+
+struct MyTest: TestKafkaProtocol {
+	var apiVersion: Int16 {
+		return 2
+	}
+	
+	var value: KafkaType? {
+		return TopicalFetchMessage(value: "asdf", partitions: [:])
+	}
+	
+	var apiKey: Int16 {
+		return 3
+	}
+	
+	init(skip: Bool) {
+		print(skip)
+	}
+}
+
 class KafkaRequest {
 
     static private var _correlationIdIndex: Int32 = 0

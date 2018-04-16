@@ -74,18 +74,7 @@ extension Stream.Status {
 	}
 }
 
-internal protocol Connection {
-	init(ipv4: String, port: Int32, broker: Broker, clientId: String)
-	func write(_ request: KafkaRequest, callback: RequestCallback?)
-}
-
-extension Connection {
-	func write(_ request: KafkaRequest, callback: RequestCallback? = nil) {
-		write(request, callback: callback)
-	}
-}
-
-class KafkaConnection: NSObject, Connection, StreamDelegate {
+class Connection: NSObject, StreamDelegate {
     
     private var ipv4: String
 
@@ -94,7 +83,6 @@ class KafkaConnection: NSObject, Connection, StreamDelegate {
     }
 
     private var _requestCallbacks = [Int32: RequestCallback]()
-    private var _broker: Broker
     
     private var clientId: String
     
@@ -112,12 +100,18 @@ class KafkaConnection: NSObject, Connection, StreamDelegate {
     private var _inputStreamQueue: DispatchQueue
     private var _outputStreamQueue: DispatchQueue
     private var _writeRequestBlocks = [()->()]()
+	
+	struct Config {
+		let ipv4: String
+		let port: Int32
+		let clientId: String
+		let authentication: Cluster.Authentication
+	}
     
-	required init(ipv4: String, port: Int32, broker: Broker, clientId: String) {
-        self.ipv4 = ipv4
-        self.clientId = clientId
-        self._broker = broker
-        self.port = port
+	required init(config: Config) {
+        self.ipv4 = config.ipv4
+        self.clientId = config.clientId
+        self.port = config.port
 
         _inputStreamQueue = DispatchQueue(
             label: "\(self.ipv4).\(self.port).input.stream.franz", attributes: []
@@ -158,17 +152,28 @@ class KafkaConnection: NSObject, Connection, StreamDelegate {
 			
 			RunLoop.current.run()
 		}
-
+		
+		// authenticate
+		if let mechanism = config.authentication.mechanism {
+			let handshakeRequest = SaslHandshakeRequest(mechanism: mechanism.kafkaLabel)
+			let response = writeBlocking(request: handshakeRequest)
+			
+			guard response.errorCode == 0 else {
+				print("Mechanism not supported, try: \(response.enabledMechanisms)")
+				return
+			}
+			
+			if !mechanism.authenticate(connection: self) {
+				fatalError("Failed authentication")
+			}
+		}
     }
     
     private func read(_ timeout: Double = 3000) {
-        //print("Read Block Added")
         _inputStreamQueue.async {
-            //print("\tBeginning Input Stream Read")
             if let inputStream = self.inputStream {
                 do {
                     let (size, correlationId) = try self.getMessageMetadata()
-                    //print("\t\tReading Bytes")
                     var bytes = [UInt8]()
                     let startTime = Date().timeIntervalSince1970
                     while bytes.count < Int(size) {
@@ -176,8 +181,6 @@ class KafkaConnection: NSObject, Connection, StreamDelegate {
                         if inputStream.hasBytesAvailable {
                             var buffer = [UInt8](repeating: 0, count: Int(size))
                             let bytesInBuffer = inputStream.read(&buffer, maxLength: Int(size))
-                            //print("\t\tReading Bytes")
-                            //print("BUFFER(\(size)): \(buffer)")
                             bytes += buffer.prefix(upTo: Int(bytesInBuffer))
                         }
                         
@@ -223,20 +226,13 @@ class KafkaConnection: NSObject, Connection, StreamDelegate {
             _requestCallbacks[request.correlationId] = requestCallback
         }
 		let dispatchBlock = DispatchWorkItem(qos: .unspecified, flags: []) {
-			//print("\tBeginning Output Stream Write")
 			if let stream = self.outputStream {
 				if stream.hasSpaceAvailable {
 					let data = request.data
-					//print("Data: \(data)")
 					
 					data.withUnsafeBytes { (bytes: UnsafePointer<UInt8>) -> Void in
 						stream.write(bytes, maxLength: data.count)
 					}
-//					let bytesPtr = (data as NSData).bytes
-//					let bytes = bytesPtr.assumingMemoryBound(to: UInt8.self)
-//					//print("Writing to Output Stream: \(data.length)")
-//					stream.write(bytes, maxLength: data.count)
-					//print("\tReleasing Output Stream Write(\(data.length))")
 				} else {
 					print("No Space Available for Writing")
 				}
@@ -253,7 +249,21 @@ class KafkaConnection: NSObject, Connection, StreamDelegate {
             _writeRequestBlocks.append(dispatchBlock.perform)
         }
     }
-    
+	
+	func writeBlocking<T: KafkaRequest & AssociatedResponse>(request: T) -> T.Response {
+		let semaphore = DispatchSemaphore(value: 0)
+		var response: T.Response!
+		print("writing \(request)")
+		write(request) { data in
+			var mutableData = data
+			response = T.Response.init(data: &mutableData)
+			semaphore.signal()
+		}
+		semaphore.wait()
+		print("received \(response)")
+		return response
+	}
+	
     private func getMessageMetadata() throws -> (Int32, Int32) {
         if let activeInputStream = inputStream {
             let length = responseLengthSize + responseCorrelationIdSize
@@ -315,12 +325,10 @@ class KafkaConnection: NSObject, Connection, StreamDelegate {
             }
         } else if let outputStream = aStream as? OutputStream {
             let status = outputStream.streamStatus
-            //print("OUTPUT STREAM STATUS: \(status.description) => \(eventCode.description)")
             switch status {
             case .open:
                 switch eventCode {
                 case Stream.Event.hasSpaceAvailable:
-                    //print("Requests: \(_writeRequestBlocks.count)")
                     if _writeRequestBlocks.count > 0 {
                         let block = _writeRequestBlocks.removeFirst()
                         _outputStreamQueue.async(execute: block)

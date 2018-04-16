@@ -261,6 +261,8 @@ enum ApiKey: Int16 {
     case syncGroupRequest = 14
     case describeGroupsRequest = 15
     case listGroupsRequest = 16
+	case saslHandshake = 17
+	case saslAuthenticate = 36
 }
 
 

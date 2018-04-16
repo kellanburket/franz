@@ -28,17 +28,9 @@ A cluster that represents a connection to multiple brokers.
 */
 open class Cluster {
 
-    private var _brokers = [String: Broker]()
-    private var _batches = [String: [Int32: [MessageSetItem]]]()
-    private var _clientId: String
-    private var _nodeId: ReplicaId
-    
-    /*
-        User-defined Client ID set at start up.
-    */
-    open var clientId: String {
-        return _clientId
-    }
+    private var batches = [String: [Int32: [MessageSetItem]]]()
+    let clientId: String
+	let nodeId: ReplicaId
 
     lazy var dispatchQueue: DispatchQueue = {
         return DispatchQueue(
@@ -48,6 +40,7 @@ open class Cluster {
     }()
     
     ///Used for swapping in fake brokers during testing
+	private var _brokers = [String: Broker]()
     internal var brokers: [Broker] {
         get {
             return Array(_brokers.values)
@@ -66,18 +59,36 @@ open class Cluster {
         - Parameter clientId: The client ID to represent you
         - Parameter nodeId:
     */
-    public init(brokers: [(String, Int32)], clientId: String, nodeId: Int32? = nil) {
+	public init(brokers: [(String, Int32)], clientId: String, nodeId: Int32? = nil, authentication: Authentication = .none) {
         for (ipv4, port) in brokers {
-            self._brokers["\(ipv4):\(port)"] = Broker(ipv4: ipv4, port: port)
+			let connectionConfig = Connection.Config(ipv4: ipv4, port: port, clientId: clientId, authentication: authentication)
+			self._brokers["\(ipv4):\(port)"] = Broker(connectionConfig: connectionConfig)
         }
-        self._clientId = clientId
+        self.clientId = clientId
 
         if let replicaId = nodeId {
-            self._nodeId = ReplicaId.node(id: replicaId)
+            self.nodeId = ReplicaId.node(id: replicaId)
         } else {
-            self._nodeId = ReplicaId.none
+            self.nodeId = ReplicaId.none
         }
+		
+		self.authentication = authentication
     }
+	
+	public enum Authentication {
+		case none
+		case plain(username: String, password: String)
+		
+		var mechanism: SaslMechanism? {
+			switch self {
+			case .plain(let username, let password):
+				return PlainMechanism(username: username, password: password)
+			default:
+				return nil
+			}
+		}
+	}
+	let authentication: Authentication
     
     /**
         Send an unbatched message to a topic-partition
@@ -109,17 +120,17 @@ open class Cluster {
      */
     open func batchMessage(_ topic: String, partition: Int32, message: String) {
         let messageSetItem = MessageSetItem(value: message)
-        if var topicPartitions = _batches[topic] {
+        if var topicPartitions = batches[topic] {
             if var topicPartition = topicPartitions[partition] {
                 topicPartition.append(messageSetItem)
                 topicPartitions[partition] = topicPartition
-                _batches[topic] = topicPartitions
+                batches[topic] = topicPartitions
             } else {
                topicPartitions[partition] = [messageSetItem]
-                _batches[topic] = topicPartitions
+                batches[topic] = topicPartitions
             }
         } else {
-            _batches[topic] = [partition: [messageSetItem]]
+            batches[topic] = [partition: [messageSetItem]]
         }
     }
 
@@ -132,7 +143,7 @@ open class Cluster {
         - Throws ClusterError.NoBatchForTopicPartition
      */
     open func sendBatch(_ topic: String, partition: Int32) throws {
-        if let topicBatch = _batches[topic], let partitionBatch = topicBatch[partition] {
+        if let topicBatch = batches[topic], let partitionBatch = topicBatch[partition] {
             findTopicLeader(topic, partition: partition, { leader in
                 leader.send(
                     topic,
@@ -140,7 +151,7 @@ open class Cluster {
                     batch: MessageSet(values: partitionBatch),
                     clientId: self.clientId
                 )
-                self._batches[topic] = nil
+                self.batches[topic] = nil
             }, { error in
                 print(error)
             })
@@ -210,7 +221,7 @@ open class Cluster {
                 partition: partition,
                 offset: offset,
                 clientId: self.clientId,
-                replicaId: self._nodeId
+                replicaId: self.nodeId
             ) { messages in
                 for message in messages {
                     callback(message)
