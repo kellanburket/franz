@@ -75,11 +75,19 @@ open class Cluster {
 		self.authentication = authentication
     }
 	
+	/// The type of authentication to use when connecting to each broker.
 	public enum Authentication {
+		
+		/// Don't use any authentication
 		case none
+		
+		/// Use PLAIN authentication.
+		/// - parameter username: The username
+		/// - parameter password: The password
+		/// This is currently sent over plain text (PLAINTEXT)
 		case plain(username: String, password: String)
 		
-		var mechanism: SaslMechanism? {
+		internal var mechanism: SaslMechanism? {
 			switch self {
 			case .plain(let username, let password):
 				return PlainMechanism(username: username, password: password)
