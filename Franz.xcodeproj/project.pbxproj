@@ -85,6 +85,7 @@
 		A3CE7D941F5A004F00FBB198 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A3EEB06C2084499300F90979 /* SaslMechanism.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaslMechanism.swift; sourceTree = "<group>"; };
 		A3EEB06F208449FA00F90979 /* PlainMechanism.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlainMechanism.swift; sourceTree = "<group>"; };
+		A3F2757920884A5900F2320B /* kafka_server_jaas.conf */ = {isa = PBXFileReference; lastKnownFileType = text; path = kafka_server_jaas.conf; sourceTree = "<group>"; };
 		OBJ_10 /* Broker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Broker.swift; sourceTree = "<group>"; };
 		OBJ_11 /* Cluster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cluster.swift; sourceTree = "<group>"; };
 		OBJ_12 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
@@ -180,6 +181,7 @@
 		A3CE7D911F5A004F00FBB198 /* DockerTests */ = {
 			isa = PBXGroup;
 			children = (
+				A3F2757920884A5900F2320B /* kafka_server_jaas.conf */,
 				A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */,
 				A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */,
 				A3CE7D941F5A004F00FBB198 /* Info.plist */,
