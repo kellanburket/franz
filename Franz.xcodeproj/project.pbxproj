@@ -45,7 +45,6 @@
 		OBJ_77 /* Partition.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_30 /* Partition.swift */; };
 		OBJ_78 /* ProduceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_31 /* ProduceAPI.swift */; };
 		OBJ_79 /* Topic.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_32 /* Topic.swift */; };
-		OBJ_80 /* Variables.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_33 /* Variables.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,7 +85,7 @@
 		A3EEB06C2084499300F90979 /* SaslMechanism.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaslMechanism.swift; sourceTree = "<group>"; };
 		A3EEB06F208449FA00F90979 /* PlainMechanism.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlainMechanism.swift; sourceTree = "<group>"; };
 		A3F2757920884A5900F2320B /* kafka_server_jaas.conf */ = {isa = PBXFileReference; lastKnownFileType = text; path = kafka_server_jaas.conf; sourceTree = "<group>"; };
-		OBJ_10 /* Broker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Broker.swift; sourceTree = "<group>"; };
+		OBJ_10 /* Broker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Broker.swift; sourceTree = "<group>"; usesTabs = 1; };
 		OBJ_11 /* Cluster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cluster.swift; sourceTree = "<group>"; };
 		OBJ_12 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
 		OBJ_15 /* CRC32.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRC32.swift; sourceTree = "<group>"; };
@@ -106,7 +105,6 @@
 		OBJ_30 /* Partition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Partition.swift; sourceTree = "<group>"; };
 		OBJ_31 /* ProduceAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProduceAPI.swift; sourceTree = "<group>"; };
 		OBJ_32 /* Topic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Topic.swift; sourceTree = "<group>"; };
-		OBJ_33 /* Variables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Variables.swift; sourceTree = "<group>"; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		OBJ_9 /* AdminAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminAPI.swift; sourceTree = "<group>"; };
 		"franz::franz::Product" /* Franz.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Franz.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -274,7 +272,6 @@
 				OBJ_25 /* MessageSet.swift */,
 				OBJ_30 /* Partition.swift */,
 				OBJ_32 /* Topic.swift */,
-				OBJ_33 /* Variables.swift */,
 				A386B8081F196A730086BFF2 /* Assignment.swift */,
 				A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */,
 			);
@@ -441,7 +438,6 @@
 				A3EEB06E2084499700F90979 /* SaslMechanism.swift in Sources */,
 				OBJ_78 /* ProduceAPI.swift in Sources */,
 				OBJ_79 /* Topic.swift in Sources */,
-				OBJ_80 /* Variables.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -350,20 +350,22 @@ open class Cluster {
     */
     public func getConsumer(topics: [TopicName], groupId: String) -> Consumer {
 		let consumer = Consumer(cluster: self, groupId: groupId)
-		DispatchQueue(label: "FranzConsumerGetQueue").async {
+		DispatchQueue(label: "FranzConsumerGet").async {
 			self.joinGroup(id: groupId, topics: topics, callback: { broker, membership in
 				consumer.broker = broker
 				consumer.membership = membership
 				membership.group.getState { groupId, state in
-					if state == GroupState.AwaitingSync {
+					switch state {
+					case .AwaitingSync:
 						self.assignRoundRobin(members: membership.members.map { $0.memberId }, topics: topics) { assignments in
 							membership.sync(assignments[membership.memberId]!, data: Data()) {
 								consumer.joinedGroupSemaphore.signal()
 							}
 						}
-					}
-					if state == .Empty {
-						print("Group shouldn't be empty")
+					case .Stable:
+						consumer.joinedGroupSemaphore.signal()
+					default:
+						fatalError(state.rawValue)
 					}
 				}
 			}, error: { error in

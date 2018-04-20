@@ -22,7 +22,7 @@ struct PlainMechanism: SaslMechanism {
 			fatalError("Plain authentication failed, make sure username and password are UTF8 encoded")
 		}
 		let authRequest = SaslAuthenticateRequest(saslAuthBytes: data)
-		let response = connection.writeBlocking(request: authRequest)
+		let response = connection.writeBlocking(authRequest)
 		return response.errorCode == 0
 	}
 }

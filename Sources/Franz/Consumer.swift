@@ -21,22 +21,23 @@ public class Consumer {
 	internal var membership: GroupMembership?
 	internal let joinedGroupSemaphore = DispatchSemaphore(value: 0)
 	
+	var groupOffsetsTimer: Timer!
+	var heartbeatTimer: Timer!
+	
 	internal init(cluster: Cluster, groupId: String) {
 		self.cluster = cluster
 		
 		if #available(OSX 10.12, iOS 10, tvOS 10, watchOS 3, *) {
-			Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in self.commitGroupoffsets() }
-			Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in
-				self.sendHeartbeat()
-			}
+			groupOffsetsTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in self.commitGroupoffsets() }
+			heartbeatTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in self.sendHeartbeat() }
 		} else {
 			// Fallback on earlier versions
-			Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(commitGroupoffsets), userInfo: nil, repeats: true)
-			Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(sendHeartbeat), userInfo: nil, repeats: true)
+			groupOffsetsTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(commitGroupoffsets), userInfo: nil, repeats: true)
+			heartbeatTimer =  Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(sendHeartbeat), userInfo: nil, repeats: true)
 		}
 	}
 	
-	private let listenQueue = DispatchQueue(label: "FranzConsumerListenQueue", attributes: .concurrent)
+	private let listenQueue = DispatchQueue(label: "FranzConsumerListenQueue")
 	
 	var offsetsToCommit = [TopicName: [PartitionId: (Offset, OffsetMetadata?)]]()
 	@objc private func commitGroupoffsets() {
@@ -105,5 +106,7 @@ public class Consumer {
 	public func stop() {
 		cancelToken?.cancel()
 		listening = false
+		groupOffsetsTimer.invalidate()
+		heartbeatTimer.invalidate()
 	}
 }

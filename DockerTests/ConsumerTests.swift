@@ -13,7 +13,7 @@ class ConsumerTests: DockerTestBase {
 	var cluster: Cluster!
 	
 	override func setUp() {
-		cluster = Cluster(brokers: [("localhost", 9092)], clientId: "testClient")
+		cluster = Cluster(brokers: [(ConsumerTests.host, ConsumerTests.port)], clientId: "testClient")
 	}
 	
 	func testReceive() {

@@ -132,7 +132,7 @@ class Connection: NSObject, StreamDelegate {
         inputStream = readStream?.takeUnretainedValue()
         outputStream = writeStream?.takeUnretainedValue()
 		
-		DispatchQueue(label: "FranzConnectionQueue").async {
+		DispatchQueue(label: "FranzConnection").async {
 			self.inputStream?.delegate = self
 			self.inputStream?.schedule(
 				in: RunLoop.current,
@@ -154,7 +154,7 @@ class Connection: NSObject, StreamDelegate {
 		// authenticate
 		if let mechanism = config.authentication.mechanism {
 			let handshakeRequest = SaslHandshakeRequest(mechanism: mechanism.kafkaLabel)
-			let response = writeBlocking(request: handshakeRequest)
+			let response = writeBlocking(handshakeRequest)
 			
 			guard response.errorCode == 0 else {
 				print("Mechanism not supported, try: \(response.enabledMechanisms)")
@@ -219,21 +219,21 @@ class Connection: NSObject, StreamDelegate {
 	
 	private static var correlationId: Int32 = 0
 	func makeCorrelationId() -> Int32 {
-		let id = Connection.correlationId
-		Connection.correlationId += 1
+		var id: Int32!
+		DispatchQueue(label: "FranzMakeCorrelationId").sync {
+			id = Connection.correlationId
+			Connection.correlationId += 1
+		}
 		return id
 	}
 	
-	func write<T: KafkaRequest>(_ request: T, callback: ((T.Response) -> Void)? = nil) {
-		
-        //print("Write Block Added")
+	func write<T: KafkaRequest>(_ request: T, callback: @escaping ((T.Response) -> Void)) {
+
 		let corId = makeCorrelationId()
-        if let requestCallback = callback {
-			_requestCallbacks[corId] = { data in
-				var mutableData = data
-				requestCallback(T.Response.init(data: &mutableData))
-			}
-        }
+		_requestCallbacks[corId] = { data in
+			var mutableData = data
+			callback(T.Response.init(data: &mutableData))
+		}
 		let dispatchBlock = DispatchWorkItem(qos: .unspecified, flags: []) {
 			if let stream = self.outputStream {
 				if stream.hasSpaceAvailable {
@@ -248,18 +248,18 @@ class Connection: NSObject, StreamDelegate {
 			}
 		}
 		
-        if let outputStream = outputStream {
-            if outputStream.hasSpaceAvailable {
-                _outputStreamQueue.async(execute: dispatchBlock)
-            } else {
-                _writeRequestBlocks.append(dispatchBlock.perform)
-            }
-        } else {
-            _writeRequestBlocks.append(dispatchBlock.perform)
-        }
+		if let outputStream = outputStream {
+			if outputStream.hasSpaceAvailable {
+				_outputStreamQueue.async(execute: dispatchBlock)
+			} else {
+				_writeRequestBlocks.append(dispatchBlock.perform)
+			}
+		} else {
+			_writeRequestBlocks.append(dispatchBlock.perform)
+		}
     }
 	
-	func writeBlocking<T: KafkaRequest>(request: T) -> T.Response {
+	func writeBlocking<T: KafkaRequest>(_ request: T) -> T.Response {
 		let semaphore = DispatchSemaphore(value: 0)
 		var response: T.Response!
 		write(request) { r in
@@ -354,9 +354,5 @@ class Connection: NSObject, StreamDelegate {
                 return
             }
         }
-    }
-    
-    deinit {
-        print("Deinitializing.")
     }
 }
