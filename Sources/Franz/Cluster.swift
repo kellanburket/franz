@@ -362,7 +362,7 @@ open class Cluster {
 								consumer.joinedGroupSemaphore.signal()
 							}
 						}
-					case .Stable:
+					case .Stable, .CompletingRebalance:
 						consumer.joinedGroupSemaphore.signal()
 					default:
 						fatalError(state.rawValue)

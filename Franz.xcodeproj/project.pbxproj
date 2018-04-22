@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		A314CB8D1F08B457008D61A6 /* CRCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A314CB8C1F08B457008D61A6 /* CRCTests.swift */; };
+		A317D929208AB047008427B9 /* SaslTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A317D927208AB042008427B9 /* SaslTests.swift */; };
+		A317D92B208AB5B7008427B9 /* APIVersionsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A317D92A208AB5B7008427B9 /* APIVersionsAPI.swift */; };
 		A32A62E11F43B733006F9111 /* ArrayProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A32A62E01F43B733006F9111 /* ArrayProtocolTests.swift */; };
 		A3426BA51F25267500579CF8 /* AssignmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3426BA41F25267500579CF8 /* AssignmentTests.swift */; };
 		A34EBFC02083CDDC00A9D0AA /* SaslApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = A34EBFBF2083CDDC00A9D0AA /* SaslApi.swift */; };
@@ -17,6 +19,7 @@
 		A386B8091F196A730086BFF2 /* Assignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A386B8081F196A730086BFF2 /* Assignment.swift */; };
 		A38E69A01F391BCB0044D3D3 /* OldConsumers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */; };
 		A38E69A11F391C350044D3D3 /* Consumer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38E699D1F391B960044D3D3 /* Consumer.swift */; };
+		A3CCBD51208C21BD00D0912C /* kafka_server_jaas.conf in Resources */ = {isa = PBXBuildFile; fileRef = A3F2757920884A5900F2320B /* kafka_server_jaas.conf */; };
 		A3CE7D951F5A004F00FBB198 /* Franz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "franz::franz::Product" /* Franz.framework */; };
 		A3CE7D9B1F5A006100FBB198 /* ConsumerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */; };
 		A3CE7D9C1F5A006100FBB198 /* DockerTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */; };
@@ -66,12 +69,12 @@
 
 /* Begin PBXFileReference section */
 		A314CB8C1F08B457008D61A6 /* CRCTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRCTests.swift; sourceTree = "<group>"; };
+		A317D927208AB042008427B9 /* SaslTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaslTests.swift; sourceTree = "<group>"; };
+		A317D92A208AB5B7008427B9 /* APIVersionsAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIVersionsAPI.swift; sourceTree = "<group>"; };
 		A32A62E01F43B733006F9111 /* ArrayProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayProtocolTests.swift; sourceTree = "<group>"; };
 		A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = "docker-compose.yml"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		A3426BA41F25267500579CF8 /* AssignmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignmentTests.swift; sourceTree = "<group>"; };
 		A34EBFBF2083CDDC00A9D0AA /* SaslApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaslApi.swift; sourceTree = "<group>"; };
-		A34EBFC22083D5E000A9D0AA /* libsasl2.2.0.22.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsasl2.2.0.22.tbd; path = usr/lib/libsasl2.2.0.22.tbd; sourceTree = SDKROOT; };
-		A34EBFC42083D69100A9D0AA /* libsasl2.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsasl2.2.dylib; path = ../../../../usr/lib/libsasl2.2.dylib; sourceTree = "<group>"; };
 		A353E8FE1F42325F00CCB63D /* IntegerProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegerProtocolTests.swift; sourceTree = "<group>"; };
 		A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumerTests.swift; sourceTree = "<group>"; };
 		A3850F4F1F4B067800C62CF1 /* MessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTests.swift; sourceTree = "<group>"; };
@@ -151,6 +154,7 @@
 				OBJ_29 /* OffsetFetchAPI.swift */,
 				OBJ_31 /* ProduceAPI.swift */,
 				A34EBFBF2083CDDC00A9D0AA /* SaslApi.swift */,
+				A317D92A208AB5B7008427B9 /* APIVersionsAPI.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -158,8 +162,6 @@
 		A34EBFC12083D5DF00A9D0AA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				A34EBFC42083D69100A9D0AA /* libsasl2.2.dylib */,
-				A34EBFC22083D5E000A9D0AA /* libsasl2.2.0.22.tbd */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -182,6 +184,7 @@
 				A3F2757920884A5900F2320B /* kafka_server_jaas.conf */,
 				A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */,
 				A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */,
+				A317D927208AB042008427B9 /* SaslTests.swift */,
 				A3CE7D941F5A004F00FBB198 /* Info.plist */,
 				A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */,
 			);
@@ -378,6 +381,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A3CCBD51208C21BD00D0912C /* kafka_server_jaas.conf in Resources */,
 				A3CE7D9E1F5A066100FBB198 /* docker-compose.yml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -391,6 +395,7 @@
 			files = (
 				A3CE7D9C1F5A006100FBB198 /* DockerTestBase.swift in Sources */,
 				A3CE7D9B1F5A006100FBB198 /* ConsumerTests.swift in Sources */,
+				A317D929208AB047008427B9 /* SaslTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -423,6 +428,7 @@
 				A34EBFC02083CDDC00A9D0AA /* SaslApi.swift in Sources */,
 				A386B8091F196A730086BFF2 /* Assignment.swift in Sources */,
 				OBJ_67 /* GroupCoordinatorAPI.swift in Sources */,
+				A317D92B208AB5B7008427B9 /* APIVersionsAPI.swift in Sources */,
 				A38E69A01F391BCB0044D3D3 /* OldConsumers.swift in Sources */,
 				OBJ_68 /* GroupMembershipAPI.swift in Sources */,
 				OBJ_69 /* KafkaProtocol.swift in Sources */,
@@ -485,7 +491,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = DockerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = Franz.DockerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -520,7 +526,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = DockerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = Franz.DockerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";

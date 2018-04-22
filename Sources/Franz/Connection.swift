@@ -73,6 +73,11 @@ extension Stream.Status {
 }
 
 class Connection: NSObject, StreamDelegate {
+	
+	enum AuthenticationError: Error {
+		case unsupportedMechanism(supportedMechanisms: [String])
+		case authenticationFailed
+	}
     
     private var ipv4: String
 
@@ -106,7 +111,7 @@ class Connection: NSObject, StreamDelegate {
 		let authentication: Cluster.Authentication
 	}
     
-	required init(config: Config) {
+	init(config: Config) throws {
         self.ipv4 = config.ipv4
         self.clientId = config.clientId
         self.port = config.port
@@ -154,17 +159,17 @@ class Connection: NSObject, StreamDelegate {
 		// authenticate
 		if let mechanism = config.authentication.mechanism {
 			let handshakeRequest = SaslHandshakeRequest(mechanism: mechanism.kafkaLabel)
-			let response = writeBlocking(handshakeRequest)
+			let response = self.writeBlocking(handshakeRequest)
 			
 			guard response.errorCode == 0 else {
-				print("Mechanism not supported, try: \(response.enabledMechanisms)")
-				return
+				throw AuthenticationError.unsupportedMechanism(supportedMechanisms: response.enabledMechanisms)
 			}
 			
 			if !mechanism.authenticate(connection: self) {
-				fatalError("Failed authentication")
+				throw AuthenticationError.authenticationFailed
 			}
 		}
+
     }
     
     private func read(_ timeout: Double = 3000) {
@@ -305,15 +310,12 @@ class Connection: NSObject, StreamDelegate {
     }
     
     func stream(_ aStream: Stream, handle eventCode: Stream.Event) {
-        //print("STREAM STATUS: \(aStream.streamStatus.description) => \(eventCode.description)")
         if let inputStream = aStream as? InputStream {
             let status = inputStream.streamStatus
-            //print("INPUT STREAM STATUS: \(status.description) => \(eventCode.description)")
             switch status {
             case .open:
                 switch eventCode {
                 case Stream.Event.hasBytesAvailable:
-                    //print("Input Stream Has Bytes Available")
                     read()
                 case Stream.Event.openCompleted:
                     return

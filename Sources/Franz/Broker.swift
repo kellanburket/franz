@@ -99,7 +99,15 @@ class Broker: KafkaType {
 
     func connect() -> Connection {
         if _connection == nil {
-			_connection = Connection(config: connectionConfig)
+			do {
+				_connection = try Connection(config: connectionConfig)
+			} catch Connection.AuthenticationError.authenticationFailed {
+				fatalError("Authentication failed")
+			} catch Connection.AuthenticationError.unsupportedMechanism(let supportedMechanisms) {
+				fatalError("Unsupported mechanism. Supported mechanisms for this broker are \(supportedMechanisms)")
+			} catch {
+				fatalError("Failed to connect")
+			}
         }
         
         return _connection!

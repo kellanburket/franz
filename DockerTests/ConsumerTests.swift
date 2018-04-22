@@ -51,9 +51,10 @@ class ConsumerTests: DockerTestBase {
 		let expectations = (0..<64).map { expectation(description: "Receives '\($0)'") }
 		let consumer = cluster.getConsumer(topics: ["test"], groupId: "testGroup")
 		consumer.listen { message in
-			let i = Int(String(data: message.value, encoding: .utf8)!)!
-			print("Consumed \(i)")
-			expectations[i].fulfill()
+			if let i = Int(String(data: message.value, encoding: .utf8)!) {
+				print("Consumed \(i)")
+				expectations[i].fulfill()
+			}
 		}
 		
 		for i in 0..<64 {

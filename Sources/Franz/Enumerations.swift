@@ -275,6 +275,7 @@ enum ApiKey: Int16, KafkaType {
     case describeGroupsRequest = 15
     case listGroupsRequest = 16
 	case saslHandshake = 17
+	case apiVersions = 18
 	case saslAuthenticate = 36
 }
 
@@ -370,6 +371,8 @@ public enum GroupState: String {
 		Group is preparing to rebalance
 	*/
 	case PreparingRebalance = "PreparingRebalance"
+	
+	case CompletingRebalance = "CompletingRebalance"
 }
 
 /**
