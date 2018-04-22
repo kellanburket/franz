@@ -16,19 +16,20 @@ services:
       KAFKA_CREATE_TOPICS: "test:1:1,foo:1:1,bar:1:1,fromStart:1:1,stop:1:1"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-  kafkaSasl:
+  kafkaSaslPlain:
     image: wurstmeister/kafka
     ports:
       - "9093:9093"
+      - "9094:9094"
     volumes:
       - .:/conf
       - /var/run/docker.sock:/var/run/docker.sock
     working_dir: /conf
     environment:
-      CUSTOM_INIT_SCRIPT: "export KAFKA_OPTS=\"-Djava.security.auth.login.config=kafka_server_jaas.conf\""
-      KAFKA_ADVERTISED_HOST_NAME: localhost
-      KAFKA_LISTENERS: PLAINTEXT://localhost:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9093
+      KAFKA_OPTS: -Djava.security.auth.login.config=kafka_server_jaas.conf
+      KAFKA_LISTENERS: SASL_PLAINTEXT://:9093,PLAINTEXT://:9094
+      KAFKA_PORT: 9094
+      KAFKA_ADVERTISED_LISTENERS: SASL_PLAINTEXT://localhost:9093,PLAINTEXT://localhost:9094
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_CREATE_TOPICS: test:1:1
       KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
