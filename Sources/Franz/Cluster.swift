@@ -402,7 +402,8 @@ open class Cluster {
                         
                         if topicObj.error == .leaderNotAvailable {
 							let retryTopics = response.topics.filter { key, val in val.error == .leaderNotAvailable }.compactMap { $1.name }
-                            sleep(1)
+							print("Leader not available, trying to find leader again in 1 second")
+                            Thread.sleep(forTimeInterval: 1)
                             broker.getTopicMetadata(topics: retryTopics, clientId: self.clientId, completion: handleGetTopicMetadata)
                             return
                         }

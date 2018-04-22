@@ -228,15 +228,21 @@ class Broker: KafkaType {
 			self._metadataReadQueue.async {
 				for responseTopic in response.topics {
 					for responsePartition in responseTopic.partitions {
-						if let error = responsePartition.error {
-							if error.code == 0 {
-								callback?()
+						guard let error = responsePartition.error else {
+							print("Unable to parse error")
+							return
+						}
+						switch error {
+						case .noError:
+							callback?()
+						case .rebalanceInProgressCode:
+							print("Rebalance in progress, retrying offset commit after 1 second")
+							self._metadataReadQueue.asyncAfter(deadline: .now() + 1) {
+								self.commitGroupOffset(groupId: groupId, topics: topics, clientId: clientId)
 							}
-							else {
-								print("Error with offset commit \(error)")
-							}
-						} else {
-							print("Unable to parse error.")
+							return
+						default:
+							print("Error with offset commit \(error)")
 						}
 					}
 				}
@@ -473,8 +479,6 @@ class Broker: KafkaType {
                     switch error {
                     case .noError:
                         callback?()
-                        //TODO: rejoin the group
-                    //case .rebalanceInProgressCode:
                     default:
                         print("ERROR: \(error.description)")
                     }

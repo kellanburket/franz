@@ -51,7 +51,8 @@ class ConsumerTests: DockerTestBase {
 		let expectations = (0..<64).map { expectation(description: "Receives '\($0)'") }
 		let consumer = cluster.getConsumer(topics: ["test"], groupId: "testGroup")
 		consumer.listen { message in
-			if let i = Int(String(data: message.value, encoding: .utf8)!) {
+			if let s = String(data: message.value, encoding: .utf8),
+			   let i = Int(s) {
 				print("Consumed \(i)")
 				expectations[i].fulfill()
 			}
@@ -68,7 +69,7 @@ class ConsumerTests: DockerTestBase {
 		consumer.stop()
 	}
 	
-	func testConsumerStops() {
+	func testStops() {
 		let consumer = cluster.getConsumer(topics: ["stop"], groupId: "newgroup")
 		
 		let e = expectation(description: "Receives message from start")
@@ -83,7 +84,7 @@ class ConsumerTests: DockerTestBase {
 		
 		cluster.sendMessage("stop", message: "test")
 		
-		waitForExpectations(timeout: 10)
+		waitForExpectations(timeout: 30)
 		
 		consumer.stop()
 

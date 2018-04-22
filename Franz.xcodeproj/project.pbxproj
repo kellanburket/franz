@@ -20,6 +20,7 @@
 		A38E69A01F391BCB0044D3D3 /* OldConsumers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */; };
 		A38E69A11F391C350044D3D3 /* Consumer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38E699D1F391B960044D3D3 /* Consumer.swift */; };
 		A3CCBD51208C21BD00D0912C /* kafka_server_jaas.conf in Resources */ = {isa = PBXBuildFile; fileRef = A3F2757920884A5900F2320B /* kafka_server_jaas.conf */; };
+		A3CCBD54208C620B00D0912C /* docker-compose-sasl.yml in Resources */ = {isa = PBXBuildFile; fileRef = A3CCBD53208C620B00D0912C /* docker-compose-sasl.yml */; };
 		A3CE7D951F5A004F00FBB198 /* Franz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "franz::franz::Product" /* Franz.framework */; };
 		A3CE7D9B1F5A006100FBB198 /* ConsumerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */; };
 		A3CE7D9C1F5A006100FBB198 /* DockerTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */; };
@@ -83,6 +84,7 @@
 		A386B8081F196A730086BFF2 /* Assignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assignment.swift; sourceTree = "<group>"; };
 		A38E699D1F391B960044D3D3 /* Consumer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Consumer.swift; sourceTree = "<group>"; };
 		A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldConsumers.swift; sourceTree = "<group>"; };
+		A3CCBD53208C620B00D0912C /* docker-compose-sasl.yml */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = "docker-compose-sasl.yml"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		A3CE7D901F5A004E00FBB198 /* DockerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DockerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3CE7D941F5A004F00FBB198 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A3EEB06C2084499300F90979 /* SaslMechanism.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaslMechanism.swift; sourceTree = "<group>"; };
@@ -187,6 +189,7 @@
 				A317D927208AB042008427B9 /* SaslTests.swift */,
 				A3CE7D941F5A004F00FBB198 /* Info.plist */,
 				A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */,
+				A3CCBD53208C620B00D0912C /* docker-compose-sasl.yml */,
 			);
 			path = DockerTests;
 			sourceTree = "<group>";
@@ -383,6 +386,7 @@
 			files = (
 				A3CCBD51208C21BD00D0912C /* kafka_server_jaas.conf in Resources */,
 				A3CE7D9E1F5A066100FBB198 /* docker-compose.yml in Resources */,
+				A3CCBD54208C620B00D0912C /* docker-compose-sasl.yml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

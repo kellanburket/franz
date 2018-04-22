@@ -15,8 +15,11 @@ class DockerTestBase: XCTestCase {
 	static let startedSemaphore = DispatchSemaphore(value: 0)
 	
 	static let compose = URL(fileURLWithPath: "/usr/local/bin/docker-compose")
-	static let yml = Bundle(for: DockerTestBase.self).url(forResource: "docker-compose", withExtension: "yml")!
 	static let jaas = Bundle(for: DockerTestBase.self).url(forResource: "kafka_server_jaas", withExtension: "conf")!
+	
+	class var yml: URL {
+		return Bundle(for: DockerTestBase.self).url(forResource: "docker-compose", withExtension: "yml")!
+	}
 	
 	class var host: String { return "localhost" }
 	class var port: Int32 { return 9092 }
@@ -28,18 +31,19 @@ class DockerTestBase: XCTestCase {
 			return
 		}
 		do {
-			try Process.run(compose, arguments: ["-f", yml.path, "down"]).waitUntilExit()
+			let downDocker = Process()
+			downDocker.executableURL = compose
+			downDocker.arguments = ["-f", yml.path, "down"]
+			downDocker.standardOutput = nil
+			try downDocker.run()
+			downDocker.waitUntilExit()
 			
 			docker = Process()
 			docker.executableURL = compose
-			docker.arguments = ["-f", yml.path, "up", "-d"]
+			docker.arguments = ["-f", yml.path, "up"]
+			docker.currentDirectoryURL = DockerTestBase.yml.deletingLastPathComponent()
+			docker.standardOutput = nil
 			
-			// create a mountable volume for the conf files
-			let tmp = FileManager.default.temporaryDirectory
-			dockerFolder = tmp.appendingPathComponent(UUID().uuidString, isDirectory: true)
-			try FileManager.default.createDirectory(at: dockerFolder!, withIntermediateDirectories: false)
-			try FileManager.default.copyItem(at: jaas, to: dockerFolder!.appendingPathComponent(jaas.lastPathComponent))
-			docker.currentDirectoryURL = dockerFolder
 			try docker.run()
 			waitForKafka()
 		} catch {

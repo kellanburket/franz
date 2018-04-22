@@ -10,7 +10,9 @@ import XCTest
 
 class SaslTests: DockerTestBase {
 	
-	override class var port: Int32 { return 9093 }
+	override class var yml: URL {
+		return Bundle(for: SaslTests.self).url(forResource: "docker-compose-sasl", withExtension: "yml")!
+	}
 	
 	var cluster: Cluster!
 	
@@ -19,12 +21,13 @@ class SaslTests: DockerTestBase {
 									   port: SaslTests.port,
 									   clientId: "saslClient",
 									   authentication: .plain(username: "kafka", password: "kafka-secret"))
+		
 		do {
 			let connection = try Connection(config: config)
 			
-			let request = TopicMetadataRequest(topic: "test")
+			let request = FetchRequest(topic: "test")
 			let response = connection.writeBlocking(request)
-			XCTAssert(response.topics.keys.contains("test"))
+			XCTAssertEqual(response.topics.first?.topicName, "test")
 		} catch {
 			XCTFail("Failed to authenticate with PLAIN")
 		}
@@ -41,7 +44,9 @@ class SaslTests: DockerTestBase {
 			let request = TopicMetadataRequest(topic: "test")
 			_ = connection.writeBlocking(request)
 			XCTFail("Somehow we authenticated with the wrong credentials?")
+		} catch Connection.AuthenticationError.authenticationFailed {
 		} catch {
+			XCTFail("Got some other error: \(error)")
 		}
 	}
 
