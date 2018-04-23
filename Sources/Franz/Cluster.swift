@@ -26,7 +26,7 @@ public enum ClusterError: Error {
 /**
 A cluster that represents a connection to multiple brokers.
 */
-open class Cluster {
+class Cluster {
 
     private var batches = [String: [Int32: [MessageSetItem]]]()
     let clientId: String
@@ -105,7 +105,7 @@ open class Cluster {
         - Parameter partition:
         - Parameter message:
      */
-    open func sendMessage(_ topic: String, partition: Int32 = 0, message: String) {
+    func sendMessage(_ topic: String, partition: Int32 = 0, message: String) {
         findTopicLeader(topic, partition: partition, { leader in
             let messages = MessageSet(values: [MessageSetItem(value: message)])
             leader.send(
@@ -126,7 +126,7 @@ open class Cluster {
         - Parameter partition:
         - Parameter message:
      */
-    open func batchMessage(_ topic: String, partition: Int32, message: String) {
+    func batchMessage(_ topic: String, partition: Int32, message: String) {
         let messageSetItem = MessageSetItem(value: message)
         if var topicPartitions = batches[topic] {
             if var topicPartition = topicPartitions[partition] {
@@ -150,7 +150,7 @@ open class Cluster {
      
         - Throws ClusterError.NoBatchForTopicPartition
      */
-    open func sendBatch(_ topic: String, partition: Int32) throws {
+    func sendBatch(_ topic: String, partition: Int32) throws {
         if let topicBatch = batches[topic], let partitionBatch = topicBatch[partition] {
             findTopicLeader(topic, partition: partition, { leader in
                 leader.send(
@@ -175,7 +175,7 @@ open class Cluster {
 
         - Parameter callback:
      */
-    open func listTopics(_ callback: @escaping ([Topic]) -> ()) {
+    func listTopics(_ callback: @escaping ([Topic]) -> ()) {
 		self._brokers.first?.value.getTopicMetadata(clientId: self.clientId) { response in
 			var topics = [Topic]()
 			for (name, topic) in response.topics {
@@ -208,7 +208,7 @@ open class Cluster {
         - Parameter partition:
         - Parameter callback:
      */
-    open func getOffsets(
+    func getOffsets(
         _ topic: String,
         partition: Int32,
         callback: @escaping ([Int64]) -> ()
@@ -231,7 +231,7 @@ open class Cluster {
         - Parameter offset:
         - Parameter callback:
      */
-    open func getMessages(
+    func getMessages(
         _ topic: String,
         partition: Int32,
         offset: Int64,
@@ -259,7 +259,7 @@ open class Cluster {
 
         - Parameter callback:
      */
-    open func listGroups(_ callback: @escaping (String, String) -> ()) {
+    func listGroups(_ callback: @escaping (String, String) -> ()) {
         for (_, broker) in _brokers {
             dispatchQueue.async {
                 broker.listGroups(clientId: self.clientId) { a, b in

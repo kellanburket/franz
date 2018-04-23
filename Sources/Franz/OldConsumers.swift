@@ -157,7 +157,7 @@ public class SimpleConsumer: OldConsumer {
 	/**
 	the delegate
 	*/
-	open var delegate: ConsumerDelegate
+	var delegate: ConsumerDelegate
 	
 	internal init(
 		topic: String,
@@ -174,7 +174,7 @@ public class SimpleConsumer: OldConsumer {
 	
 	Parameter offset:   starting offset
 	*/
-	open func poll(_ offset: Int64) {
+	func poll(_ offset: Int64) {
 		guard let coordinator = broker else {
 			return
 		}
@@ -206,7 +206,7 @@ public class HighLevelConsumer: OldConsumer {
 	/**
 	The Delegate
 	*/
-	open var delegate: HighLevelConsumerDelegate
+	var delegate: HighLevelConsumerDelegate
 	
 	internal var membership: GroupMembership?
 	
@@ -223,7 +223,7 @@ public class HighLevelConsumer: OldConsumer {
 	/**
 	Poll for messages
 	*/
-	open func poll() {
+	func poll() {
 		guard let groupId = membership?.group.id else {
 			print("Cannot poll without group membership id")
 			return

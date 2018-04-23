@@ -165,21 +165,21 @@ class KafkaMessage: KafkaType {
 /**
     A Message pulled from the Kafka Server
 */
-open class Message: NSObject {
+public class Message: NSObject {
     private var _key: Data?
     private var _value: Data
     
     /**
         Message data
     */
-    open var value: Data {
+    var value: Data {
 		return _value 
     }
 
     /**
         Message key
      */
-    open var key: Data? {
+    var key: Data? {
         return _key
     }
 
