@@ -9,14 +9,14 @@
 import Foundation
 
 
-class MessageSet: KafkaType {
+@objc public class MessageSet: NSObject, KafkaType {
     let values: [MessageSetItem]
 	
     init(values: [MessageSetItem]) {
         self.values = values
     }
 
-    required init(data: inout Data) {
+	required public init(data: inout Data) {
         var tempValues = [MessageSetItem]()
 		
         while data.count > 0 {
@@ -36,56 +36,55 @@ class MessageSet: KafkaType {
 }
 
 
-class MessageSetItem: KafkaType {
-    var _offset: Int64
-    var _value: KafkaMessage
-    var _size: Int32?
-    
-    var offset: Int64 {
-        return _offset
-    }
-    
+struct MessageSetItem: KafkaType {
+	
+    private let value: KafkaMessage
+    private let size: Int32?
+	let offset: Int64
+	
     var message: Message {
-        return Message(data: _value.value, key: _value.key)
+        return Message(data: value.value, key: value.key)
     }
     
     init(value: String, key: String? = nil, offset: Int = 0) {
-        self._offset = Int64(offset)
-        self._value = KafkaMessage(value: value, key: key)
+        self.offset = Int64(offset)
+        self.value = KafkaMessage(value: value, key: key)
+		self.size = nil
     }
 
     init(data: Data, key: Data? = nil, offset: Int = 0) {
-        self._offset = Int64(offset)
-        self._value = KafkaMessage(data: data, key: key)
+        self.offset = Int64(offset)
+        self.value = KafkaMessage(data: data, key: key)
+		self.size = nil
     }
 
-    required init(data: inout Data) {
-        _offset = Int64(data: &data)
-        _size = Int32(data: &data)
-        _value = KafkaMessage(data: &data)
+    init(data: inout Data) {
+        offset = Int64(data: &data)
+        size = Int32(data: &data)
+        value = KafkaMessage(data: &data)
     }
     
-    lazy var messageSizeData: Data = {
-        return (Int32(self._value.dataLength).data)
-    }()
+    var messageSizeData: Data {
+        return (Int32(self.value.dataLength).data)
+    }
     
     let messageSizeDataLength = 4
     
-    lazy var dataLength: Int = {
-        return self._offset.dataLength +
+    var dataLength: Int {
+        return self.offset.dataLength +
             self.messageSizeDataLength +
-            self._value.dataLength +
-            (self._size != nil ? self._size!.dataLength : 0)
-    }()
+            self.value.dataLength +
+            (self.size?.dataLength ?? 0)
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
         
-        data.append(self._offset.data)
+        data.append(self.offset.data)
         data.append(self.messageSizeData)
-        data.append(self._value.data)
+        data.append(self.value.data)
         return data
-    }()
+    }
 }
 
 class KafkaMessage: KafkaType {
@@ -165,23 +164,18 @@ class KafkaMessage: KafkaType {
 /**
     A Message pulled from the Kafka Server
 */
-public class Message: NSObject {
-    private var _key: Data?
-    private var _value: Data
-    
+//TODO: Convert to struct
+@objc public class Message: NSObject {
+	
     /**
         Message data
     */
-    public var value: Data {
-		return _value 
-    }
+    public let value: Data
 
     /**
         Message key
      */
-    public var key: Data? {
-        return _key
-    }
+    public let key: Data?
 
     /**
         Initialize a new message using raw bytes
@@ -190,7 +184,7 @@ public class Message: NSObject {
         - Parameter key:    an optional key String. Can be used for partition assignment.
     */
     internal init(data: Data, key: Data? = nil) {
-        self._key = key
-        self._value = data
+        self.key = key
+        self.value = data
     }
 }

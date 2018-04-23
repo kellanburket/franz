@@ -21,7 +21,7 @@ class SaslTests: DockerTestBase {
 	var cluster: Cluster!
 	
 	func testPlainAuthentication() {
-		let config = Connection.Config(ipv4: SaslTests.host,
+		let config = Connection.Config(host: SaslTests.host,
 									   port: SaslTests.port,
 									   clientId: "saslClient",
 									   authentication: .plain(username: "kafka", password: "kafka-secret"))
@@ -38,7 +38,7 @@ class SaslTests: DockerTestBase {
 	}
 	
 	func testInvalidPlainAuthentication() {
-		let config = Connection.Config(ipv4: SaslTests.host,
+		let config = Connection.Config(host: SaslTests.host,
 									   port: SaslTests.port,
 									   clientId: "saslClient",
 									   authentication: .plain(username: "kafka", password: "wrong-secret"))
@@ -55,7 +55,7 @@ class SaslTests: DockerTestBase {
 	}
 	
 	func testWrongMechanism() {
-		let config = Connection.Config(ipv4: SaslTests.host,
+		let config = Connection.Config(host: SaslTests.host,
 									   port: SaslTests.port,
 									   clientId: "saslClient",
 									   authentication: .none)

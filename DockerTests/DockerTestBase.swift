@@ -49,7 +49,7 @@ class DockerTestBase: XCTestCase {
 			
 			let topicRequests = topics.map { CreateTopicsRequest.CreateTopicRequest(topic: $0, numPartitions: 1, replicationFactor: 1) }
 			let request = CreateTopicsRequest(requests: topicRequests)
-			let connection = try Connection(config: .init(ipv4: host, port: port, clientId: "topicCreationClient", authentication: auth))
+			let connection = try Connection(config: .init(host: host, port: port, clientId: "topicCreationClient", authentication: auth))
 			_ = connection.writeBlocking(request)
 		} catch {
 			fatalError("Couldn't find docker-compose")
@@ -69,7 +69,7 @@ class DockerTestBase: XCTestCase {
 			}
 			
 			timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-				let config = Connection.Config(ipv4: host, port: port, clientId: "connectionTest", authentication: auth)
+				let config = Connection.Config(host: host, port: port, clientId: "connectionTest", authentication: auth)
 				
 				do {
 					print("Trying to contact Kafka server")

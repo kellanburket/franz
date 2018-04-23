@@ -10,20 +10,20 @@ import Foundation
 
 typealias PartitionId = Int32
 
-class Partition: KafkaType {
+struct Partition: KafkaType {
 	
-    private var partitionErrorCode: Int16
+    private let partitionErrorCode: Int16
     var error: KafkaErrorCode? {
         return KafkaErrorCode(rawValue: partitionErrorCode)
     }
     
-    var id: PartitionId
+    let id: PartitionId
     
-    var leader: PartitionId
+    let leader: PartitionId
     
-    private(set) var replicas: [Int32]
+    let replicas: [Int32]
     
-    private(set) var isr: [Int32]
+    let isr: [Int32]
     
     init(partitionErrorCode: Int, partitionId: Int, leader: Int, replicas: [Int], isr: [Int]) {
         self.partitionErrorCode = Int16(partitionErrorCode)
@@ -34,7 +34,7 @@ class Partition: KafkaType {
 		self.isr = [Int32](isr.map { Int32($0) })
     }
     
-	required init(data: inout Data) {
+	init(data: inout Data) {
         partitionErrorCode = Int16(data: &data)
         id = PartitionId(data: &data)
         leader = PartitionId(data: &data)

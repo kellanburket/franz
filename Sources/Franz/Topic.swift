@@ -10,22 +10,9 @@ import Foundation
 
 public typealias TopicName = String
 
-public class Topic: NSObject {
-    private var _name: TopicName
-    private var _partitions: [Int32]
-    
-    public var name: String {
-        return _name
-    }
-    
-    public var partitions: [Int32] {
-        return _partitions
-    }
-    
-    internal init(name: String, partitions: [Int32]) {
-        self._name = name
-        self._partitions = partitions
-    }
+public struct Topic {
+    public let name: TopicName
+    public let partitions: [Int32]
 }
 
 internal class KafkaTopic: KafkaType {
