@@ -14,6 +14,20 @@ protocol KafkaType {
 	var dataLength: Int { get }
 }
 
+protocol CompoundKafkaType: KafkaType {
+	var values: [KafkaType] { get }
+}
+
+extension CompoundKafkaType {
+	var data: Data {
+		return values.map { $0.data }.reduce(Data(), +)
+	}
+	
+	var dataLength: Int {
+		return values.map { $0.dataLength }.reduce(0, +)
+	}
+}
+
 extension Data {
 	mutating func take(first: Int) -> Data {
 		let start = prefix(upTo: startIndex + first)
@@ -48,6 +62,24 @@ extension Int8: KafkaType {}
 extension Int16: KafkaType {}
 extension Int32: KafkaType {}
 extension Int64: KafkaType {}
+
+extension Bool: KafkaType {
+	init(data: inout Data) {
+		self = Int8(data: &data) == 0
+	}
+	
+	private var representation: Int8 {
+		return Int8(self ? 1 : 0)
+	}
+	
+	var data: Data {
+		return representation.data
+	}
+	
+	var dataLength: Int {
+		return representation.dataLength
+	}
+}
 
 protocol KafkaVariableLengthType: KafkaType {
 	associatedtype Length: FixedWidthInteger where Length: KafkaType

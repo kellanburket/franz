@@ -14,8 +14,8 @@ struct OffsetCommitRequest: KafkaRequest {
 	
 	typealias Response = OffsetCommitResponse
 	
-	var apiKey: ApiKey { return .offsetCommitRequest }
-	var apiVersion: ApiVersion { return .v2 }
+	static let apiKey: ApiKey = .offsetCommitRequest
+	static let apiVersion: ApiVersion = 2
 	
     init(
         consumerGroupId: String,
@@ -35,9 +35,9 @@ struct OffsetCommitRequest: KafkaRequest {
         )
     }
 	
-	let value: KafkaType?
+	let values: [KafkaType]
     init(value: OffsetCommitRequestMessage) {
-		self.value = value
+		self.values = [value]
     }
 }
 

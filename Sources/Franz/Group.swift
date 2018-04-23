@@ -17,7 +17,7 @@ open class Group {
     fileprivate var _groupProtocol: GroupProtocol
     fileprivate var _groupId: String
     fileprivate var _generationId: Int32
-    fileprivate var _version: ApiVersion = ApiVersion.defaultVersion
+    fileprivate var _version: ApiVersion = 0
 
     private var _state: GroupState?
 

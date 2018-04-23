@@ -11,7 +11,8 @@ import Foundation
 struct OffsetRequest: KafkaRequest {
 	
 	typealias Response = OffsetResponse
-	var apiKey: ApiKey { return .offsetRequest }
+	static let apiKey: ApiKey = .offsetRequest 
+	static let apiVersion: ApiVersion = 0
 
     init(
 		topics: [TopicName: [PartitionId]],
@@ -47,9 +48,9 @@ struct OffsetRequest: KafkaRequest {
         )
     }
 	
-	let value: KafkaType?
+	let values: [KafkaType]
     init(value: OffsetRequestMessage) {
-		self.value = value
+		self.values = [value]
     }
     
 }

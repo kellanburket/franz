@@ -16,13 +16,12 @@ struct GroupCoordinatorRequest: KafkaRequest {
         self.init(value: GroupCoordinatorRequestMessage(groupId: id))
     }
 	
-	var apiKey: ApiKey {
-		return .groupCoordinatorRequest
-	}
+	static let apiKey: ApiKey = .groupCoordinatorRequest
+	static let apiVersion: ApiVersion = 0
 	
-	let value: KafkaType?
+	let values: [KafkaType]
     init(value: GroupCoordinatorRequestMessage) {
-        self.value = value
+        self.values = [value]
     }
     
 }

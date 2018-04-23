@@ -12,7 +12,8 @@ struct OffsetFetchRequest: KafkaRequest {
 	
 	typealias Response = OffsetFetchResponse
 	
-	var apiKey: ApiKey { return .offsetFetchRequest }
+	static let apiKey: ApiKey = .offsetFetchRequest 
+	static let apiVersion: ApiVersion = 0
 	
     init(
         consumerGroupId: String,
@@ -26,9 +27,9 @@ struct OffsetFetchRequest: KafkaRequest {
         )
     }
 	
-	let value: KafkaType?
+	let values: [KafkaType]
     init(value: OffsetFetchRequestMessage) {
-       	self.value = value
+       	self.values = [value]
     }
 }
 

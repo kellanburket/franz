@@ -10,6 +10,8 @@ import Franz
 
 class ConsumerTests: DockerTestBase {
 	
+	override class var topics: [String] { return ["test", "foo", "bar", "fromStart", "stop"] }
+	
 	var cluster: Cluster!
 	
 	override func setUp() {

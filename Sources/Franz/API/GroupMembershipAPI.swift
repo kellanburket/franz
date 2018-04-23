@@ -12,7 +12,8 @@ import Foundation
 struct GroupMembershipRequest<T: KafkaMetadata>: KafkaRequest {
 
 	typealias Response = JoinGroupResponse
-	var apiKey: ApiKey { return .joinGroupRequest }
+	static var apiKey: ApiKey { return .joinGroupRequest }
+	static var apiVersion: ApiVersion { return 0 }
 	
     init(
         groupId: String,
@@ -31,9 +32,9 @@ struct GroupMembershipRequest<T: KafkaMetadata>: KafkaRequest {
         )
     }
 	
-	let value: KafkaType?
+	let values: [KafkaType]
     init(value: JoinGroupRequestMessage<T>) {
-		self.value = value
+		self.values = [value]
     }
 }
 
@@ -142,9 +143,9 @@ struct ConsumerGroupMetadata: KafkaMetadata {
     init(
         subscription: [String],
         userData: Data? = nil,
-        version: ApiVersion = ApiVersion.defaultVersion
+        version: ApiVersion = 0
     ) {
-        _version = version.rawValue
+        _version = version
         _subscription = subscription
 		_userData = userData
     }
@@ -267,7 +268,8 @@ struct Member: KafkaType {
 struct SyncGroupRequest<T: KafkaMetadata>: KafkaRequest {
 	
 	typealias Response = SyncGroupResponse<T>
-	var apiKey: ApiKey { return .syncGroupRequest }
+	static var apiKey: ApiKey { return .syncGroupRequest }
+	static var apiVersion: ApiVersion { return 0 }
     
     init(
         groupId: String,
@@ -285,9 +287,9 @@ struct SyncGroupRequest<T: KafkaMetadata>: KafkaRequest {
         self.init(value: request)
     }
 	
-	let value: KafkaType?
+	let values: [KafkaType]
     init(value: SyncGroupRequestMessage<T>) {
-		self.value = value
+		self.values = [value]
     }
 }
 
@@ -301,7 +303,7 @@ struct GroupMemberAssignment: KafkaMetadata {
     }
 
     init(topics: [TopicName: [PartitionId]], userData: Data, version: ApiVersion) {
-        _version = version.rawValue
+        _version = version
 
         var values = [PartitionAssignment]()
         for (topic, partitions) in topics {
@@ -474,7 +476,8 @@ struct SyncGroupResponse<T: KafkaMetadata>: KafkaResponse {
 struct HeartbeatRequest: KafkaRequest {
 	
 	typealias Response = HeartbeatResponse
-	var apiKey: ApiKey { return .heartbeatRequest }
+	static let apiKey: ApiKey = .heartbeatRequest 
+	static let apiVersion: ApiVersion = 0
 
     init(
         groupId: String,
@@ -490,9 +493,9 @@ struct HeartbeatRequest: KafkaRequest {
         )
     }
 	
-	let value: KafkaType?
+	let values: [KafkaType]
     init(value: HeartbeatRequestMessage) {
-		self.value = value
+		self.values = [value]
     }
 }
 
@@ -563,7 +566,8 @@ struct LeaveGroupRequest: KafkaRequest {
 	
 	typealias Response = LeaveGroupResponse
 	
-	var apiKey: ApiKey { return .leaveGroupRequest }
+	static let apiKey: ApiKey = .leaveGroupRequest
+	static let apiVersion: ApiVersion = 0
     
     init(
         groupId: String,
@@ -577,9 +581,9 @@ struct LeaveGroupRequest: KafkaRequest {
         )
     }
 	
-	let value: KafkaType?
+	let values: [KafkaType]
     init(value: LeaveGroupRequestMessage) {
-		self.value = value
+		self.values = [value]
     }
 }
 

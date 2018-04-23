@@ -9,14 +9,14 @@
 import Foundation
 
 struct FetchRequest: KafkaRequest {
+	static let apiVersion: ApiVersion = 0
+	
 	typealias Response = FetchResponse
 	
-	var apiKey: ApiKey {
-		return .fetchRequest
-	}
+	static let apiKey: ApiKey = .fetchRequest
 	
     var minBytes: Int32 {
-        return (value as! FetchRequestMessage).minBytes
+        return (values[0] as! FetchRequestMessage).minBytes
     }
 
     init(
@@ -98,9 +98,9 @@ struct FetchRequest: KafkaRequest {
         self.init(value: message)
     }
 	
-	let value: KafkaType?
+	let values: [KafkaType]
     init(value: FetchRequestMessage) {
-		self.value = value
+		self.values = [value]
     }
 
 }

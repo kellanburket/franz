@@ -81,11 +81,7 @@ class Connection: NSObject, StreamDelegate {
     
     private var ipv4: String
 
-    var apiVersion: ApiVersion {
-        return ApiVersion.defaultVersion
-    }
-
-    private var _requestCallbacks = [Int32: ((Data) -> Void)]()
+    private var _requestCallbacks = [Int32: ((Data?) -> Void)]()
     
     private var clientId: String
     
@@ -103,6 +99,8 @@ class Connection: NSObject, StreamDelegate {
     private var _inputStreamQueue: DispatchQueue
     private var _outputStreamQueue: DispatchQueue
     private var _writeRequestBlocks = [()->()]()
+	
+	private var runLoop: RunLoop?
 	
 	struct Config {
 		let ipv4: String
@@ -153,13 +151,16 @@ class Connection: NSObject, StreamDelegate {
 			self.inputStream?.open()
 			self.outputStream?.open()
 			
+			self.runLoop = RunLoop.current
 			RunLoop.current.run()
 		}
 		
 		// authenticate
 		if let mechanism = config.authentication.mechanism {
 			let handshakeRequest = SaslHandshakeRequest(mechanism: mechanism.kafkaLabel)
-			let response = self.writeBlocking(handshakeRequest)
+			guard let response = writeBlocking(handshakeRequest) else {
+				throw AuthenticationError.authenticationFailed
+			}
 			
 			guard response.errorCode == 0 else {
 				throw AuthenticationError.unsupportedMechanism(supportedMechanisms: response.enabledMechanisms)
@@ -206,7 +207,7 @@ class Connection: NSObject, StreamDelegate {
                         )
                     }
                 } catch ConnectionError.zeroLengthResponse {
-                    print("Zero Lenth Response")
+                    print("Zero Length Response")
                 } catch ConnectionError.partialResponse(let size) {
                     print("Response Size: \(size) is invalid.")
                 } catch ConnectionError.bytesNoLongerAvailable {
@@ -232,12 +233,19 @@ class Connection: NSObject, StreamDelegate {
 		return id
 	}
 	
-	func write<T: KafkaRequest>(_ request: T, callback: @escaping ((T.Response) -> Void)) {
+	func write<T: KafkaRequest>(_ request: T, callback: @escaping (T.Response) -> Void) {
+		self.write(request, callback: callback, errorCallback: nil)
+	}
+	
+	private func write<T: KafkaRequest>(_ request: T, callback: @escaping (T.Response) -> Void, errorCallback: (() -> Void)?) {
 
 		let corId = makeCorrelationId()
 		_requestCallbacks[corId] = { data in
-			var mutableData = data
-			callback(T.Response.init(data: &mutableData))
+			if var mutableData = data {
+				callback(T.Response.init(data: &mutableData))
+			} else {
+				errorCallback?()
+			}
 		}
 		let dispatchBlock = DispatchWorkItem(qos: .unspecified, flags: []) {
 			if let stream = self.outputStream {
@@ -264,13 +272,15 @@ class Connection: NSObject, StreamDelegate {
 		}
     }
 	
-	func writeBlocking<T: KafkaRequest>(_ request: T) -> T.Response {
+	func writeBlocking<T: KafkaRequest>(_ request: T) -> T.Response? {
 		let semaphore = DispatchSemaphore(value: 0)
-		var response: T.Response!
-		write(request) { r in
+		var response: T.Response?
+		write(request, callback: { r in
 			response = r
 			semaphore.signal()
-		}
+		}, errorCallback: {
+			semaphore.signal()
+		})
 		semaphore.wait()
 		return response
 	}
@@ -310,6 +320,10 @@ class Connection: NSObject, StreamDelegate {
     }
     
     func stream(_ aStream: Stream, handle eventCode: Stream.Event) {
+		if eventCode == .endEncountered || eventCode == .errorOccurred {
+			close()
+			return
+		}
         if let inputStream = aStream as? InputStream {
             let status = inputStream.streamStatus
             switch status {
@@ -324,9 +338,10 @@ class Connection: NSObject, StreamDelegate {
                 }
             case .reading:
                 return
-            case .error:
+			case .error, .atEnd, .closed:
                 print("INPUT STREAM ERROR: \(aStream.streamError?.localizedDescription ?? String())")
-                return
+				close()
+				return
             default:
                 print("INPUT STREAM STATUS: \(aStream.streamStatus.description)")
                 return
@@ -348,8 +363,9 @@ class Connection: NSObject, StreamDelegate {
                 }
             case .writing:
                 return
-            case .error:
+            case .error, .atEnd, .closed:
                 print("OUTPUT STREAM ERROR: \(aStream.streamError?.localizedDescription ?? String())")
+				close()
                 return
             default:
                 print("OUTPUT STREAM STATUS:: \(aStream.streamStatus.description)")
@@ -357,4 +373,15 @@ class Connection: NSObject, StreamDelegate {
             }
         }
     }
+	
+	func close() {
+		print("Closing connection")
+		inputStream?.close()
+		outputStream?.close()
+		if let runLoop = runLoop {
+			inputStream?.remove(from: runLoop, forMode: .defaultRunLoopMode)
+			outputStream?.remove(from: runLoop, forMode: .defaultRunLoopMode)
+		}
+		_requestCallbacks.forEach { $1(nil) }
+	}
 }

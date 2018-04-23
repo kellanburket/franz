@@ -12,7 +12,8 @@ import Foundation
 struct TopicMetadataRequest: KafkaRequest {
 	
 	typealias Response = MetadataResponse
-	var apiKey: ApiKey { return .metadataRequest }
+	static let apiKey: ApiKey = .metadataRequest 
+	static let apiVersion: ApiVersion = 0
 
     init(topic: String) {
         self.init(message: TopicMetadataRequestMessage(values: [topic]))
@@ -22,9 +23,9 @@ struct TopicMetadataRequest: KafkaRequest {
         self.init(message: TopicMetadataRequestMessage(values: topics))
     }
 	
-	let value: KafkaType?
+	let values: [KafkaType]
     init(message: TopicMetadataRequestMessage) {
-		self.value = message
+		self.values = [message]
     }
 
 }

@@ -9,12 +9,13 @@
 import Foundation
 
 struct ProduceRequest: KafkaRequest {
+	static let apiVersion: ApiVersion = 0
 	
 	typealias Response = ProduceResponse
 	
-	var apiKey: ApiKey { return .produceRequest }
+	static let apiKey: ApiKey = .produceRequest 
 	
-	let value: KafkaType?
+	let values: [KafkaType]
     init(values: [String:[Int32:MessageSet]]) {
 
         var kafkaTopicalMessageSets = [KafkaTopicalMessageSet]()
@@ -38,7 +39,7 @@ struct ProduceRequest: KafkaRequest {
             )
         }
         
-        self.value = ProduceRequestMessage(values: kafkaTopicalMessageSets)
+        self.values = [ProduceRequestMessage(values: kafkaTopicalMessageSets)]
     }
 }
 

@@ -9,11 +9,10 @@ import Foundation
 
 struct ApiVersionsRequest: KafkaRequest {
 	
-	var apiKey: ApiKey { return .apiVersions}
+	static let apiKey: ApiKey = .apiVersions
+	static var apiVersion: ApiVersion { return 1 }
 	
-	var value: KafkaType? { return nil }
-	
-	var apiVersion: ApiVersion { return .v1 }
+	var values: [KafkaType] { return [] }
 	
 	struct Response: KafkaResponse {
 		init(data: inout Data) {

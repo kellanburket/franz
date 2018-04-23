@@ -401,7 +401,7 @@ class Broker: KafkaType {
         topics: [TopicName: [PartitionId]],
         userData: Data,
         clientId: String,
-        version: ApiVersion =  ApiVersion.defaultVersion,
+        version: ApiVersion =  0,
         callback: ((GroupMemberAssignment) -> ())? = nil
     ) {
         let groupAssignmentMetadata = GroupMemberAssignment(

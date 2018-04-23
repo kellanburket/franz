@@ -276,31 +276,11 @@ enum ApiKey: Int16, KafkaType {
     case listGroupsRequest = 16
 	case saslHandshake = 17
 	case apiVersions = 18
+	case createTopics = 19
 	case saslAuthenticate = 36
 }
 
-enum ApiVersion: Int16, KafkaType {
-	
-	init(data: inout Data) {
-		self.init(rawValue: Int16(data: &data))!
-	}
-	
-	var data: Data {
-		return rawValue.data
-	}
-	
-	var dataLength: Int {
-		return rawValue.dataLength
-	}
-	
-	static var defaultVersion: ApiVersion {
-		return v0
-	}
-	case v0 = 0
-	case v1 = 1
-	case v2 = 2
-}
-
+typealias ApiVersion = Int16
 
 /**
     Group Protocols

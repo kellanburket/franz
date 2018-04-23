@@ -9,12 +9,12 @@ import Foundation
 
 struct SaslHandshakeRequest: KafkaRequest {
 	
-	var apiKey: ApiKey { return .saslHandshake }
-	var apiVersion: ApiVersion { return .v1 }
+	static let apiKey: ApiKey = .saslHandshake 
+	static let apiVersion: ApiVersion = 1
 	
-	let value: KafkaType?
+	let values: [KafkaType]
 	init(mechanism: String) {
-		self.value = mechanism
+		self.values = [mechanism]
 	}
 	
 	struct Response: KafkaResponse {
@@ -30,12 +30,12 @@ struct SaslHandshakeRequest: KafkaRequest {
 
 struct SaslAuthenticateRequest: KafkaRequest {
 	
-	var apiKey: ApiKey { return .saslAuthenticate }
-	var apiversion: ApiVersion { return .v0 }
+	static let apiKey: ApiKey = .saslAuthenticate 
+	static let apiVersion: ApiVersion = 0
 	
-	let value: KafkaType?
+	let values: [KafkaType]
 	init(saslAuthBytes: Data) {
-		self.value = saslAuthBytes
+		self.values = [saslAuthBytes]
 	}
 	
 	struct Response: KafkaResponse {

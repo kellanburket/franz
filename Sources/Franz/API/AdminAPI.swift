@@ -9,10 +9,12 @@
 import Foundation
 
 struct ListGroupsRequest: KafkaRequest {
-	var apiKey: ApiKey { return .listGroupsRequest }
+	static let apiVersion: ApiVersion = 0
 	
-	var value: KafkaType? {
-		return nil
+	static let apiKey: ApiKey = .listGroupsRequest 
+	
+	var values: [KafkaType] {
+		return []
 	}
 	
 	typealias Response = ListGroupsResponse
@@ -91,12 +93,13 @@ struct ListedGroup: KafkaType {
 
 
 struct DescribeGroupsRequest: KafkaRequest {
+	static let apiVersion: ApiVersion = 0
 	
 	typealias Response = DescribeGroupsResponse
 	
-	let value: KafkaType?
+	let values: [KafkaType]
 	
-	var apiKey: ApiKey { return .describeGroupsRequest }
+	static let apiKey: ApiKey = .describeGroupsRequest 
 	
     init(id: String) {
 		self.init(value: DescribeGroupsRequestMessage(groupIds: [id]))
@@ -107,7 +110,7 @@ struct DescribeGroupsRequest: KafkaRequest {
     }
 
     init(value: DescribeGroupsRequestMessage) {
-		self.value = value
+		self.values = [value]
     }
 }
 

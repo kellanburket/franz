@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A313BECB208D38DE00581A50 /* CreateTopicsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A313BECA208D38DE00581A50 /* CreateTopicsAPI.swift */; };
 		A314CB8D1F08B457008D61A6 /* CRCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A314CB8C1F08B457008D61A6 /* CRCTests.swift */; };
 		A317D929208AB047008427B9 /* SaslTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A317D927208AB042008427B9 /* SaslTests.swift */; };
 		A317D92B208AB5B7008427B9 /* APIVersionsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A317D92A208AB5B7008427B9 /* APIVersionsAPI.swift */; };
@@ -69,6 +70,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A313BECA208D38DE00581A50 /* CreateTopicsAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTopicsAPI.swift; sourceTree = "<group>"; };
 		A314CB8C1F08B457008D61A6 /* CRCTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRCTests.swift; sourceTree = "<group>"; };
 		A317D927208AB042008427B9 /* SaslTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaslTests.swift; sourceTree = "<group>"; };
 		A317D92A208AB5B7008427B9 /* APIVersionsAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIVersionsAPI.swift; sourceTree = "<group>"; };
@@ -157,6 +159,7 @@
 				OBJ_31 /* ProduceAPI.swift */,
 				A34EBFBF2083CDDC00A9D0AA /* SaslApi.swift */,
 				A317D92A208AB5B7008427B9 /* APIVersionsAPI.swift */,
+				A313BECA208D38DE00581A50 /* CreateTopicsAPI.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -427,6 +430,7 @@
 				OBJ_60 /* Connection.swift in Sources */,
 				OBJ_62 /* CRC32.swift in Sources */,
 				OBJ_63 /* Enumerations.swift in Sources */,
+				A313BECB208D38DE00581A50 /* CreateTopicsAPI.swift in Sources */,
 				OBJ_65 /* FetchAPI.swift in Sources */,
 				OBJ_66 /* Group.swift in Sources */,
 				A34EBFC02083CDDC00A9D0AA /* SaslApi.swift in Sources */,
