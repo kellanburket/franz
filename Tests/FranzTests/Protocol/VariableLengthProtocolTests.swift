@@ -41,11 +41,15 @@ class VariableLengthProtocolTests: XCTestCase {
 	func testOptionalString() {
 		let s: String? = nil
 		var data = s.data
-		XCTAssertEqual("", String(data: &data))
+		XCTAssertEqual(-1, Int16(data: &data))
+		data = s.data
+		XCTAssertEqual(nil, String?(data: &data))
 		
 		let s2: String? = "test"
 		var data2 = s2.data
-		XCTAssertEqual("test", String(data: &data2))
+		XCTAssertEqual(4, Int16(data: &data2))
+		data2 = s2.data
+		XCTAssertEqual("test", String?(data: &data2))
 	}
 	
 	func testOptionalData() {

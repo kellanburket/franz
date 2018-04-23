@@ -393,14 +393,32 @@ class Broker: KafkaType {
 			}
 		}
     }
-    
+	
+	/// Use this if the client is not the leader
+	func syncGroup(_ groupId: String, generationId: Int32, callback: ((GroupMemberAssignment) -> ())? = nil) {
+		let request = SyncGroupRequest<GroupMemberAssignment>(groupId: groupId, generationId: generationId, memberId: nil, groupAssignment: [:])
+		connect().write(request) { response in
+			self._groupCoordinationQueue.async {
+				guard let error = response.error else {
+					fatalError("Unable to parse error")
+				}
+				switch error {
+				case .noError:
+					callback?(response.memberAssignment)
+				default:
+					print("ERROR: \(error.description)")
+				}
+			}
+		}
+	}
+	
+	/// Use this if the client is currently the leader
     func syncGroup(
         _ groupId: String,
         generationId: Int32,
         memberId: String,
         topics: [TopicName: [PartitionId]],
         userData: Data,
-        clientId: String,
         version: ApiVersion =  0,
         callback: ((GroupMemberAssignment) -> ())? = nil
     ) {
@@ -421,14 +439,12 @@ class Broker: KafkaType {
 			self._groupCoordinationQueue.async {
 				if let error = response.error {
 					if error.code == 0 {
-						if let syncGroupCallback = callback {
-							syncGroupCallback(response.memberAssignment)
-						}
+						callback?(response.memberAssignment)
 					} else {
 						print("ERROR: \(error.description)")
 					}
 				} else {
-					print("Unable to parse error.")
+					fatalError("Unable to parse error.")
 				}
 			}
 		}

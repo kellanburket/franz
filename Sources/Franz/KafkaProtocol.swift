@@ -128,11 +128,21 @@ extension String: KafkaVariableLengthType {
 	}
 }
 
-extension Optional where Wrapped == String {
+extension Optional: KafkaType where Wrapped == String {
+	init(data: inout Data) {
+		var peekData = data
+		let length = Int16(data: &peekData)
+		if length == -1 {
+			self = .none
+		} else {
+			self = .some(String(data: &data))
+		}
+	}
+	
 	var dataLength: Int {
 		switch self {
 		case .none:
-			return "".dataLength
+			return Int16(-1).dataLength
 		case .some(let wrapped):
 			return wrapped.dataLength
 		}
@@ -141,7 +151,7 @@ extension Optional where Wrapped == String {
 	var data: Data {
 		switch self {
 		case .none:
-			return "".data
+			return Int16(-1).data
 		case .some(let wrapped):
 			return wrapped.data
 		}

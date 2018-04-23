@@ -274,7 +274,7 @@ struct SyncGroupRequest<T: KafkaMetadata>: KafkaRequest {
     init(
         groupId: String,
         generationId: Int32,
-        memberId: String,
+        memberId: String?,
         groupAssignment: [String: T]
     ) {
         let request = SyncGroupRequestMessage<T>(
@@ -374,13 +374,13 @@ struct SyncGroupRequestMessage<T: KafkaMetadata>: KafkaType {
     
     private var _groupId: String
     private var _generationId: Int32
-    private var _memberId: String
+    private var _memberId: String?
     private var _groupAssignment: [GroupAssignment<T>]
 
     init(
         groupId: String,
         generationId: Int32,
-        memberId: String,
+        memberId: String?,
         groupAssignment: [String: T]
     ) {
         _groupId = groupId
@@ -392,7 +392,7 @@ struct SyncGroupRequestMessage<T: KafkaMetadata>: KafkaType {
 	init(data: inout Data) {
         _groupId = String(data: &data)
         _generationId = Int32(data: &data)
-        _memberId = String(data: &data)
+        _memberId = String?(data: &data)
         _groupAssignment = [GroupAssignment<T>](data: &data)
     }
     

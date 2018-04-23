@@ -350,27 +350,38 @@ open class Cluster {
     */
     public func getConsumer(topics: [TopicName], groupId: String) -> Consumer {
 		let consumer = Consumer(cluster: self, groupId: groupId)
-		DispatchQueue(label: "FranzConsumerGet").async {
-			self.joinGroup(id: groupId, topics: topics, callback: { broker, membership in
-				consumer.broker = broker
-				consumer.membership = membership
-				membership.group.getState { groupId, state in
-					switch state {
-					case .AwaitingSync:
-						self.assignRoundRobin(members: membership.members.map { $0.memberId }, topics: topics) { assignments in
-							membership.sync(assignments[membership.memberId]!, data: Data()) {
+		dispatchQueue.async {
+			func joinGroup() {
+				self.joinGroup(id: groupId, topics: topics, callback: { broker, membership in
+					func checkState() {
+						membership.group.getState { groupId, state in
+							switch state {
+							case .AwaitingSync, .CompletingRebalance:
+								//TODO: check if currently the leader and only assign if leader
+								self.assignRoundRobin(members: membership.members.map { $0.memberId }, topics: topics) { assignments in
+									membership.sync(assignments[membership.memberId]!, data: Data()) {
+										consumer.broker = broker
+										consumer.membership = membership
+										consumer.joinedGroupSemaphore.signal()
+									}
+								}
+							case .Initialize, .PreparingRebalance, .Joining:
+								self.dispatchQueue.asyncAfter(deadline: .now() + 1, execute: checkState)
+							case .Stable:
+								consumer.broker = broker
+								consumer.membership = membership
 								consumer.joinedGroupSemaphore.signal()
+							case .Empty, .Dead, .Down:
+								joinGroup()
 							}
 						}
-					case .Stable, .CompletingRebalance:
-						consumer.joinedGroupSemaphore.signal()
-					default:
-						fatalError(state.rawValue)
 					}
-				}
-			}, error: { error in
-				
-			})
+					checkState()
+				}, error: { error in
+					
+				})
+			}
+			joinGroup()
 		}
         return consumer
     }

@@ -136,7 +136,6 @@ open class GroupMembership {
             memberId: memberId,
             topics: topics,
             userData: data,
-            clientId: group._clientId,
             version: group._version) { membership in
 			for assignment in membership.partitionAssignment {
 				self.group.assignedPartitions[assignment.topic] = assignment.partitions.map { $0 }
