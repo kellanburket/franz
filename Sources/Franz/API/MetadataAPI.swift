@@ -67,9 +67,7 @@ struct MetadataResponse: KafkaResponse {
     var topics: [String: KafkaTopic] {
         var values = [String: KafkaTopic]()
         for value in _topicMetadata {
-            if let name = value.name {
-                values[name] = value
-            }
+			values[value.name] = value
         }
         return values
     }
