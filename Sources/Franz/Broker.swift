@@ -23,7 +23,17 @@ class Broker: KafkaType {
     let host: String
 
 	private let connectionConfig: Connection.Config
-    private var _connection: Connection?
+	lazy private var connection: Connection = {
+		do {
+			return try Connection(config: connectionConfig)
+		} catch Connection.AuthenticationError.authenticationFailed {
+			fatalError("Authentication failed")
+		} catch Connection.AuthenticationError.unsupportedMechanism(let supportedMechanisms) {
+			fatalError("Unsupported mechanism. Supported mechanisms for this broker are \(supportedMechanisms)")
+		} catch {
+			fatalError("Failed to connect")
+		}
+	}()
     
     var ipv4: String {
         return connectionConfig.ipv4
@@ -43,7 +53,7 @@ class Broker: KafkaType {
         host = String(data: &data)
         let port = Int32(data: &data)
 		//TODO: ??? get connection config in
-		connectionConfig = Connection.Config(ipv4: host, port: port, clientId: "asdf", authentication: .none)
+		connectionConfig = Connection.Config(ipv4: host, port: port, clientId: "placeholder", authentication: .none)
     }
     
     var dataLength: Int {
@@ -52,22 +62,6 @@ class Broker: KafkaType {
     
     var data: Data {
         return nodeId.data + host.data + port.data
-    }
-
-    func connect() -> Connection {
-        if _connection == nil {
-			do {
-				_connection = try Connection(config: connectionConfig)
-			} catch Connection.AuthenticationError.authenticationFailed {
-				fatalError("Authentication failed")
-			} catch Connection.AuthenticationError.unsupportedMechanism(let supportedMechanisms) {
-				fatalError("Unsupported mechanism. Supported mechanisms for this broker are \(supportedMechanisms)")
-			} catch {
-				fatalError("Failed to connect")
-			}
-        }
-        
-        return _connection!
     }
 	
 	class CancelToken {
@@ -103,7 +97,7 @@ class Broker: KafkaType {
 		
 		let request = FetchRequest(topics: topics, replicaId: replicaId)
 		
-		connect().write(request) { response in
+		connection.write(request) { response in
 			//Check to see if we should stop polling
 			if let token = cancelToken, token.shouldCancel {
 				return
@@ -152,7 +146,7 @@ class Broker: KafkaType {
 		
 		let request = FetchRequest(topics: topics, replicaId: replicaId)
         
-		connect().write(request) { response in
+		connection.write(request) { response in
 			readQueue.async {
 				for responseTopic in response.topics {
 					for responsePartition in responseTopic.partitions {
@@ -173,7 +167,7 @@ class Broker: KafkaType {
     
     func send(_ topic: TopicName, partition: PartitionId, batch: MessageSet, clientId: String) {
         let request = ProduceRequest(values: [topic: [partition: batch]])
-		connect().write(request) { _ in }
+		connection.write(request) { _ in }
     }
 	
 	func commitGroupOffset(groupId: String, topics: [TopicName: [PartitionId: (Offset, OffsetMetadata?)]], callback: (() -> Void)? = nil) {
@@ -181,7 +175,7 @@ class Broker: KafkaType {
 		
 		let request = OffsetCommitRequest(consumerGroupId: groupId, generationId: groupMembership.group.generationId, consumerId: groupMembership.memberId, topics: topics)
 		
-		connect().write(request) { response in
+		connection.write(request) { response in
 			self._metadataReadQueue.async {
 				for responseTopic in response.topics {
 					for responsePartition in responseTopic.partitions {
@@ -216,7 +210,7 @@ class Broker: KafkaType {
 			topics: topics
 		)
 
-		connect().write(request) { response in
+		connection.write(request) { response in
 			self._metadataReadQueue.async {
 				
 				var offsets = [TopicName: [PartitionId: Offset]]()
@@ -236,7 +230,7 @@ class Broker: KafkaType {
 
 	func getOffsets(for topics: [TopicName: [PartitionId]], time: TimeOffset = .latest, callback: @escaping ([TopicName: [PartitionId: [Offset]]]) -> ()) {
 		let request = OffsetRequest(topics: topics, time: time)
-		connect().write(request) { response in
+		connection.write(request) { response in
 			self._metadataReadQueue.async {
 				
 				if let error = response.topicalPartitionedOffsets.flatMap({ $0.partitionedOffsets.compactMap { $0.value.error } })
@@ -260,13 +254,13 @@ class Broker: KafkaType {
 	
 	func getGroupCoordinator(groupId: String, callback: @escaping (GroupCoordinatorResponse) -> Void) {
 		let request = GroupCoordinatorRequest(id: groupId)
-		connect().write(request, callback: callback)
+		connection.write(request, callback: callback)
 	}
     
     func listGroups(callback: ((String, String) -> ())? = nil) {
         let listGroupsRequest = ListGroupsRequest()
 
-		connect().write(listGroupsRequest) { response in
+		connection.write(listGroupsRequest) { response in
 			self._metadataReadQueue.async {
 				if let error = response.error {
 					if error.code == 0 {
@@ -291,7 +285,7 @@ class Broker: KafkaType {
         callback: ((String, GroupState) -> ())? = nil
     ) {
         let describeGroupRequest = DescribeGroupsRequest(id: groupId)
-		connect().write(describeGroupRequest) { response in
+		connection.write(describeGroupRequest) { response in
 			self._metadataReadQueue.async {
 				for groupState in response.states {
 					if let error = groupState.error {
@@ -318,7 +312,7 @@ class Broker: KafkaType {
             metadata: [AssignmentStrategy.RoundRobin: metadata]
         )
         
-		connect().write(request) { response in
+		connection.write(request) { response in
 			self._groupCoordinationQueue.async {
 				guard let error = response.error else {
 					print("Unable to parse error.")
@@ -354,7 +348,7 @@ class Broker: KafkaType {
 	/// Use this if the client is not the leader
 	func syncGroup(_ groupId: String, generationId: Int32, callback: ((GroupMemberAssignment) -> ())? = nil) {
 		let request = SyncGroupRequest<GroupMemberAssignment>(groupId: groupId, generationId: generationId, memberId: nil, groupAssignment: [:])
-		connect().write(request) { response in
+		connection.write(request) { response in
 			self._groupCoordinationQueue.async {
 				guard let error = response.error else {
 					fatalError("Unable to parse error")
@@ -392,7 +386,7 @@ class Broker: KafkaType {
             groupAssignment: [memberId: groupAssignmentMetadata]
 		)
 
-		connect().write(request) { response in
+		connection.write(request) { response in
 			self._groupCoordinationQueue.async {
 				if let error = response.error {
 					if error.code == 0 {
@@ -415,7 +409,7 @@ class Broker: KafkaType {
     ) {
         let request = LeaveGroupRequest(groupId: groupId, memberId: memberId)
         
-		connect().write(request) { response in
+		connection.write(request) { response in
 			self._groupCoordinationQueue.async {
 				if let error = response.error {
 					if error.code == 0 {
@@ -444,7 +438,7 @@ class Broker: KafkaType {
             memberId: memberId
         )
         
-        connect().write(request) { response in
+        connection.write(request) { response in
             self._groupCoordinationQueue.async {
                 //print(response.description)
                 if let error = response.error {
@@ -464,7 +458,7 @@ class Broker: KafkaType {
 	func getTopicMetadata(topics: [TopicName] = [], completion: @escaping (MetadataResponse) -> Void) {
 		let topicMetadataRequest = TopicMetadataRequest(topics: topics)
 		
-		connect().write(topicMetadataRequest, callback: completion)
+		connection.write(topicMetadataRequest, callback: completion)
 	}
 	
 	func createTopic(topics: [TopicName: (numPartitions: Int32, replicationFactor: Int16)]) {
@@ -474,7 +468,7 @@ class Broker: KafkaType {
 												   replicationFactor: options.replicationFactor)
 		}
 		let request = CreateTopicsRequest(requests: topicRequests)
-		_ = connect().writeBlocking(request)
+		_ = connection.writeBlocking(request)
 	}
     
     private func getReadQueue(_ topic: String, partition: Int32) -> DispatchQueue {
