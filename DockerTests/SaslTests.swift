@@ -63,9 +63,7 @@ class SaslTests: DockerTestBase {
 			let connection = try Connection(config: config)
 			
 			let request = TopicMetadataRequest(topic: "test")
-			_ = connection.writeBlocking(request)
-			XCTFail("Somehow we authenticated with the wrong credentials?")
-		} catch Connection.AuthenticationError.authenticationFailed {
+			XCTAssertNil(connection.writeBlocking(request))
 		} catch {
 			XCTFail("Got some other error: \(error)")
 		}

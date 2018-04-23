@@ -510,6 +510,16 @@ class Broker: KafkaType {
 		
 		connect().write(topicMetadataRequest, callback: completion)
 	}
+	
+	func createTopic(topics: [TopicName: (numPartitions: Int32, replicationFactor: Int16)]) {
+		let topicRequests = topics.map { (name, options) in
+			CreateTopicsRequest.CreateTopicRequest(topic: name,
+												   numPartitions: options.numPartitions,
+												   replicationFactor: options.replicationFactor)
+		}
+		let request = CreateTopicsRequest(requests: topicRequests)
+		_ = connect().writeBlocking(request)
+	}
     
     private func getReadQueue(_ topic: String, partition: Int32) -> DispatchQueue {
         var readQueue: DispatchQueue

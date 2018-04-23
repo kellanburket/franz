@@ -167,6 +167,8 @@ open class Cluster {
             throw ClusterError.noBatchForTopicPartition(topic: topic, partition: partition)
         }
     }
+	
+	//MARK: Topics
 
     /**
         List all available topics
@@ -174,18 +176,30 @@ open class Cluster {
         - Parameter callback:
      */
     open func listTopics(_ callback: @escaping ([Topic]) -> ()) {
-        _brokers.first?.value.getTopicMetadata(clientId: clientId) { response in
-            var topics = [Topic]()
-            for (name, topic) in response.topics {
-                var partitions = [PartitionId]()
-                for (partition, _) in topic.partitions {
-                    partitions.append(partition)
-                }
-                topics.append(Topic(name: name, partitions: partitions))
-            }
-            callback(topics)
-        }
+		self._brokers.first?.value.getTopicMetadata(clientId: self.clientId) { response in
+			var topics = [Topic]()
+			for (name, topic) in response.topics {
+				var partitions = [PartitionId]()
+				for (partition, _) in topic.partitions {
+					partitions.append(partition)
+				}
+				topics.append(Topic(name: name, partitions: partitions))
+			}
+			callback(topics)
+		}
     }
+	
+	/**
+		Create a new topic
+		- parameter name: The name of the topic
+		- parameter partitions: The number of partitions to be created
+		- parameter replicationFactor: The number of replicas the topic should be stored on
+	*/
+	public func createTopic(name: String, partitions: Int32, replicationFactor: Int16) {
+		dispatchQueue.async {
+			self._brokers.first?.value.createTopic(topics: [name: (partitions, replicationFactor)])
+		}
+	}
 
     /**
         Get offsets for topic partition
