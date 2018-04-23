@@ -20,7 +20,6 @@ class Broker: KafkaType {
     var groupMembership = [String: GroupMembership]()
 
     var nodeId: Int32
-    let host: String
 
 	private let connectionConfig: Connection.Config
 	lazy private var connection: Connection = {
@@ -35,25 +34,24 @@ class Broker: KafkaType {
 		}
 	}()
     
-    var ipv4: String {
-        return connectionConfig.ipv4
+    var host: String {
+        return connectionConfig.host
     }
 	var port: Int32 {
 		return connectionConfig.port
 	}
     
-	init(connectionConfig: Connection.Config, host: String? = nil) {
+	init(connectionConfig: Connection.Config) {
 		self.connectionConfig = connectionConfig
-		self.host = host ?? connectionConfig.ipv4
         nodeId = -1
     }
 	
 	required init(data: inout Data) {
         nodeId = Int32(data: &data)
-        host = String(data: &data)
+        let host = String(data: &data)
         let port = Int32(data: &data)
 		//TODO: ??? get connection config in
-		connectionConfig = Connection.Config(ipv4: host, port: port, clientId: "placeholder", authentication: .none)
+		connectionConfig = Connection.Config(host: host, port: port, clientId: "placeholder", authentication: .none)
     }
     
     var dataLength: Int {

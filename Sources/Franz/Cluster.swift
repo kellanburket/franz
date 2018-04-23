@@ -48,7 +48,7 @@ public class Cluster {
         set {
             _brokers = [String: Broker]()
             for broker in newValue {
-                _brokers["\(broker.ipv4):\(broker.port)"] = broker
+                _brokers["\(broker.host):\(broker.port)"] = broker
             }
         }
     }
@@ -61,7 +61,7 @@ public class Cluster {
     */
 	public init(brokers: [(String, Int32)], clientId: String, nodeId: Int32? = nil, authentication: Authentication = .none) {
         for (ipv4, port) in brokers {
-			let connectionConfig = Connection.Config(ipv4: ipv4, port: port, clientId: clientId, authentication: authentication)
+			let connectionConfig = Connection.Config(host: ipv4, port: port, clientId: clientId, authentication: authentication)
 			self._brokers["\(ipv4):\(port)"] = Broker(connectionConfig: connectionConfig)
         }
         self.clientId = clientId

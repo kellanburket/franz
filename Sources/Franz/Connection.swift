@@ -103,14 +103,14 @@ class Connection: NSObject, StreamDelegate {
 	private var runLoop: RunLoop?
 	
 	struct Config {
-		let ipv4: String
+		let host: String
 		let port: Int32
 		let clientId: String
 		let authentication: Cluster.Authentication
 	}
     
 	init(config: Config) throws {
-        self.ipv4 = config.ipv4
+        self.ipv4 = config.host
         self.clientId = config.clientId
         self.port = config.port
 
