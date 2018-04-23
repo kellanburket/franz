@@ -33,25 +33,10 @@ public class Cluster {
 	let nodeId: ReplicaId
 
     lazy var dispatchQueue: DispatchQueue = {
-        return DispatchQueue(
-            label: "metadata.cluster.read.stream.franz",
-            attributes: []
-        )
+        return DispatchQueue(label: "metadata.cluster.read.stream.franz")
     }()
-    
-    ///Used for swapping in fake brokers during testing
-	private var _brokers = [String: Broker]()
-    internal var brokers: [Broker] {
-        get {
-            return Array(_brokers.values)
-        }
-        set {
-            _brokers = [String: Broker]()
-            for broker in newValue {
-                _brokers["\(broker.host):\(broker.port)"] = broker
-            }
-        }
-    }
+	
+	private var brokers = [String: Broker]()
     
     /**
         Create a new cluster
@@ -62,7 +47,7 @@ public class Cluster {
 	public init(brokers: [(String, Int32)], clientId: String, nodeId: Int32? = nil, authentication: Authentication = .none) {
         for (ipv4, port) in brokers {
 			let connectionConfig = Connection.Config(host: ipv4, port: port, clientId: clientId, authentication: authentication)
-			self._brokers["\(ipv4):\(port)"] = Broker(connectionConfig: connectionConfig)
+			self.brokers["\(ipv4):\(port)"] = Broker(connectionConfig: connectionConfig)
         }
         self.clientId = clientId
 
@@ -176,7 +161,7 @@ public class Cluster {
         - Parameter callback:
      */
     public func listTopics(_ callback: @escaping ([Topic]) -> ()) {
-		self._brokers.first?.value.getTopicMetadata { response in
+		self.brokers.first?.value.getTopicMetadata { response in
 			var topics = [Topic]()
 			for (name, topic) in response.topics {
 				var partitions = [PartitionId]()
@@ -197,7 +182,7 @@ public class Cluster {
 	*/
 	public func createTopic(name: String, partitions: Int32, replicationFactor: Int16) {
 		dispatchQueue.async {
-			self._brokers.first?.value.createTopic(topics: [name: (partitions, replicationFactor)])
+			self.brokers.first?.value.createTopic(topics: [name: (partitions, replicationFactor)])
 		}
 	}
 
@@ -258,7 +243,7 @@ public class Cluster {
         - Parameter callback:
      */
     public func listGroups(_ callback: @escaping (String, String) -> ()) {
-        for (_, broker) in _brokers {
+        for (_, broker) in brokers {
             dispatchQueue.async {
                 broker.listGroups() { a, b in
                     callback(a, b)
@@ -415,7 +400,7 @@ public class Cluster {
         ) {
         var dispatchBlocks = [()->()]()
         
-        for (_, broker) in _brokers {
+        for (_, broker) in brokers {
             let dispatchBlock = DispatchWorkItem(qos: .unspecified, flags: []) {
                 
                 var handleGetTopicMetadata: ((MetadataResponse) -> Void)!
@@ -436,12 +421,12 @@ public class Cluster {
                                 error(ClusterError.leaderNotFound(topic: topic, partition: partition))
                                 return
                             } else if let leader = response.brokers[partitionObj.leader] {
-                                if let broker = self._brokers["\(leader.host):\(leader.port)"] {
+                                if let broker = self.brokers["\(leader.host):\(leader.port)"] {
                                     broker.nodeId = leader.nodeId
                                     callback(broker)
                                     return
                                 } else {
-                                    self._brokers["\(leader.host):\(leader.port)"] = leader
+                                    self.brokers["\(leader.host):\(leader.port)"] = leader
                                     callback(leader)
                                     return
                                 }
@@ -472,7 +457,7 @@ public class Cluster {
     }
     
     func getGroupCoordinator(groupId: String, callback: @escaping (Broker) -> Void) {
-        _brokers.first?.value.getGroupCoordinator(groupId: groupId) { response in
+        brokers.first?.value.getGroupCoordinator(groupId: groupId) { response in
             let host = response.host
             let port = response.port
             
@@ -483,7 +468,7 @@ public class Cluster {
                 return
             }
             
-            if let broker = self._brokers["\(host):\(port)"] {
+            if let broker = self.brokers["\(host):\(port)"] {
                 callback(broker)
             } else {
                 print("Broker: \(host):\(port) Not Found.")
@@ -492,7 +477,7 @@ public class Cluster {
     }
     
     func getParitions(for topics: [TopicName], completion: @escaping ([TopicName: [Partition]]) -> Void) {
-        _brokers.first?.value.getTopicMetadata(topics: topics) { response in
+        brokers.first?.value.getTopicMetadata(topics: topics) { response in
             let partitions = response.topics.mapValues { $0.partitions.values.map({ $0 }) }
             completion(partitions)
         }
