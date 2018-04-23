@@ -26,7 +26,7 @@ public enum ClusterError: Error {
 /**
 A cluster that represents a connection to multiple brokers.
 */
-class Cluster {
+public class Cluster {
 
     private var batches = [String: [Int32: [MessageSetItem]]]()
     let clientId: String
@@ -105,7 +105,7 @@ class Cluster {
         - Parameter partition:
         - Parameter message:
      */
-    func sendMessage(_ topic: String, partition: Int32 = 0, message: String) {
+    public func sendMessage(_ topic: String, partition: Int32 = 0, message: String) {
         findTopicLeader(topic, partition: partition, { leader in
             let messages = MessageSet(values: [MessageSetItem(value: message)])
             leader.send(
@@ -126,7 +126,7 @@ class Cluster {
         - Parameter partition:
         - Parameter message:
      */
-    func batchMessage(_ topic: String, partition: Int32, message: String) {
+    public func batchMessage(_ topic: String, partition: Int32, message: String) {
         let messageSetItem = MessageSetItem(value: message)
         if var topicPartitions = batches[topic] {
             if var topicPartition = topicPartitions[partition] {
@@ -150,7 +150,7 @@ class Cluster {
      
         - Throws ClusterError.NoBatchForTopicPartition
      */
-    func sendBatch(_ topic: String, partition: Int32) throws {
+    public func sendBatch(_ topic: String, partition: Int32) throws {
         if let topicBatch = batches[topic], let partitionBatch = topicBatch[partition] {
             findTopicLeader(topic, partition: partition, { leader in
                 leader.send(
@@ -175,8 +175,8 @@ class Cluster {
 
         - Parameter callback:
      */
-    func listTopics(_ callback: @escaping ([Topic]) -> ()) {
-		self._brokers.first?.value.getTopicMetadata(clientId: self.clientId) { response in
+    public func listTopics(_ callback: @escaping ([Topic]) -> ()) {
+		self._brokers.first?.value.getTopicMetadata { response in
 			var topics = [Topic]()
 			for (name, topic) in response.topics {
 				var partitions = [PartitionId]()
@@ -208,14 +208,13 @@ class Cluster {
         - Parameter partition:
         - Parameter callback:
      */
-    func getOffsets(
+    public func getOffsets(
         _ topic: String,
         partition: Int32,
         callback: @escaping ([Int64]) -> ()
     ) {
         findTopicLeader(topic, partition: partition, { leader in
 			leader.getOffsets(for: [topic: [partition]],
-                clientId: self.clientId,
                 callback: { callback($0[topic]![partition]!) }
             )
         }, { error in
@@ -231,7 +230,7 @@ class Cluster {
         - Parameter offset:
         - Parameter callback:
      */
-    func getMessages(
+    public func getMessages(
         _ topic: String,
         partition: Int32,
         offset: Int64,
@@ -242,7 +241,6 @@ class Cluster {
                 topic,
                 partition: partition,
                 offset: offset,
-                clientId: self.clientId,
                 replicaId: self.nodeId
             ) { messages in
                 for message in messages {
@@ -259,10 +257,10 @@ class Cluster {
 
         - Parameter callback:
      */
-    func listGroups(_ callback: @escaping (String, String) -> ()) {
+    public func listGroups(_ callback: @escaping (String, String) -> ()) {
         for (_, broker) in _brokers {
             dispatchQueue.async {
-                broker.listGroups(clientId: self.clientId) { a, b in
+                broker.listGroups() { a, b in
                     callback(a, b)
                 }
             }
@@ -403,7 +401,7 @@ class Cluster {
     internal func joinGroup(id: String, topics: [TopicName], callback: @escaping (Broker, GroupMembership) -> (), error: (KafkaErrorCode) -> ()
     ) {
         getGroupCoordinator(groupId: id) { broker in
-            broker.join(groupId: id, subscription: topics, clientId: self.clientId) { groupMembership in
+            broker.join(groupId: id, subscription: topics) { groupMembership in
                 callback(broker, groupMembership)
             }
         }
@@ -429,7 +427,7 @@ class Cluster {
 							let retryTopics = response.topics.filter { key, val in val.error == .leaderNotAvailable }.compactMap { $1.name }
 							print("Leader not available, trying to find leader again in 1 second")
                             Thread.sleep(forTimeInterval: 1)
-                            broker.getTopicMetadata(topics: retryTopics, clientId: self.clientId, completion: handleGetTopicMetadata)
+                            broker.getTopicMetadata(topics: retryTopics, completion: handleGetTopicMetadata)
                             return
                         }
                         
@@ -458,7 +456,7 @@ class Cluster {
                     }
                 }
                 
-                broker.getTopicMetadata(topics: [topic], clientId: self.clientId, completion: handleGetTopicMetadata)
+                broker.getTopicMetadata(topics: [topic], completion: handleGetTopicMetadata)
                 
                 if dispatchBlocks.count > 0 {
                     self.dispatchQueue.async(execute: dispatchBlocks.removeFirst())
@@ -474,7 +472,7 @@ class Cluster {
     }
     
     func getGroupCoordinator(groupId: String, callback: @escaping (Broker) -> Void) {
-        _brokers.first?.value.getGroupCoordinator(groupId: groupId, clientId: clientId) { response in
+        _brokers.first?.value.getGroupCoordinator(groupId: groupId) { response in
             let host = response.host
             let port = response.port
             
@@ -494,7 +492,7 @@ class Cluster {
     }
     
     func getParitions(for topics: [TopicName], completion: @escaping ([TopicName: [Partition]]) -> Void) {
-        _brokers.first?.value.getTopicMetadata(topics: topics, clientId: clientId) { response in
+        _brokers.first?.value.getTopicMetadata(topics: topics) { response in
             let partitions = response.topics.mapValues { $0.partitions.values.map({ $0 }) }
             completion(partitions)
         }

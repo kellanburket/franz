@@ -172,14 +172,14 @@ public class Message: NSObject {
     /**
         Message data
     */
-    var value: Data {
+    public var value: Data {
 		return _value 
     }
 
     /**
         Message key
      */
-    var key: Data? {
+    public var key: Data? {
         return _key
     }
 

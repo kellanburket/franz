@@ -10,15 +10,15 @@ import Foundation
 
 public typealias TopicName = String
 
-class Topic: NSObject {
+public class Topic: NSObject {
     private var _name: TopicName
     private var _partitions: [Int32]
     
-    var name: String {
+    public var name: String {
         return _name
     }
     
-    var partitions: [Int32] {
+    public var partitions: [Int32] {
         return _partitions
     }
     

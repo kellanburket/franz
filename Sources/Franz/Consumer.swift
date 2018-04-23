@@ -42,7 +42,7 @@ public class Consumer {
 	var offsetsToCommit = [TopicName: [PartitionId: (Offset, OffsetMetadata?)]]()
 	@objc private func commitGroupoffsets() {
 		guard let groupId = self.membership?.group.id, let broker = self.broker else { return }
-		broker.commitGroupOffset(groupId: groupId, topics: offsetsToCommit, clientId: cluster.clientId)
+		broker.commitGroupOffset(groupId: groupId, topics: offsetsToCommit)
 	}
 	
 	@objc private func sendHeartbeat() {
@@ -51,7 +51,7 @@ public class Consumer {
 			let memberId = self.membership?.memberId else {
 				return
 		}
-		self.broker?.heartbeatRequest(groupId, generationId: generationId, memberId: memberId, clientId: cluster.clientId)
+		self.broker?.heartbeatRequest(groupId, generationId: generationId, memberId: memberId)
 	}
 	
 	/**
@@ -81,7 +81,7 @@ public class Consumer {
 					return copy
 				})
 				
-				self.cancelToken = broker.poll(topics: ids, fromStart: fromStart, groupId: membership.group.id, clientId: self.cluster.clientId, replicaId: ReplicaId.none, callback: { topic, partitionId, offset, messages in
+				self.cancelToken = broker.poll(topics: ids, fromStart: fromStart, groupId: membership.group.id, replicaId: ReplicaId.none, callback: { topic, partitionId, offset, messages in
 					messages.forEach(handler)
 					
 					if var topicOffsets = self.offsetsToCommit[topic] {

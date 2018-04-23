@@ -169,7 +169,6 @@ class GroupMembership {
             _group.id,
             generationId:_group._generationId,
             memberId: memberId,
-            clientId: _group._clientId,
             callback: callback
         )
     }
