@@ -28,12 +28,12 @@ public class Consumer {
 		self.cluster = cluster
 		
 		if #available(OSX 10.12, iOS 10, tvOS 10, watchOS 3, *) {
-//			groupOffsetsTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in self.commitGroupoffsets() }
-//			heartbeatTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in self.sendHeartbeat() }
+			groupOffsetsTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in self.commitGroupoffsets() }
+			heartbeatTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in self.sendHeartbeat() }
 		} else {
 			// Fallback on earlier versions
-//			groupOffsetsTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(commitGroupoffsets), userInfo: nil, repeats: true)
-//			heartbeatTimer =  Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(sendHeartbeat), userInfo: nil, repeats: true)
+			groupOffsetsTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(commitGroupoffsets), userInfo: nil, repeats: true)
+			heartbeatTimer =  Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(sendHeartbeat), userInfo: nil, repeats: true)
 		}
 	}
 	
@@ -89,8 +89,6 @@ public class Consumer {
 					} else {
 						self.offsetsToCommit[topic] = [partitionId: (offset, nil)]
 					}
-					
-					self.commitGroupoffsets()
 				}, errorCallback: { error in
 					print("Error polling: \(error.localizedDescription)")
 				})
