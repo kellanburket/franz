@@ -79,26 +79,25 @@ class Connection: NSObject, StreamDelegate {
 		case authenticationFailed
 	}
     
-    private var ipv4: String
+    private var host: String
+	private var port: Int32
 
-    private var _requestCallbacks = [Int32: ((Data?) -> Void)]()
-    
+    private var requestCallbacks = [Int32: ((Data?) -> Void)]()
+	
     private var clientId: String
-    
+	
     private var readStream: Unmanaged<CFReadStream>?
     private var writeStream: Unmanaged<CFWriteStream>?
 
     private var inputStream: InputStream?
     private var outputStream: OutputStream?
     
-    private var port: Int32
-    
     private let responseLengthSize: Int32 = 4
     private let responseCorrelationIdSize: Int32 = 4
 
-    private var _inputStreamQueue: DispatchQueue
-    private var _outputStreamQueue: DispatchQueue
-    private var _writeRequestBlocks = [()->()]()
+    private var inputStreamQueue: DispatchQueue
+    private var outputStreamQueue: DispatchQueue
+    private var writeRequestBlocks = [()->()]()
 	
 	private var runLoop: RunLoop?
 	
@@ -110,23 +109,18 @@ class Connection: NSObject, StreamDelegate {
 	}
     
 	init(config: Config) throws {
-        self.ipv4 = config.host
+        self.host = config.host
         self.clientId = config.clientId
         self.port = config.port
 
-        _inputStreamQueue = DispatchQueue(
-            label: "\(self.ipv4).\(self.port).input.stream.franz", attributes: []
-        )
-
-        _outputStreamQueue = DispatchQueue(
-            label: "\(self.ipv4).\(self.port).output.stream.franz", attributes: []
-        )
+        inputStreamQueue = DispatchQueue(label: "\(self.host).\(self.port).input.stream.franz")
+		outputStreamQueue = DispatchQueue(label: "\(self.host).\(self.port).output.stream.franz")
 
         super.init()
 
         CFStreamCreatePairWithSocketToHost(
             kCFAllocatorDefault,
-            ipv4 as CFString,
+            host as CFString,
             UInt32(port),
             &readStream,
             &writeStream
@@ -174,52 +168,50 @@ class Connection: NSObject, StreamDelegate {
     }
     
     private func read(_ timeout: Double = 3000) {
-        _inputStreamQueue.async {
-            if let inputStream = self.inputStream {
-                do {
-                    let (size, correlationId) = try self.getMessageMetadata()
-                    var bytes = [UInt8]()
-                    let startTime = Date().timeIntervalSince1970
-                    while bytes.count < Int(size) {
-                        
-                        if inputStream.hasBytesAvailable {
-                            var buffer = [UInt8](repeating: 0, count: Int(size))
-                            let bytesInBuffer = inputStream.read(&buffer, maxLength: Int(size))
-                            bytes += buffer.prefix(upTo: Int(bytesInBuffer))
-                        }
-                        
-                        let currentTime = Date().timeIntervalSince1970
-                        let timeDelta = (currentTime - startTime) * 1000
-
-                        if  timeDelta >= timeout {
-                            print("Timeout @ Delta \(timeDelta).")
-                            break
-                        }
-                    }
-                    
-                    if let callback = self._requestCallbacks[correlationId] {
-						self._requestCallbacks.removeValue(forKey: correlationId)
-						callback(Data(bytes: bytes))
-                    } else {
-                        print(
-                            "Unable to find reuqest callback for " +
-                            "Correlation Id: \(correlationId)"
-                        )
-                    }
-                } catch ConnectionError.zeroLengthResponse {
-                    print("Zero Length Response")
-                } catch ConnectionError.partialResponse(let size) {
-                    print("Response Size: \(size) is invalid.")
-                } catch ConnectionError.bytesNoLongerAvailable {
-                    return
-                } catch {
-                    print("Error")
-                }
-            } else {
-                print("Unable to find Input Stream")
-            }
-
-            //print("\tReleasing Input Stream Read")
+        inputStreamQueue.async {
+			guard let inputStream = self.inputStream else {
+				print("Unable to find Input Stream")
+				return
+			}
+			do {
+				let (size, correlationId) = try self.getMessageMetadata()
+				var bytes = [UInt8]()
+				let startTime = Date().timeIntervalSince1970
+				while bytes.count < Int(size) {
+					
+					if inputStream.hasBytesAvailable {
+						var buffer = [UInt8](repeating: 0, count: Int(size))
+						let bytesInBuffer = inputStream.read(&buffer, maxLength: Int(size))
+						bytes += buffer.prefix(upTo: Int(bytesInBuffer))
+					}
+					
+					let currentTime = Date().timeIntervalSince1970
+					let timeDelta = (currentTime - startTime) * 1000
+					
+					if  timeDelta >= timeout {
+						print("Timeout @ Delta \(timeDelta).")
+						break
+					}
+				}
+				
+				if let callback = self.requestCallbacks[correlationId] {
+					self.requestCallbacks.removeValue(forKey: correlationId)
+					callback(Data(bytes: bytes))
+				} else {
+					print(
+						"Unable to find request callback for " +
+						"Correlation Id: \(correlationId)"
+					)
+				}
+			} catch ConnectionError.zeroLengthResponse {
+				print("Zero length response")
+			} catch ConnectionError.partialResponse(let size) {
+				print("Response Size: \(size) is invalid.")
+			} catch ConnectionError.bytesNoLongerAvailable {
+				return
+			} catch {
+				print("Error")
+			}
         }
     }
 	
@@ -240,7 +232,7 @@ class Connection: NSObject, StreamDelegate {
 	private func write<T: KafkaRequest>(_ request: T, callback: @escaping (T.Response) -> Void, errorCallback: (() -> Void)?) {
 
 		let corId = makeCorrelationId()
-		_requestCallbacks[corId] = { data in
+		requestCallbacks[corId] = { data in
 			if var mutableData = data {
 				callback(T.Response.init(data: &mutableData))
 			} else {
@@ -248,27 +240,27 @@ class Connection: NSObject, StreamDelegate {
 			}
 		}
 		let dispatchBlock = DispatchWorkItem(qos: .unspecified, flags: []) {
-			if let stream = self.outputStream {
-				if stream.hasSpaceAvailable {
-					let data = request.data(correlationId: corId, clientId: self.clientId)
-					
-					data.withUnsafeBytes { (bytes: UnsafePointer<UInt8>) -> Void in
-						stream.write(bytes, maxLength: data.count)
-					}
-				} else {
-					print("No Space Available for Writing")
-				}
+			guard let stream = self.outputStream else {
+				return
+			}
+			guard stream.hasSpaceAvailable else {
+				print("No Space Available for Writing")
+				return
+			}
+			let data = request.data(correlationId: corId, clientId: self.clientId)
+			data.withUnsafeBytes { (bytes: UnsafePointer<UInt8>) -> Void in
+				stream.write(bytes, maxLength: data.count)
 			}
 		}
 		
 		if let outputStream = outputStream {
 			if outputStream.hasSpaceAvailable {
-				_outputStreamQueue.async(execute: dispatchBlock)
+				outputStreamQueue.async(execute: dispatchBlock)
 			} else {
-				_writeRequestBlocks.append(dispatchBlock.perform)
+				writeRequestBlocks.append(dispatchBlock.perform)
 			}
 		} else {
-			_writeRequestBlocks.append(dispatchBlock.perform)
+			writeRequestBlocks.append(dispatchBlock.perform)
 		}
     }
 	
@@ -286,37 +278,37 @@ class Connection: NSObject, StreamDelegate {
 	}
 	
     private func getMessageMetadata() throws -> (Int32, Int32) {
-        if let activeInputStream = inputStream {
-            let length = responseLengthSize + responseCorrelationIdSize
-            var buffer = Array<UInt8>(repeating: 0, count: Int(length))
-            if activeInputStream.hasBytesAvailable {
-				activeInputStream.read(&buffer, maxLength: Int(length))
-            } else {
-                throw ConnectionError.bytesNoLongerAvailable
-            }
-			let sizeBytes = buffer.prefix(upTo: Int(responseLengthSize))
-			buffer.removeFirst(Int(responseLengthSize))
+		guard let activeInputStream = inputStream else {
+			throw ConnectionError.unableToFindInputStream
+		}
 			
-			var sizeData = Data(bytes: sizeBytes)
-			let responseLengthSizeInclusive = Int32(data: &sizeData)
-            
-            if responseLengthSizeInclusive > 4 {
-				let correlationIdSizeBytes = buffer.prefix(upTo: Int(responseCorrelationIdSize))
-				buffer.removeFirst(Int(responseCorrelationIdSize))
-				
-				var correlationIdSizeData = Data(bytes: correlationIdSizeBytes)
-                return (
-                    responseLengthSizeInclusive - responseLengthSize,
-                    Int32(data: &correlationIdSizeData)
-                )
-            } else if responseLengthSizeInclusive == 0 {
-                throw ConnectionError.zeroLengthResponse
-            } else {
-                throw ConnectionError.partialResponse(size: responseLengthSizeInclusive)
-            }
-        }
-        
-        throw ConnectionError.unableToFindInputStream
+		let length = responseLengthSize + responseCorrelationIdSize
+		var buffer = Array<UInt8>(repeating: 0, count: Int(length))
+		if activeInputStream.hasBytesAvailable {
+			activeInputStream.read(&buffer, maxLength: Int(length))
+		} else {
+			throw ConnectionError.bytesNoLongerAvailable
+		}
+		let sizeBytes = buffer.prefix(upTo: Int(responseLengthSize))
+		buffer.removeFirst(Int(responseLengthSize))
+		
+		var sizeData = Data(bytes: sizeBytes)
+		let responseLengthSizeInclusive = Int32(data: &sizeData)
+		
+		if responseLengthSizeInclusive > 4 {
+			let correlationIdSizeBytes = buffer.prefix(upTo: Int(responseCorrelationIdSize))
+			buffer.removeFirst(Int(responseCorrelationIdSize))
+			
+			var correlationIdSizeData = Data(bytes: correlationIdSizeBytes)
+			return (
+				responseLengthSizeInclusive - responseLengthSize,
+				Int32(data: &correlationIdSizeData)
+			)
+		} else if responseLengthSizeInclusive == 0 {
+			throw ConnectionError.zeroLengthResponse
+		} else {
+			throw ConnectionError.partialResponse(size: responseLengthSizeInclusive)
+		}
     }
     
     func stream(_ aStream: Stream, handle eventCode: Stream.Event) {
@@ -352,9 +344,9 @@ class Connection: NSObject, StreamDelegate {
             case .open:
                 switch eventCode {
                 case Stream.Event.hasSpaceAvailable:
-                    if _writeRequestBlocks.count > 0 {
-                        let block = _writeRequestBlocks.removeFirst()
-                        _outputStreamQueue.async(execute: block)
+                    if writeRequestBlocks.count > 0 {
+                        let block = writeRequestBlocks.removeFirst()
+                        outputStreamQueue.async(execute: block)
                     }
                 case Stream.Event.openCompleted:
                     return
@@ -374,6 +366,7 @@ class Connection: NSObject, StreamDelegate {
         }
     }
 	
+	/// Closes the connection and removes any streams from the RunLoop.
 	func close() {
 		print("Closing connection")
 		inputStream?.close()
@@ -382,6 +375,6 @@ class Connection: NSObject, StreamDelegate {
 			inputStream?.remove(from: runLoop, forMode: .defaultRunLoopMode)
 			outputStream?.remove(from: runLoop, forMode: .defaultRunLoopMode)
 		}
-		_requestCallbacks.forEach { $1(nil) }
+		requestCallbacks.forEach { $1(nil) }
 	}
 }
