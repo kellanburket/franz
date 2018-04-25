@@ -247,7 +247,20 @@ enum CompressionCodec: Int8 {
 }
 
 
-enum ApiKey: Int16 {
+enum ApiKey: Int16, KafkaType {
+	
+	init(data: inout Data) {
+		self.init(rawValue: Int16(data: &data))!
+	}
+	
+	var data: Data {
+		return rawValue.data
+	}
+	
+	var dataLength: Int {
+		return rawValue.dataLength
+	}
+	
     case produceRequest = 0
     case fetchRequest = 1
     case offsetRequest = 2
@@ -261,18 +274,13 @@ enum ApiKey: Int16 {
     case syncGroupRequest = 14
     case describeGroupsRequest = 15
     case listGroupsRequest = 16
+	case saslHandshake = 17
+	case apiVersions = 18
+	case createTopics = 19
+	case saslAuthenticate = 36
 }
 
-
-enum ApiVersion: Int16 {
-	static var defaultVersion: ApiVersion {
-		return v0
-	}
-	case v0 = 0
-	case v1 = 1
-	case v2 = 2
-}
-
+typealias ApiVersion = Int16
 
 /**
     Group Protocols
@@ -343,6 +351,8 @@ public enum GroupState: String {
 		Group is preparing to rebalance
 	*/
 	case PreparingRebalance = "PreparingRebalance"
+	
+	case CompletingRebalance = "CompletingRebalance"
 }
 
 /**

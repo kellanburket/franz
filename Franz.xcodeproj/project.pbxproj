@@ -7,19 +7,28 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A313BECB208D38DE00581A50 /* CreateTopicsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A313BECA208D38DE00581A50 /* CreateTopicsAPI.swift */; };
 		A314CB8D1F08B457008D61A6 /* CRCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A314CB8C1F08B457008D61A6 /* CRCTests.swift */; };
+		A317D929208AB047008427B9 /* SaslTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A317D927208AB042008427B9 /* SaslTests.swift */; };
+		A317D92B208AB5B7008427B9 /* APIVersionsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A317D92A208AB5B7008427B9 /* APIVersionsAPI.swift */; };
 		A32A62E11F43B733006F9111 /* ArrayProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A32A62E01F43B733006F9111 /* ArrayProtocolTests.swift */; };
 		A3426BA51F25267500579CF8 /* AssignmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3426BA41F25267500579CF8 /* AssignmentTests.swift */; };
+		A34EBFC02083CDDC00A9D0AA /* SaslApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = A34EBFBF2083CDDC00A9D0AA /* SaslApi.swift */; };
 		A353E8FF1F42325F00CCB63D /* IntegerProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A353E8FE1F42325F00CCB63D /* IntegerProtocolTests.swift */; };
 		A3850F501F4B067800C62CF1 /* MessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3850F4F1F4B067800C62CF1 /* MessageTests.swift */; };
 		A38623331F43A3BE005590B8 /* VariableLengthProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38623321F43A3BE005590B8 /* VariableLengthProtocolTests.swift */; };
 		A386B8091F196A730086BFF2 /* Assignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A386B8081F196A730086BFF2 /* Assignment.swift */; };
 		A38E69A01F391BCB0044D3D3 /* OldConsumers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */; };
 		A38E69A11F391C350044D3D3 /* Consumer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38E699D1F391B960044D3D3 /* Consumer.swift */; };
+		A3BB0309208DC54C0067C210 /* TopicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BB0308208DC54C0067C210 /* TopicTests.swift */; };
+		A3CCBD51208C21BD00D0912C /* kafka_server_jaas.conf in Resources */ = {isa = PBXBuildFile; fileRef = A3F2757920884A5900F2320B /* kafka_server_jaas.conf */; };
+		A3CCBD54208C620B00D0912C /* docker-compose-sasl.yml in Resources */ = {isa = PBXBuildFile; fileRef = A3CCBD53208C620B00D0912C /* docker-compose-sasl.yml */; };
 		A3CE7D951F5A004F00FBB198 /* Franz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "franz::franz::Product" /* Franz.framework */; };
 		A3CE7D9B1F5A006100FBB198 /* ConsumerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */; };
 		A3CE7D9C1F5A006100FBB198 /* DockerTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */; };
 		A3CE7D9E1F5A066100FBB198 /* docker-compose.yml in Resources */ = {isa = PBXBuildFile; fileRef = A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */; };
+		A3EEB06E2084499700F90979 /* SaslMechanism.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3EEB06C2084499300F90979 /* SaslMechanism.swift */; };
+		A3EEB070208449FA00F90979 /* PlainMechanism.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3EEB06F208449FA00F90979 /* PlainMechanism.swift */; };
 		OBJ_50 /* Franz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "franz::franz::Product" /* Franz.framework */; };
 		OBJ_57 /* AdminAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* AdminAPI.swift */; };
 		OBJ_58 /* Broker.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* Broker.swift */; };
@@ -42,7 +51,6 @@
 		OBJ_77 /* Partition.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_30 /* Partition.swift */; };
 		OBJ_78 /* ProduceAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_31 /* ProduceAPI.swift */; };
 		OBJ_79 /* Topic.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_32 /* Topic.swift */; };
-		OBJ_80 /* Variables.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_33 /* Variables.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,10 +71,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A313BECA208D38DE00581A50 /* CreateTopicsAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTopicsAPI.swift; sourceTree = "<group>"; };
 		A314CB8C1F08B457008D61A6 /* CRCTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRCTests.swift; sourceTree = "<group>"; };
+		A317D927208AB042008427B9 /* SaslTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaslTests.swift; sourceTree = "<group>"; };
+		A317D92A208AB5B7008427B9 /* APIVersionsAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIVersionsAPI.swift; sourceTree = "<group>"; };
 		A32A62E01F43B733006F9111 /* ArrayProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayProtocolTests.swift; sourceTree = "<group>"; };
 		A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = "docker-compose.yml"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		A3426BA41F25267500579CF8 /* AssignmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignmentTests.swift; sourceTree = "<group>"; };
+		A34EBFBF2083CDDC00A9D0AA /* SaslApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaslApi.swift; sourceTree = "<group>"; };
 		A353E8FE1F42325F00CCB63D /* IntegerProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegerProtocolTests.swift; sourceTree = "<group>"; };
 		A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumerTests.swift; sourceTree = "<group>"; };
 		A3850F4F1F4B067800C62CF1 /* MessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTests.swift; sourceTree = "<group>"; };
@@ -75,9 +87,14 @@
 		A386B8081F196A730086BFF2 /* Assignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assignment.swift; sourceTree = "<group>"; };
 		A38E699D1F391B960044D3D3 /* Consumer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Consumer.swift; sourceTree = "<group>"; };
 		A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldConsumers.swift; sourceTree = "<group>"; };
+		A3BB0308208DC54C0067C210 /* TopicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicTests.swift; sourceTree = "<group>"; };
+		A3CCBD53208C620B00D0912C /* docker-compose-sasl.yml */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = "docker-compose-sasl.yml"; sourceTree = "<group>"; tabWidth = 2; usesTabs = 0; };
 		A3CE7D901F5A004E00FBB198 /* DockerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DockerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3CE7D941F5A004F00FBB198 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		OBJ_10 /* Broker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Broker.swift; sourceTree = "<group>"; };
+		A3EEB06C2084499300F90979 /* SaslMechanism.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaslMechanism.swift; sourceTree = "<group>"; };
+		A3EEB06F208449FA00F90979 /* PlainMechanism.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlainMechanism.swift; sourceTree = "<group>"; };
+		A3F2757920884A5900F2320B /* kafka_server_jaas.conf */ = {isa = PBXFileReference; lastKnownFileType = text; path = kafka_server_jaas.conf; sourceTree = "<group>"; };
+		OBJ_10 /* Broker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Broker.swift; sourceTree = "<group>"; usesTabs = 1; };
 		OBJ_11 /* Cluster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cluster.swift; sourceTree = "<group>"; };
 		OBJ_12 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
 		OBJ_15 /* CRC32.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRC32.swift; sourceTree = "<group>"; };
@@ -97,7 +114,6 @@
 		OBJ_30 /* Partition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Partition.swift; sourceTree = "<group>"; };
 		OBJ_31 /* ProduceAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProduceAPI.swift; sourceTree = "<group>"; };
 		OBJ_32 /* Topic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Topic.swift; sourceTree = "<group>"; };
-		OBJ_33 /* Variables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Variables.swift; sourceTree = "<group>"; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		OBJ_9 /* AdminAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminAPI.swift; sourceTree = "<group>"; };
 		"franz::franz::Product" /* Franz.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Franz.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -143,8 +159,18 @@
 				OBJ_28 /* OffsetCommitAPI.swift */,
 				OBJ_29 /* OffsetFetchAPI.swift */,
 				OBJ_31 /* ProduceAPI.swift */,
+				A34EBFBF2083CDDC00A9D0AA /* SaslApi.swift */,
+				A317D92A208AB5B7008427B9 /* APIVersionsAPI.swift */,
+				A313BECA208D38DE00581A50 /* CreateTopicsAPI.swift */,
 			);
 			path = API;
+			sourceTree = "<group>";
+		};
+		A34EBFC12083D5DF00A9D0AA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		A38623311F43A31F005590B8 /* Protocol */ = {
@@ -162,12 +188,25 @@
 		A3CE7D911F5A004F00FBB198 /* DockerTests */ = {
 			isa = PBXGroup;
 			children = (
+				A3F2757920884A5900F2320B /* kafka_server_jaas.conf */,
 				A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */,
 				A353FF781F2FF3B40047EE2C /* ConsumerTests.swift */,
+				A317D927208AB042008427B9 /* SaslTests.swift */,
+				A3BB0308208DC54C0067C210 /* TopicTests.swift */,
 				A3CE7D941F5A004F00FBB198 /* Info.plist */,
 				A32DAE311F48FA8F00D7A6A5 /* docker-compose.yml */,
+				A3CCBD53208C620B00D0912C /* docker-compose-sasl.yml */,
 			);
 			path = DockerTests;
+			sourceTree = "<group>";
+		};
+		A3EEB06B208443BD00F90979 /* Sasl mechanisms */ = {
+			isa = PBXGroup;
+			children = (
+				A3EEB06C2084499300F90979 /* SaslMechanism.swift */,
+				A3EEB06F208449FA00F90979 /* PlainMechanism.swift */,
+			);
+			path = "Sasl mechanisms";
 			sourceTree = "<group>";
 		};
 		OBJ_14 /* Crypt */ = {
@@ -215,6 +254,7 @@
 				OBJ_7 /* Sources */,
 				OBJ_35 /* Tests */,
 				OBJ_40 /* Products */,
+				A34EBFC12083D5DF00A9D0AA /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -229,6 +269,7 @@
 		OBJ_8 /* Franz */ = {
 			isa = PBXGroup;
 			children = (
+				A3EEB06B208443BD00F90979 /* Sasl mechanisms */,
 				A34EBFBE2083B88D00A9D0AA /* API */,
 				OBJ_10 /* Broker.swift */,
 				OBJ_11 /* Cluster.swift */,
@@ -243,7 +284,6 @@
 				OBJ_25 /* MessageSet.swift */,
 				OBJ_30 /* Partition.swift */,
 				OBJ_32 /* Topic.swift */,
-				OBJ_33 /* Variables.swift */,
 				A386B8081F196A730086BFF2 /* Assignment.swift */,
 				A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */,
 			);
@@ -338,8 +378,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				"franz::franzTests" /* FranzTests */,
 				"franz::franz" /* Franz */,
+				"franz::franzTests" /* FranzTests */,
 				A3CE7D8F1F5A004E00FBB198 /* DockerTests */,
 			);
 		};
@@ -350,7 +390,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A3CCBD51208C21BD00D0912C /* kafka_server_jaas.conf in Resources */,
 				A3CE7D9E1F5A066100FBB198 /* docker-compose.yml in Resources */,
+				A3CCBD54208C620B00D0912C /* docker-compose-sasl.yml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -362,7 +404,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				A3CE7D9C1F5A006100FBB198 /* DockerTestBase.swift in Sources */,
+				A3BB0309208DC54C0067C210 /* TopicTests.swift in Sources */,
 				A3CE7D9B1F5A006100FBB198 /* ConsumerTests.swift in Sources */,
+				A317D929208AB047008427B9 /* SaslTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -390,14 +434,18 @@
 				OBJ_60 /* Connection.swift in Sources */,
 				OBJ_62 /* CRC32.swift in Sources */,
 				OBJ_63 /* Enumerations.swift in Sources */,
+				A313BECB208D38DE00581A50 /* CreateTopicsAPI.swift in Sources */,
 				OBJ_65 /* FetchAPI.swift in Sources */,
 				OBJ_66 /* Group.swift in Sources */,
+				A34EBFC02083CDDC00A9D0AA /* SaslApi.swift in Sources */,
 				A386B8091F196A730086BFF2 /* Assignment.swift in Sources */,
 				OBJ_67 /* GroupCoordinatorAPI.swift in Sources */,
+				A317D92B208AB5B7008427B9 /* APIVersionsAPI.swift in Sources */,
 				A38E69A01F391BCB0044D3D3 /* OldConsumers.swift in Sources */,
 				OBJ_68 /* GroupMembershipAPI.swift in Sources */,
 				OBJ_69 /* KafkaProtocol.swift in Sources */,
 				OBJ_70 /* KafkaRequest.swift in Sources */,
+				A3EEB070208449FA00F90979 /* PlainMechanism.swift in Sources */,
 				OBJ_71 /* KafkaResponse.swift in Sources */,
 				OBJ_72 /* MessageSet.swift in Sources */,
 				OBJ_73 /* MetadataAPI.swift in Sources */,
@@ -405,9 +453,9 @@
 				OBJ_75 /* OffsetCommitAPI.swift in Sources */,
 				OBJ_76 /* OffsetFetchAPI.swift in Sources */,
 				OBJ_77 /* Partition.swift in Sources */,
+				A3EEB06E2084499700F90979 /* SaslMechanism.swift in Sources */,
 				OBJ_78 /* ProduceAPI.swift in Sources */,
 				OBJ_79 /* Topic.swift in Sources */,
-				OBJ_80 /* Variables.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -455,7 +503,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = DockerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = Franz.DockerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -490,7 +538,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = DockerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = Franz.DockerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -658,6 +706,7 @@
 				PRODUCT_MODULE_NAME = Franz;
 				PRODUCT_NAME = Franz;
 				SKIP_INSTALL = YES;
+				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Csasl";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
 				SWIFT_VERSION = 4.0;
 				TARGET_NAME = franz;
@@ -682,6 +731,7 @@
 				PRODUCT_MODULE_NAME = Franz;
 				PRODUCT_NAME = Franz;
 				SKIP_INSTALL = YES;
+				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Csasl";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
 				SWIFT_VERSION = 4.0;
 				TARGET_NAME = franz;

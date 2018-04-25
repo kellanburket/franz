@@ -157,7 +157,7 @@ public class SimpleConsumer: OldConsumer {
 	/**
 	the delegate
 	*/
-	open var delegate: ConsumerDelegate
+	var delegate: ConsumerDelegate
 	
 	internal init(
 		topic: String,
@@ -174,12 +174,12 @@ public class SimpleConsumer: OldConsumer {
 	
 	Parameter offset:   starting offset
 	*/
-	open func poll(_ offset: Int64) {
+	func poll(_ offset: Int64) {
 		guard let coordinator = broker else {
 			return
 		}
 		
-		_ = coordinator.poll(topics: [_topic: [_partition: offset]], clientId: _clientId, replicaId: .none, callback: { topicName, partitionId, offset, messages in
+		_ = coordinator.poll(topics: [_topic: [_partition: offset]], replicaId: .none, callback: { topicName, partitionId, offset, messages in
 			messages.forEach { self.delegate.consumerDidReturnMessage($0, offset: offset) }
 		}, errorCallback: { error in
 			switch error {
@@ -206,7 +206,7 @@ public class HighLevelConsumer: OldConsumer {
 	/**
 	The Delegate
 	*/
-	open var delegate: HighLevelConsumerDelegate
+	var delegate: HighLevelConsumerDelegate
 	
 	internal var membership: GroupMembership?
 	
@@ -223,7 +223,7 @@ public class HighLevelConsumer: OldConsumer {
 	/**
 	Poll for messages
 	*/
-	open func poll() {
+	func poll() {
 		guard let groupId = membership?.group.id else {
 			print("Cannot poll without group membership id")
 			return
@@ -233,7 +233,7 @@ public class HighLevelConsumer: OldConsumer {
 			return
 		}
 		
-		_ = coordinator.poll(topics: [_topic: [_partition]], fromStart: true, groupId: groupId, clientId: _clientId, replicaId: .none, callback: { (topicName, partitionId, offset, messages) in
+		_ = coordinator.poll(topics: [_topic: [_partition]], fromStart: true, groupId: groupId, replicaId: .none, callback: { (topicName, partitionId, offset, messages) in
 			for (idx, message) in messages.enumerated() {
 				self.delegate.consumerDidReturnMessage(
 					message,
@@ -247,7 +247,7 @@ public class HighLevelConsumer: OldConsumer {
 			
 			let metadata = self.delegate.shouldAttachOffsetMetadata?(topicName, partition: partitionId, offset: offset)
 			
-			coordinator.commitGroupOffset(groupId: groupId, topics: [topicName: [partitionId: (offset, metadata)]], clientId: self._clientId, callback: {
+			coordinator.commitGroupOffset(groupId: groupId, topics: [topicName: [partitionId: (offset, metadata)]], callback: {
 				self.delegate.offsetDidCommit?(topicName, partition: partitionId, offset: offset)
 			})
 		}, errorCallback: { error in

@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import Foundation
 @testable import Franz
 
 class DockerTestBase: XCTestCase {
@@ -14,65 +15,74 @@ class DockerTestBase: XCTestCase {
 	static let startedSemaphore = DispatchSemaphore(value: 0)
 	
 	static let compose = URL(fileURLWithPath: "/usr/local/bin/docker-compose")
-	static let yml = Bundle(for: DockerTestBase.self).url(forResource: "docker-compose", withExtension: "yml")!
+	static let jaas = Bundle(for: DockerTestBase.self).url(forResource: "kafka_server_jaas", withExtension: "conf")!
+	
+	class var yml: URL {
+		return Bundle(for: DockerTestBase.self).url(forResource: "docker-compose", withExtension: "yml")!
+	}
+	
+	class var host: String { return "localhost" }
+	class var port: Int32 { return 9092 }
+	class var topics: [String] { return [] }
+	class var auth: Cluster.Authentication { return .none }
 	
 	override class func setUp() {
+		if CommandLine.arguments.contains("--no-docker") {
+			return
+		}
 		do {
+			let downDocker = Process()
+			downDocker.executableURL = compose
+			downDocker.arguments = ["-f", yml.path, "down"]
+			downDocker.standardOutput = nil
+			try downDocker.run()
+			downDocker.waitUntilExit()
 			
-			if #available(OSX 10.13, *) {
-				try Process.run(compose, arguments: ["-f", yml.path, "stop"]).waitUntilExit()
-				try Process.run(compose, arguments: ["-f", yml.path, "rm", "-f"]).waitUntilExit()
-				try docker = Process.run(compose, arguments: ["-f", yml.path, "up", "-d"])
-			} else {
-				Process.launchedProcess(launchPath: compose.path, arguments: ["-f", yml.path, "stop"]).waitUntilExit()
-				Process.launchedProcess(launchPath: compose.path, arguments: ["-f", yml.path, "rm", "-f"]).waitUntilExit()
-				docker = Process.launchedProcess(launchPath: compose.path, arguments: ["-f", yml.path, "up", "-d"])
-			}
+			docker = Process()
+			docker.executableURL = compose
+			docker.arguments = ["-f", yml.path, "up"]
+			docker.currentDirectoryURL = DockerTestBase.yml.deletingLastPathComponent()
+			docker.standardOutput = nil
 			
+			try docker.run()
 			waitForKafka()
 			
+			let topicRequests = topics.map { CreateTopicsRequest.CreateTopicRequest(topic: $0, numPartitions: 1, replicationFactor: 1) }
+			let request = CreateTopicsRequest(requests: topicRequests)
+			let connection = try Connection(config: .init(host: host, port: port, clientId: "topicCreationClient", authentication: auth))
+			_ = connection.writeBlocking(request)
 		} catch {
 			fatalError("Couldn't find docker-compose")
 		}
 	}
 	
 	class func waitForKafka() {
-		let delegate = DockerStreamDelegate()
-		var inputStream: InputStream?, outputStream: OutputStream?
 		var timer: Timer?
 		
 		var runLoopToStop: CFRunLoop!
 		
-		DispatchQueue(label: "dockerStreamPoll").async {
-			if #available(OSX 10.12, *) {
-				timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-					
-					if !delegate.retry {
-						return
+		DispatchQueue(label: "FranzDockerStreamPoll").async {
+			let cancelTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: false) { _ in
+				timer?.invalidate()
+				tearDown()
+				fatalError("Couldn't connect to Kafka")
+			}
+			
+			timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+				let config = Connection.Config(host: host, port: port, clientId: "connectionTest", authentication: auth)
+				
+				do {
+					print("Trying to contact Kafka server")
+					let connection = try Connection(config: config)
+					if let response = connection.writeBlocking(TopicMetadataRequest()),
+						response.brokers.count > 0 {
+						cancelTimer.invalidate()
+						startedSemaphore.signal()
+						connection.close()
 					}
+				} catch {
 					
-					delegate.written = false
-					delegate.retry = false
-					
-					inputStream?.close()
-					outputStream?.close()
-					
-					Stream.getStreamsToHost(withName: "localhost", port: 9092, inputStream: &inputStream, outputStream: &outputStream)
-					
-					inputStream!.delegate = delegate
-					outputStream!.delegate = delegate
-					
-					delegate.inputStream = inputStream
-					delegate.outputStream = outputStream
-					
-					inputStream!.schedule(in: .current, forMode: .commonModes)
-					outputStream!.schedule(in: .current, forMode: .commonModes)
-					
-					inputStream!.open()
-					outputStream!.open()
 				}
-			} else {
-				fatalError("Upgrade to macOS 10.12 to run Docker tests")
 			}
 			runLoopToStop = CFRunLoopGetCurrent()
 			CFRunLoopRun()
@@ -83,60 +93,12 @@ class DockerTestBase: XCTestCase {
 		
 		print("Kafka server is ready")
 		
-		inputStream?.close()
-		outputStream?.close()
-		
 		timer?.invalidate()
-	}
-	
-	class DockerStreamDelegate: NSObject, StreamDelegate {
-		
-		var inputStream: InputStream!, outputStream: OutputStream!
-		var retry = true
-		var written = false
-		
-		func stream(_ aStream: Stream, handle eventCode: Stream.Event) {
-			if eventCode == .errorOccurred {
-				retry = true
-			}
-			if aStream == inputStream, eventCode == .hasBytesAvailable {
-				
-				//Attempt to read in the size of the list groups request
-				var data = Data(capacity: 4)
-				data.withUnsafeMutableBytes { (bytes: UnsafeMutablePointer<UInt8>) -> Void in
-					
-					inputStream.read(bytes, maxLength: 4)
-					var readData = Data(buffer: UnsafeBufferPointer(start: bytes, count: 4))
-					let responseSize = UInt32(data: &readData)
-					
-					//If it's a zero-length response, retry
-					if responseSize > 0 {
-						startedSemaphore.signal()
-					} else {
-						retry = true
-					}
-				}
-			}
-			if aStream == outputStream, eventCode == .hasSpaceAvailable, !written {
-				print("Trying to contact Kafka server")
-				let req = ListGroupsRequest()
-				req.clientId = "test"
-				req.data.withUnsafeBytes { (bytes: UnsafePointer<UInt8>) -> Void in
-					outputStream.write(bytes, maxLength: req.data.count)
-				}
-				written = true
-			}
-		}
-		
 	}
 	
 	override class func tearDown() {
 		do {
-			if #available(OSX 10.13, *) {
-				try Process.run(compose, arguments: ["-f", yml.path, "stop"]).waitUntilExit()
-			} else {
-				Process.launchedProcess(launchPath: compose.path, arguments: ["-f", yml.path, "stop"]).waitUntilExit()
-			}
+			try Process.run(compose, arguments: ["-f", yml.path, "stop"]).waitUntilExit()
 		} catch {
 			print("Failed to stop containers")
 		}

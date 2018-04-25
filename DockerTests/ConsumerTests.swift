@@ -10,10 +10,12 @@ import Franz
 
 class ConsumerTests: DockerTestBase {
 	
+	override class var topics: [String] { return ["test", "foo", "bar", "fromStart", "stop"] }
+	
 	var cluster: Cluster!
 	
 	override func setUp() {
-		cluster = Cluster(brokers: [("localhost", 9092)], clientId: "testClient")
+		cluster = Cluster(brokers: [(ConsumerTests.host, ConsumerTests.port)], clientId: "testClient")
 	}
 	
 	func testReceive() {
@@ -51,9 +53,11 @@ class ConsumerTests: DockerTestBase {
 		let expectations = (0..<64).map { expectation(description: "Receives '\($0)'") }
 		let consumer = cluster.getConsumer(topics: ["test"], groupId: "testGroup")
 		consumer.listen { message in
-			let i = Int(String(data: message.value, encoding: .utf8)!)!
-			print("Consumed \(i)")
-			expectations[i].fulfill()
+			if let s = String(data: message.value, encoding: .utf8),
+			   let i = Int(s) {
+				print("Consumed \(i)")
+				expectations[i].fulfill()
+			}
 		}
 		
 		for i in 0..<64 {
@@ -67,7 +71,7 @@ class ConsumerTests: DockerTestBase {
 		consumer.stop()
 	}
 	
-	func testConsumerStops() {
+	func testStops() {
 		let consumer = cluster.getConsumer(topics: ["stop"], groupId: "newgroup")
 		
 		let e = expectation(description: "Receives message from start")
@@ -82,7 +86,7 @@ class ConsumerTests: DockerTestBase {
 		
 		cluster.sendMessage("stop", message: "test")
 		
-		waitForExpectations(timeout: 10)
+		waitForExpectations(timeout: 30)
 		
 		consumer.stop()
 

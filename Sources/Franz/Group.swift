@@ -11,34 +11,34 @@ import Foundation
 /**
     Base class for all Client Groups.
 */
-open class Group {
+class Group {
     fileprivate var _broker: Broker
     fileprivate var _clientId: String
     fileprivate var _groupProtocol: GroupProtocol
     fileprivate var _groupId: String
     fileprivate var _generationId: Int32
-    fileprivate var _version: ApiVersion = ApiVersion.defaultVersion
+    fileprivate var _version: ApiVersion = 0
 
     private var _state: GroupState?
 
     /**
         Group Protocol
     */
-    open var groupProtocol: String {
+    var groupProtocol: String {
         return _groupProtocol.value
     }
 
     /**
         Generation Id
     */
-    open var generationId: Int32 {
+    var generationId: Int32 {
         return _generationId
     }
 
     /**
         Group Id
     */
-    open var id: String {
+    var id: String {
         return _groupId
     }
     
@@ -61,7 +61,7 @@ open class Group {
      
         - Parameter callback:   a closure which takes a group id and a state of that group as its parameters
     */
-    open func getState(_ callback: @escaping (String, GroupState) -> ()) {
+    func getState(_ callback: @escaping (String, GroupState) -> ()) {
         _broker.describeGroups(self.id, clientId: _clientId) { id, state in
             self._state = state
             callback(id, state)
@@ -76,7 +76,7 @@ open class Group {
 /**
     A Consumer Group
 */
-open class ConsumerGroup: Group {
+class ConsumerGroup: Group {
     internal init(
         broker: Broker,
         clientId: String,
@@ -97,7 +97,7 @@ open class ConsumerGroup: Group {
 /**
     An abstraction of a Broker's relationship to a group.
 */
-open class GroupMembership {
+class GroupMembership {
     var _group: Group
     var _memberId: String
 	let members: [Member]
@@ -105,14 +105,14 @@ open class GroupMembership {
     /**
         A Group
     */
-    open var group: Group {
+    var group: Group {
         return _group
     }
 
     /**
         The Broker's id
     */
-    open var memberId: String {
+    var memberId: String {
         return _memberId
     }
     
@@ -136,7 +136,6 @@ open class GroupMembership {
             memberId: memberId,
             topics: topics,
             userData: data,
-            clientId: group._clientId,
             version: group._version) { membership in
 			for assignment in membership.partitionAssignment {
 				self.group.assignedPartitions[assignment.topic] = assignment.partitions.map { $0 }
@@ -151,7 +150,7 @@ open class GroupMembership {
      
         - Parameter callback:   called when the group has successfully been left
     */
-    open func leave(_ callback: (() -> ())? = nil) {
+    func leave(_ callback: (() -> ())? = nil) {
         group._broker.leaveGroup(
             _group.id,
             memberId: memberId,
@@ -165,12 +164,11 @@ open class GroupMembership {
      
         - Parameter callback:   called when the heartbeat request has successfully completed
     */
-    open func heartbeat(_ callback: (() -> ())? = nil) {
+    func heartbeat(_ callback: (() -> ())? = nil) {
         group._broker.heartbeatRequest(
             _group.id,
             generationId:_group._generationId,
             memberId: memberId,
-            clientId: _group._clientId,
             callback: callback
         )
     }

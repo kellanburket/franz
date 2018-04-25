@@ -8,14 +8,20 @@
 
 import Foundation
 
-class ListGroupsRequest: KafkaRequest {
-    init() {
-        super.init(apiKey: ApiKey.listGroupsRequest)
-    }
+struct ListGroupsRequest: KafkaRequest {
+	static let apiVersion: ApiVersion = 0
+	
+	static let apiKey: ApiKey = .listGroupsRequest 
+	
+	var values: [KafkaType] {
+		return []
+	}
+	
+	typealias Response = ListGroupsResponse
 }
 
 
-class ListGroupsResponse: KafkaResponse {
+struct ListGroupsResponse: KafkaResponse {
     
     private var _errorCode: Int16
     private var _groups: [ListedGroup]
@@ -34,7 +40,7 @@ class ListGroupsResponse: KafkaResponse {
         return groups
     }
     
-	required init(data: inout Data) {
+	init(data: inout Data) {
         _errorCode = Int16(data: &data)
         _groups = [ListedGroup](data: &data)
     }
@@ -53,7 +59,7 @@ class ListGroupsResponse: KafkaResponse {
 }
 
 
-class ListedGroup: KafkaType {
+struct ListedGroup: KafkaType {
     private var _groupId: String
     private var _protocolType: String
     
@@ -65,44 +71,51 @@ class ListedGroup: KafkaType {
         return _protocolType
     }
     
-	required init(data: inout Data) {
+	init(data: inout Data) {
         _groupId = String(data: &data)
         _protocolType = String(data: &data)
     }
     
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return  self._groupId.dataLength +
             self._protocolType.dataLength
         
-    }()
+	}
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
 		data.append(self._groupId.data)
 		data.append(self._protocolType.data)
         return data
-    }()
+	}
 }
 
 
-class DescribeGroupsRequest: KafkaRequest {
-
-    convenience init(id: String) {
-        self.init(value: DescribeGroupsRequestMessage(groupIds: [id]))
+struct DescribeGroupsRequest: KafkaRequest {
+	static let apiVersion: ApiVersion = 0
+	
+	typealias Response = DescribeGroupsResponse
+	
+	let values: [KafkaType]
+	
+	static let apiKey: ApiKey = .describeGroupsRequest 
+	
+    init(id: String) {
+		self.init(value: DescribeGroupsRequestMessage(groupIds: [id]))
     }
 
-    convenience init(ids: [String]) {
-        self.init(value: DescribeGroupsRequestMessage(groupIds: ids))
+    init(ids: [String]) {
+		self.init(value: DescribeGroupsRequestMessage(groupIds: ids))
     }
 
     init(value: DescribeGroupsRequestMessage) {
-        super.init(apiKey: ApiKey.describeGroupsRequest, value: value)
+		self.values = [value]
     }
 }
 
 
-class DescribeGroupsRequestMessage: KafkaType {
+struct DescribeGroupsRequestMessage: KafkaType {
     private var _groupIds: [String]
     
     init(groupIds: [String]) {
@@ -113,19 +126,19 @@ class DescribeGroupsRequestMessage: KafkaType {
         _groupIds = groupIds
     }
     
-	required init(data: inout Data) {
+	init(data: inout Data) {
         _groupIds = [String](data: &data)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return  self._groupIds.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
 		data.append(self._groupIds.data)
         return data
-    }()
+    }
 }
 
 
@@ -149,7 +162,7 @@ class DescribeGroupsResponse: KafkaResponse {
 }
 
 
-class GroupStateResponse: KafkaType {
+struct GroupStateResponse: KafkaType {
     private var _errorCode: Int16
     private var _groupId: String
     private var _state: String
@@ -182,7 +195,7 @@ class GroupStateResponse: KafkaType {
     
     private(set) var members: [GroupMemberResponse]
 
-    required init(data: inout Data) {
+    init(data: inout Data) {
         _errorCode = Int16(data: &data)
         _groupId = String(data: &data)
         _state = String(data: &data)
@@ -192,27 +205,27 @@ class GroupStateResponse: KafkaType {
     }
     
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self._errorCode.dataLength +
             self._groupId.dataLength +
             self._state.dataLength +
             self._protocolType.dataLength +
             self._protocol.dataLength +
             self.members.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
 		data.append(self._groupId.data)
 		data.append(self._protocolType.data)
 		//TODO: this looks broken?
         return data
-    }()
+    }
 	
 }
 
 
-class GroupMemberResponse: KafkaType {
+struct GroupMemberResponse: KafkaType {
     private var _memberId: String
     private var _clientId: String
     private var _clientHost: String
@@ -231,7 +244,7 @@ class GroupMemberResponse: KafkaType {
         return _clientHost
     }
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         _memberId = String(data: &data)
         _clientId = String(data: &data)
         _clientHost = String(data: &data)
@@ -240,16 +253,16 @@ class GroupMemberResponse: KafkaType {
     }
     
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self._memberId.dataLength +
             self._clientId.dataLength +
             self._clientHost.dataLength +
             self._memberMetadata.dataLength +
             self._memberAssignment.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
-        var data = Data(capacity: self.dataLength)
-        return data
-    }()
+    var data: Data {
+		//TODO: needs implemented
+        return Data(capacity: self.dataLength)
+    }
 }

@@ -8,9 +8,14 @@
 
 import Foundation
 
-
-class OffsetFetchRequest: KafkaRequest {
-    convenience init(
+struct OffsetFetchRequest: KafkaRequest {
+	
+	typealias Response = OffsetFetchResponse
+	
+	static let apiKey: ApiKey = .offsetFetchRequest 
+	static let apiVersion: ApiVersion = 0
+	
+    init(
         consumerGroupId: String,
         topics: [String: [Int32]]
     ) {
@@ -21,14 +26,15 @@ class OffsetFetchRequest: KafkaRequest {
             )
         )
     }
-    
+	
+	let values: [KafkaType]
     init(value: OffsetFetchRequestMessage) {
-        super.init(apiKey: ApiKey.offsetFetchRequest, value: value)
+       	self.values = [value]
     }
 }
 
 
-class OffsetFetchRequestMessage: KafkaType {
+struct OffsetFetchRequestMessage: KafkaType {
     
     private var _consumerGroup: String
     private var _topics: [OffsetFetchTopic]
@@ -43,25 +49,25 @@ class OffsetFetchRequestMessage: KafkaType {
 		_topics = values
     }
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         _consumerGroup = String(data: &data)
         _topics = [OffsetFetchTopic](data: &data)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self._consumerGroup.dataLength +
             self._topics.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self._consumerGroup.data)
         data.append(self._topics.data)
         return data
-    }()
+    }
 }
 
-class OffsetFetchTopic: KafkaType {
+struct OffsetFetchTopic: KafkaType {
     
     private var _topicName: TopicName
     private var _partitions: [PartitionId]
@@ -71,69 +77,69 @@ class OffsetFetchTopic: KafkaType {
         self._partitions = partitions
     }
     
-    required init(data: inout Data) {
+	init(data: inout Data) {
         _topicName = String(data: &data)
         _partitions = [PartitionId](data: &data)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self._topicName.dataLength + self._partitions.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self._topicName.data)
         data.append(self._partitions.data)
         return data
-    }()
+    }
 }
 
 
-class OffsetFetchResponse: KafkaResponse {
+struct OffsetFetchResponse: KafkaResponse {
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         topics = [OffsetFetchTopicResponse](data: &data)
     }
     
     private(set) var topics: [OffsetFetchTopicResponse]
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self.topics.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self.topics.data)
         return data
-    }()
+    }
 }
 
 
-class OffsetFetchTopicResponse: KafkaType {
+struct OffsetFetchTopicResponse: KafkaType {
     var topic: TopicName
     
     private(set) var partitions: [OffsetFetchPartitionOffset]
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         topic = String(data: &data)
         partitions = [OffsetFetchPartitionOffset](data: &data)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self.topic.dataLength + self.partitions.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self.topic.data)
         data.append(self.partitions.data)
         return data
-    }()
+    }
 }
 
 typealias Offset = Int64
 
-class OffsetFetchPartitionOffset: KafkaType {
+struct OffsetFetchPartitionOffset: KafkaType {
     private var _partition: Int32
     private var _offset: Offset
     private var _metadata: String
@@ -159,26 +165,26 @@ class OffsetFetchPartitionOffset: KafkaType {
         return _offset == -1 ? 0 : _offset
     }
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         _partition = Int32(data: &data)
         _offset = Int64(data: &data)
         _metadata = String(data: &data)
         _errorCode = Int16(data: &data)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self._partition.dataLength +
             self._offset.dataLength +
             self._metadata.dataLength +
             self._errorCode.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self._partition.data)
         data.append(self._offset.data)
         data.append(self._metadata.data)
         data.append(self._errorCode.data)
         return data
-    }()
+    }
 }

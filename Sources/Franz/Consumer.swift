@@ -21,27 +21,28 @@ public class Consumer {
 	internal var membership: GroupMembership?
 	internal let joinedGroupSemaphore = DispatchSemaphore(value: 0)
 	
+	var groupOffsetsTimer: Timer!
+	var heartbeatTimer: Timer!
+	
 	internal init(cluster: Cluster, groupId: String) {
 		self.cluster = cluster
 		
 		if #available(OSX 10.12, iOS 10, tvOS 10, watchOS 3, *) {
-			Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in self.commitGroupoffsets() }
-			Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in
-				self.sendHeartbeat()
-			}
+			groupOffsetsTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in self.commitGroupoffsets() }
+			heartbeatTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { _ in self.sendHeartbeat() }
 		} else {
 			// Fallback on earlier versions
-			Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(commitGroupoffsets), userInfo: nil, repeats: true)
-			Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(sendHeartbeat), userInfo: nil, repeats: true)
+			groupOffsetsTimer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(commitGroupoffsets), userInfo: nil, repeats: true)
+			heartbeatTimer =  Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(sendHeartbeat), userInfo: nil, repeats: true)
 		}
 	}
 	
-	private let listenQueue = DispatchQueue(label: "FranzConsumerListenQueue", attributes: .concurrent)
+	private let listenQueue = DispatchQueue(label: "FranzConsumerListenQueue")
 	
 	var offsetsToCommit = [TopicName: [PartitionId: (Offset, OffsetMetadata?)]]()
 	@objc private func commitGroupoffsets() {
 		guard let groupId = self.membership?.group.id, let broker = self.broker else { return }
-		broker.commitGroupOffset(groupId: groupId, topics: offsetsToCommit, clientId: cluster.clientId)
+		broker.commitGroupOffset(groupId: groupId, topics: offsetsToCommit)
 	}
 	
 	@objc private func sendHeartbeat() {
@@ -50,7 +51,7 @@ public class Consumer {
 			let memberId = self.membership?.memberId else {
 				return
 		}
-		self.broker?.heartbeatRequest(groupId, generationId: generationId, memberId: memberId, clientId: cluster.clientId)
+		self.broker?.heartbeatRequest(groupId, generationId: generationId, memberId: memberId)
 	}
 	
 	/**
@@ -80,14 +81,14 @@ public class Consumer {
 					return copy
 				})
 				
-				self.cancelToken = broker.poll(topics: ids, fromStart: fromStart, groupId: membership.group.id, clientId: "test", replicaId: ReplicaId.none, callback: { topic, partitionId, offset, messages in
-						messages.forEach(handler)
-						
-						if var topicOffsets = self.offsetsToCommit[topic] {
-							topicOffsets[partitionId] = (offset, nil)
-						} else {
-							self.offsetsToCommit[topic] = [partitionId: (offset, nil)]
-						}
+				self.cancelToken = broker.poll(topics: ids, fromStart: fromStart, groupId: membership.group.id, replicaId: ReplicaId.none, callback: { topic, partitionId, offset, messages in
+					messages.forEach(handler)
+					
+					if var topicOffsets = self.offsetsToCommit[topic] {
+						topicOffsets[partitionId] = (offset, nil)
+					} else {
+						self.offsetsToCommit[topic] = [partitionId: (offset, nil)]
+					}
 				}, errorCallback: { error in
 					print("Error polling: \(error.localizedDescription)")
 				})
@@ -105,5 +106,7 @@ public class Consumer {
 	public func stop() {
 		cancelToken?.cancel()
 		listening = false
+		groupOffsetsTimer.invalidate()
+		heartbeatTimer.invalidate()
 	}
 }

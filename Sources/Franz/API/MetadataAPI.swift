@@ -9,26 +9,28 @@
 import Foundation
 
 
-class TopicMetadataRequest: KafkaRequest {
+struct TopicMetadataRequest: KafkaRequest {
+	
+	typealias Response = MetadataResponse
+	static let apiKey: ApiKey = .metadataRequest 
+	static let apiVersion: ApiVersion = 0
 
-    convenience init(topic: String) {
+    init(topic: String) {
         self.init(message: TopicMetadataRequestMessage(values: [topic]))
     }
 
-    convenience init(topics: [String] = []) {
+    init(topics: [String] = []) {
         self.init(message: TopicMetadataRequestMessage(values: topics))
     }
-    
+	
+	let values: [KafkaType]
     init(message: TopicMetadataRequestMessage) {
-        super.init(
-            apiKey: ApiKey.metadataRequest,
-            value: message
-        )
+		self.values = [message]
     }
 
 }
 
-class TopicMetadataRequestMessage: KafkaType {
+struct TopicMetadataRequestMessage: KafkaType {
 
     var values: [String]
     
@@ -36,20 +38,20 @@ class TopicMetadataRequestMessage: KafkaType {
         self.values = values
     }
 
-    required init(data: inout Data) {
+    init(data: inout Data) {
         values = [String](data: &data)
     }
 
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self.values.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         return (self.values.data)
-    }()
+    }
 }
 
-class MetadataResponse: KafkaResponse {
+struct MetadataResponse: KafkaResponse {
     
     private var _metadataBrokers: [Broker]
     private var _topicMetadata: [KafkaTopic]
@@ -65,14 +67,12 @@ class MetadataResponse: KafkaResponse {
     var topics: [String: KafkaTopic] {
         var values = [String: KafkaTopic]()
         for value in _topicMetadata {
-            if let name = value.name {
-                values[name] = value
-            }
+			values[value.name] = value
         }
         return values
     }
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         _metadataBrokers = [Broker](data: &data)
         _topicMetadata = [KafkaTopic](data: &data)
     }

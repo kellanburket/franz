@@ -8,8 +8,6 @@
 
 import Foundation
 
-typealias RequestCallback = (Data) -> Void
-
 enum ConnectionError: Error {
     case unableToOpenConnection
     case invalidIpAddress
@@ -74,64 +72,55 @@ extension Stream.Status {
 	}
 }
 
-internal protocol Connection {
-	init(ipv4: String, port: Int32, broker: Broker, clientId: String)
-	func write(_ request: KafkaRequest, callback: RequestCallback?)
-}
-
-extension Connection {
-	func write(_ request: KafkaRequest, callback: RequestCallback? = nil) {
-		write(request, callback: callback)
+class Connection: NSObject, StreamDelegate {
+	
+	enum AuthenticationError: Error {
+		case unsupportedMechanism(supportedMechanisms: [String])
+		case authenticationFailed
 	}
-}
-
-class KafkaConnection: NSObject, Connection, StreamDelegate {
     
-    private var ipv4: String
+    private var host: String
+	private var port: Int32
 
-    var apiVersion: ApiVersion {
-        return ApiVersion.defaultVersion
-    }
-
-    private var _requestCallbacks = [Int32: RequestCallback]()
-    private var _broker: Broker
-    
+    private var requestCallbacks = [Int32: ((Data?) -> Void)]()
+	
     private var clientId: String
-    
+	
     private var readStream: Unmanaged<CFReadStream>?
     private var writeStream: Unmanaged<CFWriteStream>?
 
     private var inputStream: InputStream?
     private var outputStream: OutputStream?
     
-    private var port: Int32
-    
     private let responseLengthSize: Int32 = 4
     private let responseCorrelationIdSize: Int32 = 4
 
-    private var _inputStreamQueue: DispatchQueue
-    private var _outputStreamQueue: DispatchQueue
-    private var _writeRequestBlocks = [()->()]()
+    private var inputStreamQueue: DispatchQueue
+    private var outputStreamQueue: DispatchQueue
+    private var writeRequestBlocks = [()->()]()
+	
+	private var runLoop: RunLoop?
+	
+	struct Config {
+		let host: String
+		let port: Int32
+		let clientId: String
+		let authentication: Cluster.Authentication
+	}
     
-	required init(ipv4: String, port: Int32, broker: Broker, clientId: String) {
-        self.ipv4 = ipv4
-        self.clientId = clientId
-        self._broker = broker
-        self.port = port
+	init(config: Config) throws {
+        self.host = config.host
+        self.clientId = config.clientId
+        self.port = config.port
 
-        _inputStreamQueue = DispatchQueue(
-            label: "\(self.ipv4).\(self.port).input.stream.franz", attributes: []
-        )
-
-        _outputStreamQueue = DispatchQueue(
-            label: "\(self.ipv4).\(self.port).output.stream.franz", attributes: []
-        )
+        inputStreamQueue = DispatchQueue(label: "\(self.host).\(self.port).input.stream.franz")
+		outputStreamQueue = DispatchQueue(label: "\(self.host).\(self.port).output.stream.franz")
 
         super.init()
 
         CFStreamCreatePairWithSocketToHost(
             kCFAllocatorDefault,
-            ipv4 as CFString,
+            host as CFString,
             UInt32(port),
             &readStream,
             &writeStream
@@ -140,7 +129,7 @@ class KafkaConnection: NSObject, Connection, StreamDelegate {
         inputStream = readStream?.takeUnretainedValue()
         outputStream = writeStream?.takeUnretainedValue()
 		
-		DispatchQueue(label: "FranzConnectionQueue").async {
+		DispatchQueue(label: "FranzConnection").async {
 			self.inputStream?.delegate = self
 			self.inputStream?.schedule(
 				in: RunLoop.current,
@@ -156,148 +145,183 @@ class KafkaConnection: NSObject, Connection, StreamDelegate {
 			self.inputStream?.open()
 			self.outputStream?.open()
 			
+			self.runLoop = RunLoop.current
 			RunLoop.current.run()
+		}
+		
+		// authenticate
+		if let mechanism = config.authentication.mechanism {
+			let handshakeRequest = SaslHandshakeRequest(mechanism: mechanism.kafkaLabel)
+			guard let response = writeBlocking(handshakeRequest) else {
+				throw AuthenticationError.authenticationFailed
+			}
+			
+			guard response.errorCode == 0 else {
+				throw AuthenticationError.unsupportedMechanism(supportedMechanisms: response.enabledMechanisms)
+			}
+			
+			if !mechanism.authenticate(connection: self) {
+				throw AuthenticationError.authenticationFailed
+			}
 		}
 
     }
     
     private func read(_ timeout: Double = 3000) {
-        //print("Read Block Added")
-        _inputStreamQueue.async {
-            //print("\tBeginning Input Stream Read")
-            if let inputStream = self.inputStream {
-                do {
-                    let (size, correlationId) = try self.getMessageMetadata()
-                    //print("\t\tReading Bytes")
-                    var bytes = [UInt8]()
-                    let startTime = Date().timeIntervalSince1970
-                    while bytes.count < Int(size) {
-                        
-                        if inputStream.hasBytesAvailable {
-                            var buffer = [UInt8](repeating: 0, count: Int(size))
-                            let bytesInBuffer = inputStream.read(&buffer, maxLength: Int(size))
-                            //print("\t\tReading Bytes")
-                            //print("BUFFER(\(size)): \(buffer)")
-                            bytes += buffer.prefix(upTo: Int(bytesInBuffer))
-                        }
-                        
-                        let currentTime = Date().timeIntervalSince1970
-                        let timeDelta = (currentTime - startTime) * 1000
-
-                        if  timeDelta >= timeout {
-                            print("Timeout @ Delta \(timeDelta).")
-                            break
-                        }
-                    }
-                    
-                    if let callback = self._requestCallbacks[correlationId] {
-						self._requestCallbacks.removeValue(forKey: correlationId)
-						callback(Data(bytes: bytes))
-                    } else {
-                        print(
-                            "Unable to find reuqest callback for " +
-                            "Correlation Id: \(correlationId)"
-                        )
-                    }
-                } catch ConnectionError.zeroLengthResponse {
-                    print("Zero Lenth Response")
-                } catch ConnectionError.partialResponse(let size) {
-                    print("Response Size: \(size) is invalid.")
-                } catch ConnectionError.bytesNoLongerAvailable {
-                    return
-                } catch {
-                    print("Error")
-                }
-            } else {
-                print("Unable to find Input Stream")
-            }
-
-            //print("\tReleasing Input Stream Read")
+        inputStreamQueue.async {
+			guard let inputStream = self.inputStream else {
+				print("Unable to find Input Stream")
+				return
+			}
+			do {
+				let (size, correlationId) = try self.getMessageMetadata()
+				var bytes = [UInt8]()
+				let startTime = Date().timeIntervalSince1970
+				while bytes.count < Int(size) {
+					
+					if inputStream.hasBytesAvailable {
+						var buffer = [UInt8](repeating: 0, count: Int(size))
+						let bytesInBuffer = inputStream.read(&buffer, maxLength: Int(size))
+						bytes += buffer.prefix(upTo: Int(bytesInBuffer))
+					}
+					
+					let currentTime = Date().timeIntervalSince1970
+					let timeDelta = (currentTime - startTime) * 1000
+					
+					if  timeDelta >= timeout {
+						print("Timeout @ Delta \(timeDelta).")
+						break
+					}
+				}
+				
+				if let callback = self.requestCallbacks[correlationId] {
+					self.requestCallbacks.removeValue(forKey: correlationId)
+					callback(Data(bytes: bytes))
+				} else {
+					print(
+						"Unable to find request callback for " +
+						"Correlation Id: \(correlationId)"
+					)
+				}
+			} catch ConnectionError.zeroLengthResponse {
+				print("Zero length response")
+			} catch ConnectionError.partialResponse(let size) {
+				print("Response Size: \(size) is invalid.")
+			} catch ConnectionError.bytesNoLongerAvailable {
+				return
+			} catch {
+				print("Error")
+			}
         }
     }
+	
+	private static var correlationId: Int32 = 0
+	func makeCorrelationId() -> Int32 {
+		var id: Int32!
+		DispatchQueue(label: "FranzMakeCorrelationId").sync {
+			id = Connection.correlationId
+			Connection.correlationId += 1
+		}
+		return id
+	}
+	
+	func write<T: KafkaRequest>(_ request: T, callback: @escaping (T.Response) -> Void) {
+		self.write(request, callback: callback, errorCallback: nil)
+	}
+	
+	private func write<T: KafkaRequest>(_ request: T, callback: @escaping (T.Response) -> Void, errorCallback: (() -> Void)?) {
 
-    func write(_ request: KafkaRequest, callback: RequestCallback? = nil) {
-        request.clientId = clientId
-        //print("Write Block Added")
-        if let requestCallback = callback {
-            _requestCallbacks[request.correlationId] = requestCallback
-        }
+		let corId = makeCorrelationId()
+		requestCallbacks[corId] = { data in
+			if var mutableData = data {
+				callback(T.Response.init(data: &mutableData))
+			} else {
+				errorCallback?()
+			}
+		}
 		let dispatchBlock = DispatchWorkItem(qos: .unspecified, flags: []) {
-			//print("\tBeginning Output Stream Write")
-			if let stream = self.outputStream {
-				if stream.hasSpaceAvailable {
-					let data = request.data
-					//print("Data: \(data)")
-					
-					data.withUnsafeBytes { (bytes: UnsafePointer<UInt8>) -> Void in
-						stream.write(bytes, maxLength: data.count)
-					}
-//					let bytesPtr = (data as NSData).bytes
-//					let bytes = bytesPtr.assumingMemoryBound(to: UInt8.self)
-//					//print("Writing to Output Stream: \(data.length)")
-//					stream.write(bytes, maxLength: data.count)
-					//print("\tReleasing Output Stream Write(\(data.length))")
-				} else {
-					print("No Space Available for Writing")
-				}
+			guard let stream = self.outputStream else {
+				return
+			}
+			guard stream.hasSpaceAvailable else {
+				print("No Space Available for Writing")
+				return
+			}
+			let data = request.data(correlationId: corId, clientId: self.clientId)
+			data.withUnsafeBytes { (bytes: UnsafePointer<UInt8>) -> Void in
+				stream.write(bytes, maxLength: data.count)
 			}
 		}
 		
-        if let outputStream = outputStream {
-            if outputStream.hasSpaceAvailable {
-                _outputStreamQueue.async(execute: dispatchBlock)
-            } else {
-                _writeRequestBlocks.append(dispatchBlock.perform)
-            }
-        } else {
-            _writeRequestBlocks.append(dispatchBlock.perform)
-        }
+		if let outputStream = outputStream {
+			if outputStream.hasSpaceAvailable {
+				outputStreamQueue.async(execute: dispatchBlock)
+			} else {
+				writeRequestBlocks.append(dispatchBlock.perform)
+			}
+		} else {
+			writeRequestBlocks.append(dispatchBlock.perform)
+		}
     }
-    
+	
+	func writeBlocking<T: KafkaRequest>(_ request: T) -> T.Response? {
+		let semaphore = DispatchSemaphore(value: 0)
+		var response: T.Response?
+		write(request, callback: { r in
+			response = r
+			semaphore.signal()
+		}, errorCallback: {
+			semaphore.signal()
+		})
+		semaphore.wait()
+		return response
+	}
+	
     private func getMessageMetadata() throws -> (Int32, Int32) {
-        if let activeInputStream = inputStream {
-            let length = responseLengthSize + responseCorrelationIdSize
-            var buffer = Array<UInt8>(repeating: 0, count: Int(length))
-            if activeInputStream.hasBytesAvailable {
-				activeInputStream.read(&buffer, maxLength: Int(length))
-            } else {
-                throw ConnectionError.bytesNoLongerAvailable
-            }
-			let sizeBytes = buffer.prefix(upTo: Int(responseLengthSize))
-			buffer.removeFirst(Int(responseLengthSize))
+		guard let activeInputStream = inputStream else {
+			throw ConnectionError.unableToFindInputStream
+		}
 			
-			var sizeData = Data(bytes: sizeBytes)
-			let responseLengthSizeInclusive = Int32(data: &sizeData)
-            
-            if responseLengthSizeInclusive > 4 {
-				let correlationIdSizeBytes = buffer.prefix(upTo: Int(responseCorrelationIdSize))
-				buffer.removeFirst(Int(responseCorrelationIdSize))
-				
-				var correlationIdSizeData = Data(bytes: correlationIdSizeBytes)
-                return (
-                    responseLengthSizeInclusive - responseLengthSize,
-                    Int32(data: &correlationIdSizeData)
-                )
-            } else if responseLengthSizeInclusive == 0 {
-                throw ConnectionError.zeroLengthResponse
-            } else {
-                throw ConnectionError.partialResponse(size: responseLengthSizeInclusive)
-            }
-        }
-        
-        throw ConnectionError.unableToFindInputStream
+		let length = responseLengthSize + responseCorrelationIdSize
+		var buffer = Array<UInt8>(repeating: 0, count: Int(length))
+		if activeInputStream.hasBytesAvailable {
+			activeInputStream.read(&buffer, maxLength: Int(length))
+		} else {
+			throw ConnectionError.bytesNoLongerAvailable
+		}
+		let sizeBytes = buffer.prefix(upTo: Int(responseLengthSize))
+		buffer.removeFirst(Int(responseLengthSize))
+		
+		var sizeData = Data(bytes: sizeBytes)
+		let responseLengthSizeInclusive = Int32(data: &sizeData)
+		
+		if responseLengthSizeInclusive > 4 {
+			let correlationIdSizeBytes = buffer.prefix(upTo: Int(responseCorrelationIdSize))
+			buffer.removeFirst(Int(responseCorrelationIdSize))
+			
+			var correlationIdSizeData = Data(bytes: correlationIdSizeBytes)
+			return (
+				responseLengthSizeInclusive - responseLengthSize,
+				Int32(data: &correlationIdSizeData)
+			)
+		} else if responseLengthSizeInclusive == 0 {
+			throw ConnectionError.zeroLengthResponse
+		} else {
+			throw ConnectionError.partialResponse(size: responseLengthSizeInclusive)
+		}
     }
     
     func stream(_ aStream: Stream, handle eventCode: Stream.Event) {
-        //print("STREAM STATUS: \(aStream.streamStatus.description) => \(eventCode.description)")
+		if eventCode == .endEncountered || eventCode == .errorOccurred {
+			close()
+			return
+		}
         if let inputStream = aStream as? InputStream {
             let status = inputStream.streamStatus
-            //print("INPUT STREAM STATUS: \(status.description) => \(eventCode.description)")
             switch status {
             case .open:
                 switch eventCode {
                 case Stream.Event.hasBytesAvailable:
-                    //print("Input Stream Has Bytes Available")
                     read()
                 case Stream.Event.openCompleted:
                     return
@@ -306,24 +330,23 @@ class KafkaConnection: NSObject, Connection, StreamDelegate {
                 }
             case .reading:
                 return
-            case .error:
+			case .error, .atEnd, .closed:
                 print("INPUT STREAM ERROR: \(aStream.streamError?.localizedDescription ?? String())")
-                return
+				close()
+				return
             default:
                 print("INPUT STREAM STATUS: \(aStream.streamStatus.description)")
                 return
             }
         } else if let outputStream = aStream as? OutputStream {
             let status = outputStream.streamStatus
-            //print("OUTPUT STREAM STATUS: \(status.description) => \(eventCode.description)")
             switch status {
             case .open:
                 switch eventCode {
                 case Stream.Event.hasSpaceAvailable:
-                    //print("Requests: \(_writeRequestBlocks.count)")
-                    if _writeRequestBlocks.count > 0 {
-                        let block = _writeRequestBlocks.removeFirst()
-                        _outputStreamQueue.async(execute: block)
+                    if writeRequestBlocks.count > 0 {
+                        let block = writeRequestBlocks.removeFirst()
+                        outputStreamQueue.async(execute: block)
                     }
                 case Stream.Event.openCompleted:
                     return
@@ -332,8 +355,9 @@ class KafkaConnection: NSObject, Connection, StreamDelegate {
                 }
             case .writing:
                 return
-            case .error:
+            case .error, .atEnd, .closed:
                 print("OUTPUT STREAM ERROR: \(aStream.streamError?.localizedDescription ?? String())")
+				close()
                 return
             default:
                 print("OUTPUT STREAM STATUS:: \(aStream.streamStatus.description)")
@@ -341,8 +365,16 @@ class KafkaConnection: NSObject, Connection, StreamDelegate {
             }
         }
     }
-    
-    deinit {
-        print("Deinitializing.")
-    }
+	
+	/// Closes the connection and removes any streams from the RunLoop.
+	func close() {
+		print("Closing connection")
+		inputStream?.close()
+		outputStream?.close()
+		if let runLoop = runLoop {
+			inputStream?.remove(from: runLoop, forMode: .defaultRunLoopMode)
+			outputStream?.remove(from: runLoop, forMode: .defaultRunLoopMode)
+		}
+		requestCallbacks.forEach { $1(nil) }
+	}
 }

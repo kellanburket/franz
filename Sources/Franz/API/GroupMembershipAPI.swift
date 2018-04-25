@@ -9,9 +9,13 @@
 import Foundation
 
 
-class GroupMembershipRequest<T: KafkaMetadata>: KafkaRequest {
+struct GroupMembershipRequest<T: KafkaMetadata>: KafkaRequest {
 
-    convenience init(
+	typealias Response = JoinGroupResponse
+	static var apiKey: ApiKey { return .joinGroupRequest }
+	static var apiVersion: ApiVersion { return 0 }
+	
+    init(
         groupId: String,
         metadata: [AssignmentStrategy: T],
         memberId: String = "",
@@ -27,14 +31,15 @@ class GroupMembershipRequest<T: KafkaMetadata>: KafkaRequest {
             )
         )
     }
-    
+	
+	let values: [KafkaType]
     init(value: JoinGroupRequestMessage<T>) {
-        super.init(apiKey: ApiKey.joinGroupRequest, value: value)
+		self.values = [value]
     }
 }
 
 
-class JoinGroupRequestMessage<T: KafkaMetadata>: KafkaType {
+struct JoinGroupRequestMessage<T: KafkaMetadata>: KafkaType {
     
     private var _groupId: String
     private var _sessionTimeout: Int32
@@ -62,7 +67,7 @@ class JoinGroupRequestMessage<T: KafkaMetadata>: KafkaType {
         _groupProtocols = values
     }
     
-	required init(data: inout Data) {
+	init(data: inout Data) {
         _groupId = String(data: &data)
         _sessionTimeout = Int32(data: &data)
         _memberId = String(data: &data)
@@ -70,15 +75,15 @@ class JoinGroupRequestMessage<T: KafkaMetadata>: KafkaType {
         _groupProtocols = [JoinGroupProtocol<T>](data: &data)
     }
     
-    lazy var dataLength: Int = {
+	var dataLength: Int {
         return self._groupId.dataLength +
             self._sessionTimeout.dataLength +
             self._memberId.dataLength +
             self._protocolType.dataLength +
             self._groupProtocols.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self._groupId.data)
         data.append(self._sessionTimeout.data)
@@ -86,7 +91,7 @@ class JoinGroupRequestMessage<T: KafkaMetadata>: KafkaType {
         data.append(self._protocolType.data)
         data.append(self._groupProtocols.data)
         return data
-    }()
+    }
     
     var groupId: String {
 		return _groupId
@@ -97,7 +102,7 @@ class JoinGroupRequestMessage<T: KafkaMetadata>: KafkaType {
     }
 }
 
-class JoinGroupProtocol<T: KafkaMetadata>: KafkaType {
+struct JoinGroupProtocol<T: KafkaMetadata>: KafkaType {
     private var _protocolName: String
     private var _protocolMetadata: T
 
@@ -106,26 +111,26 @@ class JoinGroupProtocol<T: KafkaMetadata>: KafkaType {
         _protocolMetadata = metadata
     }
     
-	required init(data: inout Data) {
+	init(data: inout Data) {
         _protocolName = String(data: &data)
         _protocolMetadata = T(data: &data)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self._protocolName.dataLength +
             self._protocolMetadata.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self._protocolName.data)
         data.append(self._protocolMetadata.data)
         return data
-    }()
+    }
 
 }
 
-class ConsumerGroupMetadata: KafkaMetadata {
+struct ConsumerGroupMetadata: KafkaMetadata {
     
     private var _version: Int16
     private var _subscription: [String]
@@ -138,49 +143,49 @@ class ConsumerGroupMetadata: KafkaMetadata {
     init(
         subscription: [String],
         userData: Data? = nil,
-        version: ApiVersion = ApiVersion.defaultVersion
+        version: ApiVersion = 0
     ) {
-        _version = version.rawValue
+        _version = version
         _subscription = subscription
 		_userData = userData
     }
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         _version = Int16(data: &data)
         _subscription = [String](data: &data)
         _userData = Data(data: &data)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self.sizeDataLength + self.valueDataLength
-    }()
+    }
     
-    lazy var sizeDataLength: Int = {
+    var sizeDataLength: Int {
         return 4
-    }()
+    }
     
-    lazy var valueDataLength: Int = {
+    var valueDataLength: Int {
         return self._version.dataLength +
             self._subscription.dataLength +
             self._userData.dataLength
-    }()
+    }
     
-    private lazy var sizeData: Data = {
+    private var sizeData: Data {
         return (Int32(self.valueDataLength).data)
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self.sizeData)
         data.append(self._version.data)
         data.append(self._subscription.data)
         data.append(self._userData.data)
         return data
-    }()
+    }
 }
 
 
-class JoinGroupResponse: KafkaResponse {
+struct JoinGroupResponse: KafkaResponse {
     
     private var _errorCode: Int16
 	
@@ -205,7 +210,7 @@ class JoinGroupResponse: KafkaResponse {
     
     private(set) var members: [Member]
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         _errorCode = Int16(data: &data)
         generationId = Int32(data: &data)
         _groupProtocol = String(data: &data)
@@ -225,7 +230,7 @@ class JoinGroupResponse: KafkaResponse {
 	}
 }
 
-class Member: KafkaType {
+struct Member: KafkaType {
     private var _memberName: String
     private var _memberMetadata: Data
 	
@@ -242,30 +247,34 @@ class Member: KafkaType {
         _memberMetadata = metadata.data(using: .utf8)!
     }
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         _memberName = String(data: &data)
         _memberMetadata = Data(data: &data)
     }
     
-    lazy var dataLength: Int = {
+	var dataLength: Int {
         return self._memberName.dataLength + self._memberMetadata.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self._memberName.data)
         data.append(self._memberMetadata.data)
         return data
-    }()
+    }
 }
 
 
-class SyncGroupRequest<T: KafkaMetadata>: KafkaRequest {
+struct SyncGroupRequest<T: KafkaMetadata>: KafkaRequest {
+	
+	typealias Response = SyncGroupResponse<T>
+	static var apiKey: ApiKey { return .syncGroupRequest }
+	static var apiVersion: ApiVersion { return 0 }
     
-    convenience init(
+    init(
         groupId: String,
         generationId: Int32,
-        memberId: String,
+        memberId: String?,
         groupAssignment: [String: T]
     ) {
         let request = SyncGroupRequestMessage<T>(
@@ -277,13 +286,14 @@ class SyncGroupRequest<T: KafkaMetadata>: KafkaRequest {
         
         self.init(value: request)
     }
-    
+	
+	let values: [KafkaType]
     init(value: SyncGroupRequestMessage<T>) {
-        super.init(apiKey: .syncGroupRequest, value: value)
+		self.values = [value]
     }
 }
 
-class GroupMemberAssignment: KafkaMetadata {
+struct GroupMemberAssignment: KafkaMetadata {
     private var _version: Int16
     let partitionAssignment: [PartitionAssignment]
     private var _userData: Data
@@ -293,7 +303,7 @@ class GroupMemberAssignment: KafkaMetadata {
     }
 
     init(topics: [TopicName: [PartitionId]], userData: Data, version: ApiVersion) {
-        _version = version.rawValue
+        _version = version
 
         var values = [PartitionAssignment]()
         for (topic, partitions) in topics {
@@ -305,7 +315,7 @@ class GroupMemberAssignment: KafkaMetadata {
 		_userData = userData
     }
 
-    required init(data: inout Data) {
+    init(data: inout Data) {
 		if data.count <= 0 {
 			_version = 0
 			partitionAssignment = []
@@ -317,22 +327,22 @@ class GroupMemberAssignment: KafkaMetadata {
         _userData = Data(data: &data)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self._version.dataLength +
             self.partitionAssignment.dataLength +
             self._userData.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self._version.data)
         data.append(self.partitionAssignment.data)
         data.append(self._userData.data)
         return data
-    }()
+    }
 }
 
-class PartitionAssignment: KafkaType {
+struct PartitionAssignment: KafkaType {
     let topic: String
     let partitions: [PartitionId]
     
@@ -341,36 +351,36 @@ class PartitionAssignment: KafkaType {
         self.partitions = partitions
     }
 
-    required init(data: inout Data) {
+    init(data: inout Data) {
         topic = String(data: &data)
         partitions = [PartitionId](data: &data)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self.topic.dataLength + self.partitions.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self.topic.data)
         data.append(self.partitions.data)
         return data
-    }()
+    }
 }
 
 typealias MemberId = String
 
-class SyncGroupRequestMessage<T: KafkaMetadata>: KafkaType {
+struct SyncGroupRequestMessage<T: KafkaMetadata>: KafkaType {
     
     private var _groupId: String
     private var _generationId: Int32
-    private var _memberId: String
+    private var _memberId: String?
     private var _groupAssignment: [GroupAssignment<T>]
 
     init(
         groupId: String,
         generationId: Int32,
-        memberId: String,
+        memberId: String?,
         groupAssignment: [String: T]
     ) {
         _groupId = groupId
@@ -379,36 +389,34 @@ class SyncGroupRequestMessage<T: KafkaMetadata>: KafkaType {
 		_groupAssignment = groupAssignment.map { GroupAssignment<T>(memberId: $0, memberAssignment: $1) }
     }
     
-    required init(data: inout Data) {
+	init(data: inout Data) {
         _groupId = String(data: &data)
         _generationId = Int32(data: &data)
-        _memberId = String(data: &data)
+        _memberId = String?(data: &data)
         _groupAssignment = [GroupAssignment<T>](data: &data)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self._groupId.dataLength +
             self._generationId.dataLength +
             self._memberId.dataLength +
             self._groupAssignment.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self._groupId.data)
         data.append(self._generationId.data)
         data.append(self._memberId.data)
         data.append(self._groupAssignment.data)
         return data
-    }()
+    }
     
     var groupId: String {
         return _groupId
     }
 	
-	
-	
-	class GroupAssignment<T: KafkaMetadata>: KafkaType {
+	struct GroupAssignment<T: KafkaMetadata>: KafkaType {
 		
 		let memberId: String
 		let memberAssignment: T
@@ -417,7 +425,7 @@ class SyncGroupRequestMessage<T: KafkaMetadata>: KafkaType {
 			return Data(memberAssignment.data)
 		}
 		
-		required init(data: inout Data) {
+		init(data: inout Data) {
 			memberId = String(data: &data)
 			memberAssignment = T(data: &data)
 		}
@@ -439,35 +447,39 @@ class SyncGroupRequestMessage<T: KafkaMetadata>: KafkaType {
 }
 
 
-class SyncGroupResponse<T: KafkaMetadata>: KafkaResponse {
+struct SyncGroupResponse<T: KafkaMetadata>: KafkaResponse {
     
     private var _errorCode: Int16
     let memberAssignment: T
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         _errorCode = Int16(data: &data)
 		var memberAssignmentData = Data(data: &data)
 		memberAssignment = T(data: &memberAssignmentData)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
 		return self._errorCode.dataLength + memberAssignment.dataLength + 4
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         return Data()
-    }()
+    }
     
-    lazy var error: KafkaErrorCode? = {
+    var error: KafkaErrorCode? {
         return KafkaErrorCode(rawValue: self._errorCode)
-    }()
+    }
 	
 }
 
 
-class HeartbeatRequest: KafkaRequest {
+struct HeartbeatRequest: KafkaRequest {
+	
+	typealias Response = HeartbeatResponse
+	static let apiKey: ApiKey = .heartbeatRequest 
+	static let apiVersion: ApiVersion = 0
 
-    convenience init(
+    init(
         groupId: String,
         generationId: Int32,
         memberId: String
@@ -480,14 +492,15 @@ class HeartbeatRequest: KafkaRequest {
             )
         )
     }
-    
+	
+	let values: [KafkaType]
     init(value: HeartbeatRequestMessage) {
-        super.init(apiKey: ApiKey.heartbeatRequest, value: value)
+		self.values = [value]
     }
 }
 
 
-class HeartbeatRequestMessage: KafkaType {
+struct HeartbeatRequestMessage: KafkaType {
     
     private var _groupId: String
     private var _generationId: Int32
@@ -499,25 +512,25 @@ class HeartbeatRequestMessage: KafkaType {
         _memberId = memberId
     }
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         _groupId = String(data: &data)
         _generationId = Int32(data: &data)
         _memberId = String(data: &data)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self._groupId.dataLength +
             self._generationId.dataLength +
             self._memberId.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+	var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self._groupId.data)
         data.append(self._generationId.data)
         data.append(self._memberId.data)
         return data
-    }()
+    }
     
     var groupId: String {
         return _groupId
@@ -526,32 +539,37 @@ class HeartbeatRequestMessage: KafkaType {
 }
 
 
-class HeartbeatResponse: KafkaResponse {
+struct HeartbeatResponse: KafkaResponse {
     
     private var _errorCode: Int16
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         _errorCode = Int16(data: &data)
     }
     
-    lazy var dataLength: Int = {
+	var dataLength: Int {
         return self._errorCode.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         return Data()
-    }()
+    }
     
-    lazy var error: KafkaErrorCode? = {
+    var error: KafkaErrorCode? {
         return KafkaErrorCode(rawValue: self._errorCode)
-    }()
+    }
 	
 }
 
 
-class LeaveGroupRequest: KafkaRequest {
+struct LeaveGroupRequest: KafkaRequest {
+	
+	typealias Response = LeaveGroupResponse
+	
+	static let apiKey: ApiKey = .leaveGroupRequest
+	static let apiVersion: ApiVersion = 0
     
-    convenience init(
+    init(
         groupId: String,
         memberId: String
     ) {
@@ -562,14 +580,15 @@ class LeaveGroupRequest: KafkaRequest {
             )
         )
     }
-    
+	
+	let values: [KafkaType]
     init(value: LeaveGroupRequestMessage) {
-        super.init(apiKey: ApiKey.leaveGroupRequest, value: value)
+		self.values = [value]
     }
 }
 
 
-class LeaveGroupRequestMessage: KafkaType {
+struct LeaveGroupRequestMessage: KafkaType {
     private var _groupId: String
     private var _memberId: String
     
@@ -578,22 +597,22 @@ class LeaveGroupRequestMessage: KafkaType {
         _memberId = memberId
     }
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         _groupId = String(data: &data)
         _memberId = String(data: &data)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self._groupId.dataLength +
             self._memberId.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         var data = Data(capacity: self.dataLength)
         data.append(self._groupId.data)
         data.append(self._memberId.data)
         return data
-    }()
+    }
     
     var groupId: String {
 		return _groupId
@@ -601,24 +620,24 @@ class LeaveGroupRequestMessage: KafkaType {
 }
 
 
-class LeaveGroupResponse: KafkaResponse {
+struct LeaveGroupResponse: KafkaResponse {
     
     private var _errorCode: Int16
     
-    required init(data: inout Data) {
+    init(data: inout Data) {
         _errorCode = Int16(data: &data)
     }
     
-    lazy var dataLength: Int = {
+    var dataLength: Int {
         return self._errorCode.dataLength
-    }()
+    }
     
-    lazy var data: Data = {
+    var data: Data {
         return Data()
-    }()
+    }
     
-    lazy var error: KafkaErrorCode? = {
+    var error: KafkaErrorCode? {
         return KafkaErrorCode(rawValue: self._errorCode)
-    }()
+    }
 }
 

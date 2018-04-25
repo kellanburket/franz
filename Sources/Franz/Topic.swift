@@ -10,31 +10,18 @@ import Foundation
 
 public typealias TopicName = String
 
-open class Topic: NSObject {
-    private var _name: TopicName
-    private var _partitions: [Int32]
-    
-    open var name: String {
-        return _name
-    }
-    
-    open var partitions: [Int32] {
-        return _partitions
-    }
-    
-    internal init(name: String, partitions: [Int32]) {
-        self._name = name
-        self._partitions = partitions
-    }
+public struct Topic {
+    public let name: TopicName
+    public let partitions: [Int32]
 }
 
-internal class KafkaTopic: KafkaType {
-    private var _errorCode: Int16
-    private var _topicName: String
-    private var _partitionMetadata: [Partition]
+internal struct KafkaTopic: KafkaType {
+	let name: String
+    private let errorCode: Int16
+    private let partitionMetadata: [Partition]
     
     var error: KafkaErrorCode? {
-        if let error = KafkaErrorCode(rawValue: _errorCode) {
+        if let error = KafkaErrorCode(rawValue: errorCode) {
             return error
         } else {
             return nil
@@ -42,36 +29,26 @@ internal class KafkaTopic: KafkaType {
     }
     
     var partitions: [Int32: Partition] {
-        
-        var values = [Int32: Partition]()
-        for value in _partitionMetadata {
-            values[value.id] = value
-        }
-        
-        return values
-    }
-    
-    var name: String? {
-        return _topicName
+		return [Int32:Partition](uniqueKeysWithValues: partitionMetadata.map { ($0.id, $0) })
     }
     
     init(errorCode: Int, name: String, partitionMetadata: [Partition]) {
-        self._errorCode = Int16(errorCode)
-        self._topicName = name
-        self._partitionMetadata = partitionMetadata
+        self.errorCode = Int16(errorCode)
+        self.name = name
+        self.partitionMetadata = partitionMetadata
     }
     
-    required init(data: inout Data) {
-        _errorCode = Int16(data: &data)
-        _topicName = String(data: &data)
-        _partitionMetadata = [Partition](data: &data)
+    init(data: inout Data) {
+        errorCode = Int16(data: &data)
+        name = String(data: &data)
+        partitionMetadata = [Partition](data: &data)
     }
     
-    lazy var dataLength: Int = {
-        return self._errorCode.dataLength
-    }()
+	var dataLength: Int {
+        return self.errorCode.dataLength
+    }
     
     var data: Data {
-        return _errorCode.data + _topicName.data + _partitionMetadata.data
+        return errorCode.data + name.data + partitionMetadata.data
     }
 }
