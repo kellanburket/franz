@@ -4,6 +4,7 @@
 [![Version](https://img.shields.io/cocoapods/v/Franz.svg?style=flat)](http://cocoapods.org/pods/Franz)
 [![License](https://img.shields.io/cocoapods/l/Franz.svg?style=flat)](http://cocoapods.org/pods/Franz)
 [![Platform](https://img.shields.io/cocoapods/p/Franz.svg?style=flat)](http://cocoapods.org/pods/Franz)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
 
 Franz is an Apache Kafka 0.9.0 client for iOS and macOS.
@@ -50,6 +51,13 @@ dependencies: [
 targets: [
     .target(name: "MyTarget", dependencies: ["Franz"])
 ]
+```
+
+### [Carthage](https://github.com/Carthage/Carthage)
+
+Add the following dependency to your `Cartfile`:
+```
+github "kellanburket/franz" ~> 1.0.0
 ```
 
 ## Author
