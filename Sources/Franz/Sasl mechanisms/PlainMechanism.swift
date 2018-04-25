@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Handles authenticating with the PLAIN mechanism
 struct PlainMechanism: SaslMechanism {
 	
 	let username: String
