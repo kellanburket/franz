@@ -2,3 +2,5 @@
 /.build
 /Packages
 /*.xcodeproj
+# doesn't make sense to save resolved package with relative local paths
+/Package.resolved
