@@ -70,7 +70,7 @@ enum ReplicaId {
 /*
     Built in Kafka error codes
 */
-enum KafkaErrorCode: Int16 {
+enum KafkaErrorCode: Int16, Codable {
     case noError = 0
     case unknown = -1
     case offsetOutOfRange = 1
@@ -247,20 +247,7 @@ enum CompressionCodec: Int8 {
 }
 
 
-enum ApiKey: Int16, KafkaType {
-	
-	init(data: inout Data) {
-		self.init(rawValue: Int16(data: &data))!
-	}
-	
-	var data: Data {
-		return rawValue.data
-	}
-	
-	var dataLength: Int {
-		return rawValue.dataLength
-	}
-	
+enum ApiKey: Int16, Encodable {
     case produceRequest = 0
     case fetchRequest = 1
     case offsetRequest = 2
@@ -302,7 +289,7 @@ public enum GroupProtocol {
 /**
     Group States
 */
-public enum GroupState: String {
+public enum GroupState: String, Codable {
     /**
         Returned when the join group phase has completed (i.e. all expected members 
         of the group have sent JoinGroup requests) and the coordinator is awaiting 

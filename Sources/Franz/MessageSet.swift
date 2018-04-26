@@ -9,7 +9,7 @@
 import Foundation
 
 
-@objc public class MessageSet: NSObject, KafkaType {
+@objc public class MessageSet: NSObject, Codable {
     let values: [MessageSetItem]
 	
     init(values: [MessageSetItem]) {

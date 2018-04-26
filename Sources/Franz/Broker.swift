@@ -15,7 +15,13 @@ enum BrokerError: Error {
 	case kafkaError(KafkaErrorCode)
 }
 
-class Broker: KafkaType {
+class Broker: Encodable {
+	
+	func encode(to encoder: Encoder) throws {
+		try nodeId.encode(to: encoder)
+		try host.encode(to: encoder)
+		try port.encode(to: encoder)
+	}
 	
     var groupMembership = [String: GroupMembership]()
 
@@ -44,22 +50,6 @@ class Broker: KafkaType {
 	init(connectionConfig: Connection.Config) {
 		self.connectionConfig = connectionConfig
         nodeId = -1
-    }
-	
-	required init(data: inout Data) {
-        nodeId = Int32(data: &data)
-        let host = String(data: &data)
-        let port = Int32(data: &data)
-		//TODO: ??? get connection config in
-		connectionConfig = Connection.Config(host: host, port: port, clientId: "placeholder", authentication: .none)
-    }
-    
-    var dataLength: Int {
-        return nodeId.dataLength + host.dataLength + port.dataLength
-    }
-    
-    var data: Data {
-        return nodeId.data + host.data + port.data
     }
 	
 	class CancelToken {
@@ -250,7 +240,7 @@ class Broker: KafkaType {
 		}
     }
 	
-	func getGroupCoordinator(groupId: String, callback: @escaping (GroupCoordinatorResponse) -> Void) {
+	func getGroupCoordinator(groupId: String, callback: @escaping (GroupCoordinatorRequest.Response) -> Void) {
 		let request = GroupCoordinatorRequest(id: groupId)
 		connection.write(request, callback: callback)
 	}
@@ -436,24 +426,19 @@ class Broker: KafkaType {
             memberId: memberId
         )
         
-        connection.write(request) { response in
+        connection.write(request) { error in
             self._groupCoordinationQueue.async {
-                //print(response.description)
-                if let error = response.error {
-                    switch error {
-                    case .noError:
-                        callback?()
-                    default:
-                        print("ERROR: \(error.description)")
-                    }
-                } else {
-                    print("Unable to process error.")
-                }
+				switch error {
+				case .noError:
+					callback?()
+				default:
+					print("ERROR: \(error.description)")
+				}
             }
         }
     }
 	
-	func getTopicMetadata(topics: [TopicName] = [], completion: @escaping (MetadataResponse) -> Void) {
+	func getTopicMetadata(topics: [TopicName] = [], completion: @escaping (TopicMetadataRequest.Response) -> Void) {
 		let topicMetadataRequest = TopicMetadataRequest(topics: topics)
 		
 		connection.write(topicMetadataRequest, callback: completion)

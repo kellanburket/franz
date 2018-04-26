@@ -403,7 +403,7 @@ public class Cluster {
         for (_, broker) in brokers {
             let dispatchBlock = DispatchWorkItem(qos: .unspecified, flags: []) {
                 
-                var handleGetTopicMetadata: ((MetadataResponse) -> Void)!
+                var handleGetTopicMetadata: ((TopicMetadataRequest.Response) -> Void)!
                 handleGetTopicMetadata = { response in
                     
                     if let topicObj = response.topics[topic] {

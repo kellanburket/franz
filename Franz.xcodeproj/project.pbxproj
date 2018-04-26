@@ -18,6 +18,8 @@
 		A3850F501F4B067800C62CF1 /* MessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3850F4F1F4B067800C62CF1 /* MessageTests.swift */; };
 		A38623331F43A3BE005590B8 /* VariableLengthProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38623321F43A3BE005590B8 /* VariableLengthProtocolTests.swift */; };
 		A386B8091F196A730086BFF2 /* Assignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A386B8081F196A730086BFF2 /* Assignment.swift */; };
+		A38ABE8020902435003AD21B /* KafkaEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38ABE7F20902435003AD21B /* KafkaEncoder.swift */; };
+		A38ABE82209032C7003AD21B /* KafkaDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38ABE81209032C7003AD21B /* KafkaDecoder.swift */; };
 		A38E69A01F391BCB0044D3D3 /* OldConsumers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */; };
 		A38E69A11F391C350044D3D3 /* Consumer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A38E699D1F391B960044D3D3 /* Consumer.swift */; };
 		A3BB0309208DC54C0067C210 /* TopicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BB0308208DC54C0067C210 /* TopicTests.swift */; };
@@ -85,6 +87,8 @@
 		A3850F521F4B3C2F00C62CF1 /* DockerTestBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DockerTestBase.swift; path = DockerTests/DockerTestBase.swift; sourceTree = SOURCE_ROOT; };
 		A38623321F43A3BE005590B8 /* VariableLengthProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariableLengthProtocolTests.swift; sourceTree = "<group>"; };
 		A386B8081F196A730086BFF2 /* Assignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assignment.swift; sourceTree = "<group>"; };
+		A38ABE7F20902435003AD21B /* KafkaEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KafkaEncoder.swift; sourceTree = "<group>"; };
+		A38ABE81209032C7003AD21B /* KafkaDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KafkaDecoder.swift; sourceTree = "<group>"; };
 		A38E699D1F391B960044D3D3 /* Consumer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Consumer.swift; sourceTree = "<group>"; };
 		A38E699F1F391BCB0044D3D3 /* OldConsumers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldConsumers.swift; sourceTree = "<group>"; };
 		A3BB0308208DC54C0067C210 /* TopicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicTests.swift; sourceTree = "<group>"; };
@@ -279,6 +283,8 @@
 				OBJ_16 /* Enumerations.swift */,
 				OBJ_19 /* Group.swift */,
 				OBJ_22 /* KafkaProtocol.swift */,
+				A38ABE7F20902435003AD21B /* KafkaEncoder.swift */,
+				A38ABE81209032C7003AD21B /* KafkaDecoder.swift */,
 				OBJ_23 /* KafkaRequest.swift */,
 				OBJ_24 /* KafkaResponse.swift */,
 				OBJ_25 /* MessageSet.swift */,
@@ -436,12 +442,14 @@
 				OBJ_63 /* Enumerations.swift in Sources */,
 				A313BECB208D38DE00581A50 /* CreateTopicsAPI.swift in Sources */,
 				OBJ_65 /* FetchAPI.swift in Sources */,
+				A38ABE8020902435003AD21B /* KafkaEncoder.swift in Sources */,
 				OBJ_66 /* Group.swift in Sources */,
 				A34EBFC02083CDDC00A9D0AA /* SaslApi.swift in Sources */,
 				A386B8091F196A730086BFF2 /* Assignment.swift in Sources */,
 				OBJ_67 /* GroupCoordinatorAPI.swift in Sources */,
 				A317D92B208AB5B7008427B9 /* APIVersionsAPI.swift in Sources */,
 				A38E69A01F391BCB0044D3D3 /* OldConsumers.swift in Sources */,
+				A38ABE82209032C7003AD21B /* KafkaDecoder.swift in Sources */,
 				OBJ_68 /* GroupMembershipAPI.swift in Sources */,
 				OBJ_69 /* KafkaProtocol.swift in Sources */,
 				OBJ_70 /* KafkaRequest.swift in Sources */,

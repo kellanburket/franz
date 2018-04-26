@@ -19,10 +19,10 @@ protocol KafkaRequest {
 	static var apiVersion: ApiVersion { get }
 	
 	/// The contents of the request.
-	var values: [KafkaType] { get }
+	var values: [Encodable] { get }
 	
 	/// The type of response you expect to receive when making this request.
-	associatedtype Response: KafkaResponse
+	associatedtype Response: Decodable
 }
 
 extension KafkaRequest {
@@ -30,15 +30,11 @@ extension KafkaRequest {
 	/// The request header and content data.
 	/// - Parameter correlationId: A unique correlation ID to associate with the response.
 	func data(correlationId: Int32, clientId: String) -> Data {
-		let content: [KafkaType] = [Self.apiKey, Self.apiVersion, correlationId, clientId] + values
-		let size: Int32 = content
-			.map { $0.dataLength }
-			.map(Int32.init)
-			.reduce(0, +)
-
-		return ([size] + content)
-			.compactMap { $0?.data }
-			.reduce(Data(), +)
+		let content: [Encodable] = [Self.apiKey, Self.apiVersion, correlationId, clientId] + values
+		
+		let data = try! content.map(KafkaEncoder.encode).reduce(Data(), +)
+		let size = try! KafkaEncoder.encode(data.count)
+		return size + data
 	}
 	
 }

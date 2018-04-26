@@ -8,8 +8,8 @@
 
 import Foundation
 
-protocol KafkaResponse {
-	
-	init(data: inout Data)
-	
-}
+//protocol KafkaResponse {
+//	
+//	init(data: inout Data)
+//	
+//}
