@@ -57,7 +57,7 @@ targets: [
 
 Add the following dependency to your `Cartfile`:
 ```
-github "kellanburket/franz" ~> 1.0.0
+github "kellanburket/franz" ~> 1.1.0
 ```
 
 ## Author
